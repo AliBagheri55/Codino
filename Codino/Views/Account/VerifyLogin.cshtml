@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "کد ورود";
+}
+
+<link rel="stylesheet"
+      href="~/css/account.css"
+      asp-append-version="true" />
+
+<div class="account-page">
+
+    <div class="account-card">
+
+        <div class="account-logo">
+
+            <img src="~/images/codino-intro.jpg"
+                 alt="Codino" />
+
+            <span>Codino</span>
+
+        </div>
+
+        <h1>
+            تأیید ورود
+        </h1>
+
+        <p class="account-description">
+
+            کد ورود برای شماره
+
+            <strong>
+                @ViewBag.PhoneNumber
+            </strong>
+
+            را وارد کنید.
+
+        </p>
+
+        <!-- =========================
+             TEST OTP
+        ========================== -->
+
+        <div class="test-otp-box">
+
+            <span>
+                کد تست ورود
+            </span>
+
+            <strong>
+                123456
+            </strong>
+
+            <small>
+                فعلاً پیامک فعال نیست.
+            </small>
+
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="account-error">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form method="post"
+              action="/Account/VerifyLogin">
+
+            <div class="input-group">
+
+                <label>
+                    کد ورود
+                </label>
+
+                <input type="text"
+                       name="code"
+                       maxlength="6"
+                       inputmode="numeric"
+                       autocomplete="one-time-code"
+                       placeholder="123456"
+                       class="otp-input"
+                       required />
+
+            </div>
+
+            <button type="submit"
+                    class="account-button">
+
+                ورود به Codino
+
+            </button>
+
+        </form>
+
+        <div class="account-footer">
+
+            <a href="/Account/Login">
+                بازگشت به ورود
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "تأیید شماره موبایل";
+}
+
+<link rel="stylesheet"
+      href="~/css/account.css"
+      asp-append-version="true" />
+
+<div class="account-page">
+
+    <div class="account-card">
+
+        <div class="account-logo">
+
+            <img src="~/images/codino-intro.jpg"
+                 alt="Codino" />
+
+            <span>
+                Codino
+            </span>
+
+        </div>
+
+        <h1>
+            تأیید شماره موبایل
+        </h1>
+
+        <p class="account-description">
+
+            کد تأیید برای شماره
+
+            <strong>
+                @ViewBag.PhoneNumber
+            </strong>
+
+            را وارد کنید.
+
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(
+                ViewBag.Otp as string))
+        {
+            <div class="test-otp-box">
+
+                <span>
+                    کد تأیید شما
+                </span>
+
+                <strong>
+                    @ViewBag.Otp
+                </strong>
+
+                <small>
+                    این کد فعلاً به صورت آزمایشی نمایش داده می‌شود.
+                </small>
+
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(
+                ViewBag.Error as string))
+        {
+            <div class="account-error">
+
+                @ViewBag.Error
+
+            </div>
+        }
+
+        <form asp-controller="Account"
+              asp-action="VerifyRegister"
+              method="post"
+              autocomplete="off">
+
+            @Html.AntiForgeryToken()
+
+            <div class="input-group">
+
+                <label for="code">
+                    کد تأیید
+                </label>
+
+                <input type="text"
+                       id="code"
+                       name="code"
+                       maxlength="6"
+                       minlength="6"
+                       inputmode="numeric"
+                       pattern="[0-9]{6}"
+                       autocomplete="one-time-code"
+                       placeholder="123456"
+                       class="otp-input"
+                       required />
+
+            </div>
+
+            <button type="submit"
+                    class="account-button">
+
+                تأیید و ساخت حساب
+
+            </button>
+
+        </form>
+
+        <div class="account-footer">
+
+            <a asp-controller="Account"
+               asp-action="Register">
+
+                بازگشت به ثبت نام
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

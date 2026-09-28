@@ -1,0 +1,18 @@
+[
+  {
+    "ContainingType": "Codino.Controllers.CodeController",
+    "Method": "Execute",
+    "RelativePath": "api/code/execute",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Codino.Models.Code.CodeExecutionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

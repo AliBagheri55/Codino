@@ -1,0 +1,999 @@
+﻿@model Codino.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Codino";
+
+    string? userFullName =
+        Context.Session.GetString("UserFullName");
+
+    string? userId =
+        Context.Session.GetString("UserId");
+
+    bool isLoggedIn =
+        !string.IsNullOrWhiteSpace(userId) &&
+        !string.IsNullOrWhiteSpace(userFullName);
+
+    int coursesCount =
+        Model?.Courses?.Count ?? 0;
+}
+
+<!DOCTYPE html>
+
+<html lang="fa" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Codino - آموزش برنامه‌نویسی">
+
+    <meta name="author"
+          content="Ali Bagheri">
+
+    <title>
+        Codino | آموزش برنامه‌نویسی
+    </title>
+
+    <link rel="stylesheet"
+          href="~/css/style.css"
+          asp-append-version="true">
+
+</head>
+
+<body>
+
+
+    <!-- =========================
+         WARNING BAR
+    ========================== -->
+
+    <div class="warning-bar">
+
+        هر گونه مشکل در سایت را به آیدی
+
+        <strong>
+            ali_i_b_8
+        </strong>
+
+        در تلگرام گزارش دهید.
+
+    </div>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <header class="navbar">
+
+        <div class="navbar-container">
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="logo">
+
+                <img src="~/images/codino-intro.jpg"
+                     alt="Codino">
+
+            </a>
+
+
+            <nav class="nav-menu"
+                 id="navMenu">
+
+                <a href="#about">
+                    درباره من
+                </a>
+
+                <a href="#courses">
+                    دوره‌ها
+                </a>
+
+                <a href="#playground">
+                    محیط آنلاین کدنویسی
+                </a>
+
+                <a href="#comments">
+                    نظرات
+                </a>
+
+            </nav>
+
+
+            <!-- =========================
+                 ACCOUNT
+            ========================== -->
+
+            <div class="nav-actions">
+
+                @if (isLoggedIn)
+                {
+                    <div class="user-menu">
+
+                        <span class="user-name">
+                            @userFullName
+                        </span>
+
+                        <a asp-controller="Account"
+                           asp-action="Logout"
+                           class="logout-button">
+
+                            خروج
+
+                        </a>
+
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Account"
+                       asp-action="Login"
+                       class="login-button">
+
+                        ورود
+
+                    </a>
+
+                    <a asp-controller="Account"
+                       asp-action="Register"
+                       class="register-button">
+
+                        ثبت نام
+
+                    </a>
+                }
+
+            </div>
+
+
+            <button type="button"
+                    class="mobile-menu-button"
+                    id="mobileMenuButton">
+
+                ☰
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main>
+
+
+        <!-- =========================
+             ABOUT
+        ========================== -->
+
+        <section class="about section"
+                 id="about">
+
+            <div class="section-container">
+
+                <div class="section-heading">
+
+                    <span>
+                        ABOUT ME
+                    </span>
+
+                    <h2>
+                        درباره من
+                    </h2>
+
+                </div>
+
+
+                <div class="about-content">
+
+                    <div class="about-image">
+
+                        <div class="image-frame">
+
+                            <img src="~/images/AliBagheri.jpg"
+                                 alt="علی باقری">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="about-text">
+
+                        <span class="about-label">
+                            ALI BAGHERI
+                        </span>
+
+                        <h3>
+                            سلام، من علی باقری هستم.
+                        </h3>
+
+                        <p>
+                            کارشناسی کامپیوتر دارم و حدود دو سال است
+                            که در زمینه برنامه‌نویسی فعالیت می‌کنم.
+                        </p>
+
+                        <p>
+                            Codino را ساخته‌ام تا مسیر یادگیری
+                            برنامه‌نویسی برای علاقه‌مندان ساده‌تر،
+                            کاربردی‌تر و پروژه‌محورتر باشد.
+                        </p>
+
+                        <p>
+                            در Codino می‌توانید زبان‌های مختلف
+                            برنامه‌نویسی را یاد بگیرید، تمرین کنید
+                            و پروژه‌های واقعی بسازید.
+                        </p>
+
+
+                        <div class="about-stats">
+
+                            <div class="stat">
+
+                                <strong>
+                                    2+
+                                </strong>
+
+                                <span>
+                                    سال تجربه
+                                </span>
+
+                            </div>
+
+
+                            <div class="stat">
+
+                                <strong>
+                                    @coursesCount
+                                </strong>
+
+                                <span>
+                                    دوره آموزشی
+                                </span>
+
+                            </div>
+
+
+                            <div class="stat">
+
+                                <strong>
+                                    20+
+                                </strong>
+
+                                <span>
+                                    جلسه آموزشی
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             COURSES
+        ========================== -->
+
+        <section class="courses section"
+                 id="courses">
+
+            <div class="section-container">
+
+                <div class="section-heading centered">
+
+                    <span>
+                        CODINO COURSES
+                    </span>
+
+                    <h2>
+                        دوره‌های آموزشی
+                    </h2>
+
+                    <p>
+                        مسیر یادگیری خودت را انتخاب کن.
+                    </p>
+
+                </div>
+
+
+                <div class="courses-grid">
+
+                    @if (Model?.Courses != null &&
+                         Model.Courses.Any())
+                    {
+                        foreach (var course in Model.Courses)
+                        {
+                            <article class="course-card">
+
+                                <div class="course-image">
+
+                                    <img src="@course.Image"
+                                         alt="@course.Title">
+
+                                    <span class="course-badge">
+                                        @course.Title
+                                    </span>
+
+                                </div>
+
+
+                                <div class="course-content">
+
+                                    <h3>
+                                        @course.Title
+                                    </h3>
+
+                                    <p>
+                                        @course.Description
+                                    </p>
+
+
+                                    <div class="course-info">
+
+                                        <span>
+                                            @course.Chapters فصل
+                                        </span>
+
+                                        <span>
+                                            @course.Sessions جلسه
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="course-footer">
+
+                                        <strong>
+                                            @course.Price.ToString("N0")
+                                            تومان
+                                        </strong>
+
+
+                                        @if (isLoggedIn)
+                                        {
+                                            <!-- =========================
+                                                 COURSE DETAILS
+                                            ========================== -->
+
+                                            <a asp-controller="Course"
+                                               asp-action="Details"
+                                               asp-route-slug="@course.Slug"
+                                               class="course-button">
+
+                                                مشاهده دوره
+
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#"
+                                               class="course-button course-login-required">
+
+                                                مشاهده دوره
+
+                                            </a>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </article>
+                        }
+                    }
+                    else
+                    {
+                        <div class="no-comments">
+
+                            در حال حاضر دوره‌ای برای نمایش وجود ندارد.
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ONLINE CODE PLAYGROUND
+        ================================================== -->
+
+        <section class="playground section"
+                 id="playground">
+
+            <div class="section-container">
+
+                <div class="section-heading">
+
+                    <span>
+                        ONLINE CODE
+                    </span>
+
+                    <h2>
+                        محیط آنلاین کدنویسی
+                    </h2>
+
+                    <p>
+                        زبان برنامه‌نویسی خود را انتخاب کنید،
+                        کد بنویسید و اجرا کنید.
+                    </p>
+
+                </div>
+
+
+                <!-- =========================
+                     TOOLBAR
+                ========================== -->
+
+                <div class="playground-toolbar">
+
+                    <div class="language-selector">
+
+                        <label for="languageSelect">
+                            زبان:
+                        </label>
+
+                        <select id="languageSelect">
+
+                            <option value="html">
+                                HTML + CSS
+                            </option>
+
+                            <option value="javascript">
+                                JavaScript
+                            </option>
+
+                            <option value="csharp">
+                                C#
+                            </option>
+
+                            <option value="cpp">
+                                C++
+                            </option>
+
+                            <option value="c">
+                                C
+                            </option>
+
+                            <option value="python">
+                                Python
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="editor-language">
+
+                        <span id="currentLanguage">
+                            HTML + CSS
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     PLAYGROUND BOX
+                ========================== -->
+
+                <div class="playground-box">
+
+
+                    <!-- =========================
+                         EDITOR
+                    ========================== -->
+
+                    <div class="editor">
+
+                        <div class="editor-header">
+
+                            <div class="editor-title">
+                                CODE EDITOR
+                            </div>
+
+                            <div class="editor-dots">
+
+                                <span></span>
+                                <span></span>
+                                <span></span>
+
+                            </div>
+
+                        </div>
+
+
+                        <textarea id="codeEditor"
+                                  spellcheck="false"
+                                  autocomplete="off"
+                                  autocorrect="off"
+                                  autocapitalize="off"
+                                  placeholder="کد خود را اینجا بنویسید..."></textarea>
+
+                    </div>
+
+
+                    <!-- =========================
+                         OUTPUT
+                    ========================== -->
+
+                    <div class="output">
+
+                        <div class="output-header">
+
+                            <span>
+                                OUTPUT
+                            </span>
+
+                            <span id="executionStatus"
+                                  class="execution-status">
+
+                                آماده اجرا
+
+                            </span>
+
+                        </div>
+
+
+                        <div id="codeOutput">
+
+                            <div class="empty-output">
+
+                                کد خود را بنویسید
+                                و روی اجرای کد کلیک کنید.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     BUTTONS
+                ========================== -->
+
+                <div class="playground-actions">
+
+                    <button type="button"
+                            id="runCode"
+                            class="primary-button">
+
+                        ▶ اجرای کد
+
+                    </button>
+
+
+                    <button type="button"
+                            id="clearCode"
+                            class="secondary-button">
+
+                        پاک کردن
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             COMMENTS
+        ========================== -->
+
+        <section class="comments section"
+                 id="comments">
+
+            <div class="section-container">
+
+                <div class="section-heading centered">
+
+                    <span>
+                        COMMUNITY
+                    </span>
+
+                    <h2>
+                        نظرات کاربران
+                    </h2>
+
+                    <p>
+                        تجربه کاربران از Codino
+                    </p>
+
+                </div>
+
+
+                @if (TempData["CommentSuccess"] != null)
+                {
+                    <div class="comment-message success">
+
+                        @TempData["CommentSuccess"]
+
+                    </div>
+                }
+
+
+                @if (TempData["CommentError"] != null)
+                {
+                    <div class="comment-message error">
+
+                        @TempData["CommentError"]
+
+                    </div>
+                }
+
+
+                @if (Model?.Comments != null &&
+                     Model.Comments.Any())
+                {
+                    <div class="comments-grid">
+
+                        @foreach (var comment in Model.Comments)
+                        {
+                            <article class="comment-card">
+
+                                <div class="comment-top">
+
+                                    <div class="comment-avatar">
+
+                                        @(string.IsNullOrWhiteSpace(
+                                            comment.UserName)
+                                                ? "ک"
+                                                : comment.UserName.Substring(0, 1))
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <h4>
+                                            @comment.UserName
+                                        </h4>
+
+                                        <span>
+                                            @comment.CreatedAt
+                                            .ToLocalTime()
+                                            .ToString("yyyy/MM/dd")
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="stars">
+
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= comment.Rating)
+                                        {
+                                            <span class="star-filled">
+                                                ★
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="star-empty">
+                                                ★
+                                            </span>
+                                        }
+                                    }
+
+                                </div>
+
+
+                                <p>
+                                    @comment.Text
+                                </p>
+
+                            </article>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="no-comments">
+
+                        هنوز نظری ثبت نشده است.
+
+                        <br>
+
+                        اولین نفری باش که نظرش را ثبت می‌کند.
+
+                    </div>
+                }
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             ADD COMMENT
+        ========================== -->
+
+        <section class="add-comment section"
+                 id="add-comment">
+
+            <div class="section-container">
+
+                <div class="section-heading centered">
+
+                    <span>
+                        YOUR OPINION
+                    </span>
+
+                    <h2>
+                        نظر خودت را ثبت کن
+                    </h2>
+
+                    <p>
+                        تجربه‌ات از Codino را با ما به اشتراک بگذار.
+                    </p>
+
+                </div>
+
+
+                @if (!isLoggedIn)
+                {
+                    <div class="login-required">
+
+                        <h3>
+                            برای ثبت نظر وارد حساب خود شوید
+                        </h3>
+
+                        <p>
+                            فقط کاربران واردشده می‌توانند
+                            نظر و امتیاز ثبت کنند.
+                        </p>
+
+
+                        <a asp-controller="Account"
+                           asp-action="Login"
+                           class="primary-button">
+
+                            ورود به حساب
+
+                        </a>
+
+                    </div>
+                }
+                else
+                {
+                    <form class="comment-form"
+                          id="commentForm"
+                          asp-controller="Home"
+                          asp-action="CreateComment"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <div class="rating">
+
+                            <span>
+                                امتیاز شما:
+                            </span>
+
+
+                            <div class="rating-stars"
+                                 id="ratingStars">
+
+                                <button type="button"
+                                        data-rating="1">
+                                    ★
+                                </button>
+
+                                <button type="button"
+                                        data-rating="2">
+                                    ★
+                                </button>
+
+                                <button type="button"
+                                        data-rating="3">
+                                    ★
+                                </button>
+
+                                <button type="button"
+                                        data-rating="4">
+                                    ★
+                                </button>
+
+                                <button type="button"
+                                        data-rating="5">
+                                    ★
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <input type="hidden"
+                               id="rating"
+                               name="rating"
+                               value="0">
+
+
+                        <textarea id="commentText"
+                                  name="text"
+                                  maxlength="500"
+                                  required
+                                  placeholder="نظر خود را بنویسید..."></textarea>
+
+
+                        <div class="comment-counter">
+
+                            <span id="commentCounter">
+                                0
+                            </span>
+
+                            / 500
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="primary-button">
+
+                            ثبت نظر
+
+                        </button>
+
+                    </form>
+                }
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+
+        <div class="footer-container">
+
+            <div class="footer-brand">
+
+                <img src="~/images/codino-intro.jpg"
+                     alt="Codino">
+
+                <h3>
+                    CODINO
+                </h3>
+
+                <p>
+                    مسیری برای یادگیری،
+                    تمرین و ساختن.
+                </p>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <h4>
+                    دسترسی سریع
+                </h4>
+
+                <a href="#about">
+                    درباره من
+                </a>
+
+                <a href="#courses">
+                    دوره‌ها
+                </a>
+
+                <a href="#playground">
+                    محیط کدنویسی
+                </a>
+
+                <a href="#comments">
+                    نظرات
+                </a>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <h4>
+                    ارتباط با من
+                </h4>
+
+                <a href="https://t.me/ali_b_i_8"
+                   target="_blank"
+                   rel="noopener noreferrer">
+
+                    Telegram
+
+                </a>
+
+                <a href="https://instagram.com/a.b._.off"
+                   target="_blank"
+                   rel="noopener noreferrer">
+
+                    Instagram
+
+                </a>
+
+                <a href="https://github.com/"
+                   target="_blank"
+                   rel="noopener noreferrer">
+
+                    GitHub
+
+                </a>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <h4>
+                    Codino
+                </h4>
+
+                <p>
+                    آموزش برنامه‌نویسی
+                    به شکل ساده و کاربردی.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p>
+                © 2026 Codino
+                — تمامی حقوق محفوظ است.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================
+         SITE JS
+    ========================== -->
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
+
+</body>
+
+</html>

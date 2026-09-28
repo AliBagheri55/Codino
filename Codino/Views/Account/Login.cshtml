@@ -1,0 +1,163 @@
+﻿@{
+    ViewData["Title"] = "ورود به حساب";
+}
+
+<link rel="stylesheet"
+      href="~/css/account.css"
+      asp-append-version="true" />
+
+<div class="account-page">
+
+    <div class="account-card">
+
+        <div class="account-logo">
+
+            <img src="~/images/codino-intro.jpg"
+                 alt="Codino" />
+
+            <span>
+                Codino
+            </span>
+
+        </div>
+
+        <h1>
+            ورود به حساب
+        </h1>
+
+        <p class="account-description">
+            برای ورود، شماره موبایل و رمز عبور خود را وارد کنید.
+        </p>
+
+        @if (TempData["AccountSuccess"] != null)
+        {
+            <div class="account-success">
+                @TempData["AccountSuccess"]
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="account-error">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form asp-controller="Account"
+              asp-action="Login"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="input-group">
+
+                <label for="phoneNumber">
+                    شماره موبایل
+                </label>
+
+                <input type="text"
+                       id="phoneNumber"
+                       name="phoneNumber"
+                       maxlength="11"
+                       minlength="11"
+                       inputmode="numeric"
+                       autocomplete="tel"
+                       placeholder="09123456789"
+                       required />
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="password">
+                    رمز عبور
+                </label>
+
+                <input type="password"
+                       id="password"
+                       name="password"
+                       minlength="8"
+                       autocomplete="current-password"
+                       placeholder="رمز عبور"
+                       required />
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="captcha">
+                    کد امنیتی
+                </label>
+
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:10px;
+                    margin-bottom:10px;
+                    ">
+
+                    <div style="
+                        background:#111827;
+                        border:1px solid #374151;
+                        border-radius:10px;
+                        padding:10px 18px;
+                        font-size:24px;
+                        font-weight:bold;
+                        letter-spacing:6px;
+                        color:#fff;
+                        user-select:none;
+                        text-align:center;
+                        ">
+
+                        @ViewBag.Captcha
+
+                    </div>
+
+                </div>
+
+                <input type="text"
+                       id="captcha"
+                       name="captcha"
+                       maxlength="5"
+                       autocomplete="off"
+                       placeholder="کد بالا را وارد کنید"
+                       required />
+
+            </div>
+
+            <button type="submit"
+                    class="account-button">
+
+                ورود
+
+            </button>
+
+        </form>
+
+        <div class="account-footer">
+
+            <a asp-controller="Account"
+               asp-action="ForgotPassword">
+
+                فراموشی رمز عبور
+
+            </a>
+
+        </div>
+
+        <div class="account-footer">
+
+            حساب کاربری ندارید؟
+
+            <a asp-controller="Account"
+               asp-action="Register">
+
+                ثبت نام کنید
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

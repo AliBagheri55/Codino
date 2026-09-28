@@ -1,0 +1,199 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Tahoma, Arial, sans-serif;
+    background: radial-gradient( circle at top right, rgba(111, 76, 255, 0.25), transparent 35% ), radial-gradient( circle at bottom left, rgba(0, 220, 255, 0.12), transparent 35% ), #070914;
+    color: #ffffff;
+}
+
+.account-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+.account-card {
+    width: 100%;
+    max-width: 450px;
+    padding: 40px;
+    border-radius: 25px;
+    background: rgba(18, 21, 40, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.45), 0 0 50px rgba(102, 76, 255, 0.12);
+    backdrop-filter: blur(20px);
+}
+
+.account-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+    .account-logo img {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 14px;
+    }
+
+.account-card h1 {
+    margin: 0 0 10px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.account-description {
+    text-align: center;
+    color: #aeb4ca;
+    line-height: 1.9;
+    margin-bottom: 28px;
+}
+
+    .account-description strong {
+        color: #ffffff;
+    }
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+    .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #dfe3f5;
+        font-size: 14px;
+    }
+
+    .input-group input {
+        width: 100%;
+        height: 52px;
+        padding: 0 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        outline: none;
+        font-size: 15px;
+        transition: 0.25s;
+    }
+
+        .input-group input:focus {
+            border-color: #765cff;
+            box-shadow: 0 0 20px rgba(118, 92, 255, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: #6f758b;
+        }
+
+.account-button {
+    width: 100%;
+    height: 54px;
+    border: none;
+    border-radius: 13px;
+    background: linear-gradient( 135deg, #7255ff, #4e8cff );
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+    .account-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(85, 91, 255, 0.3);
+    }
+
+.account-error {
+    padding: 13px 15px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: rgba(255, 70, 90, 0.1);
+    border: 1px solid rgba(255, 70, 90, 0.25);
+    color: #ff8797;
+    text-align: center;
+    line-height: 1.7;
+}
+
+.account-footer {
+    margin-top: 25px;
+    text-align: center;
+    color: #8e94aa;
+    font-size: 14px;
+}
+
+    .account-footer a {
+        color: #8b76ff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .account-footer a:hover {
+            text-decoration: underline;
+        }
+
+.otp-input {
+    text-align: center !important;
+    font-size: 28px !important;
+    letter-spacing: 12px;
+    direction: ltr;
+}
+
+/* =========================
+   TEST OTP
+========================= */
+
+.test-otp-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+    padding: 18px;
+    border-radius: 15px;
+    background: rgba(118, 92, 255, 0.10);
+    border: 1px solid rgba(118, 92, 255, 0.25);
+    text-align: center;
+}
+
+    .test-otp-box span {
+        color: #aeb4ca;
+        font-size: 13px;
+    }
+
+    .test-otp-box strong {
+        direction: ltr;
+        font-size: 30px;
+        letter-spacing: 8px;
+        color: #8b76ff;
+    }
+
+    .test-otp-box small {
+        color: #777e96;
+        font-size: 11px;
+        margin-top: 3px;
+    }
+
+@media (max-width: 500px) {
+
+    .account-card {
+        padding: 30px 22px;
+    }
+
+        .account-card h1 {
+            font-size: 26px;
+        }
+
+    .otp-input {
+        letter-spacing: 7px;
+    }
+}

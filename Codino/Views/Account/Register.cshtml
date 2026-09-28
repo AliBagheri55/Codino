@@ -1,0 +1,175 @@
+﻿@{
+    ViewData["Title"] = "ثبت نام";
+}
+
+<link rel="stylesheet"
+      href="~/css/account.css"
+      asp-append-version="true" />
+
+<div class="account-page">
+
+    <div class="account-card">
+
+        <div class="account-logo">
+
+            <img src="~/images/codino-intro.jpg"
+                 alt="Codino" />
+
+            <span>
+                Codino
+            </span>
+
+        </div>
+
+        <h1>
+            ساخت حساب
+        </h1>
+
+        <p class="account-description">
+            برای شروع یادگیری در Codino ثبت‌نام کنید.
+        </p>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="account-error">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form asp-controller="Account"
+              asp-action="Register"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="input-group">
+
+                <label for="fullName">
+                    نام و نام خانوادگی
+                </label>
+
+                <input type="text"
+                       id="fullName"
+                       name="fullName"
+                       placeholder="مثلاً علی باقری"
+                       required />
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="phoneNumber">
+                    شماره موبایل
+                </label>
+
+                <input type="tel"
+                       id="phoneNumber"
+                       name="phoneNumber"
+                       placeholder="09123456789"
+                       maxlength="11"
+                       minlength="11"
+                       inputmode="numeric"
+                       autocomplete="tel"
+                       required />
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="password">
+                    رمز عبور
+                </label>
+
+                <input type="password"
+                       id="password"
+                       name="password"
+                       placeholder="حداقل ۸ کاراکتر"
+                       minlength="8"
+                       autocomplete="new-password"
+                       required />
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="repeatPassword">
+                    تکرار رمز عبور
+                </label>
+
+                <input type="password"
+                       id="repeatPassword"
+                       name="repeatPassword"
+                       placeholder="رمز عبور را دوباره وارد کنید"
+                       minlength="8"
+                       autocomplete="new-password"
+                       required />
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="captcha">
+                    کد امنیتی
+                </label>
+
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:10px;
+                    margin-bottom:10px;
+                    ">
+
+                    <div style="
+                        background:#111827;
+                        border:1px solid #374151;
+                        border-radius:10px;
+                        padding:10px 18px;
+                        font-size:24px;
+                        font-weight:bold;
+                        letter-spacing:6px;
+                        color:#fff;
+                        user-select:none;
+                        text-align:center;
+                        ">
+
+                        @ViewBag.Captcha
+
+                    </div>
+
+                </div>
+
+                <input type="text"
+                       id="captcha"
+                       name="captcha"
+                       maxlength="5"
+                       autocomplete="off"
+                       placeholder="کد بالا را وارد کنید"
+                       required />
+
+            </div>
+
+            <button type="submit"
+                    class="account-button">
+
+                ثبت نام
+
+            </button>
+
+        </form>
+
+        <div class="account-footer">
+
+            حساب کاربری دارید؟
+
+            <a asp-controller="Account"
+               asp-action="Login">
+
+                ورود
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
