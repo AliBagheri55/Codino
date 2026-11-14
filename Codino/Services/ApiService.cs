@@ -832,6 +832,124 @@ public async Task<List<CommentResponse>> GetCommentsAsync(
         }
 
         // =========================================================
+        // SUBMIT COLLABORATION REQUEST
+        // =========================================================
+
+        public async Task<ApiResponse> SubmitCollaborationRequestAsync(
+            string specialty,
+            string experience,
+            string skills,
+            string? portfolioUrl,
+            string description,
+            CancellationToken cancellationToken = default)
+        {
+            // بررسی وجود توکن ورود در نشست کاربر
+            string? accessToken = GetAccessToken();
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                return Failure(
+                    "نشست شما معتبر نیست. لطفاً دوباره وارد حساب کاربری شوید.");
+            }
+
+            // بررسی اطلاعات ارسالی
+            if (string.IsNullOrWhiteSpace(specialty) ||
+                string.IsNullOrWhiteSpace(experience) ||
+                string.IsNullOrWhiteSpace(skills) ||
+                string.IsNullOrWhiteSpace(description))
+            {
+                return Failure("لطفاً تمام اطلاعات ضروری را تکمیل کنید.");
+            }
+
+            // ساخت اطلاعات درخواست
+            var requestData = new
+            {
+                Specialty = specialty.Trim(),
+                Experience = experience.Trim(),
+                Skills = skills.Trim(),
+                PortfolioUrl = string.IsNullOrWhiteSpace(portfolioUrl)
+                    ? null
+                    : portfolioUrl.Trim(),
+                Description = description.Trim()
+            };
+
+            try
+            {
+                // ارسال درخواست به API با توکن کاربر
+                using HttpRequestMessage httpRequest =
+                    CreateAuthenticatedRequest(
+                        HttpMethod.Post,
+                        "api/Collaboration/submit");
+
+                httpRequest.Content = JsonContent.Create(
+                    requestData,
+                    options: JsonOptions);
+
+                using HttpResponseMessage response =
+                    await _httpClient.SendAsync(
+                        httpRequest,
+                        cancellationToken);
+
+                string content =
+                    await response.Content.ReadAsStringAsync(
+                        cancellationToken);
+
+                LogResponse(
+                    "SUBMIT COLLABORATION",
+                    response,
+                    content);
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return Failure(
+                        "نشست شما منقضی شده است. لطفاً دوباره وارد شوید.");
+                }
+
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    return Failure(
+                        "شما اجازه ثبت درخواست همکاری ندارید.");
+                }
+
+                if (response.StatusCode == HttpStatusCode.Conflict)
+                {
+                    return Failure(
+                        GetErrorMessageFromContent(
+                            content,
+                            "شما قبلاً درخواست همکاری ثبت کرده‌اید."));
+                }
+
+                return ParseApiResponse(
+                    response,
+                    content,
+                    "پاسخ ثبت درخواست همکاری معتبر نیست.");
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (TaskCanceledException ex)
+            {
+                LogException("COLLABORATION TIMEOUT", ex);
+
+                return Failure("زمان پاسخ سرور به پایان رسید.");
+            }
+            catch (HttpRequestException ex)
+            {
+                LogException("COLLABORATION HTTP ERROR", ex);
+
+                return Failure("ارتباط با API برقرار نشد.");
+            }
+            catch (Exception ex)
+            {
+                LogException("COLLABORATION ERROR", ex);
+
+                return Failure("خطایی هنگام ثبت درخواست همکاری رخ داد.");
+            }
+        }
+
+        // =========================================================
         // SAFE JSON DESERIALIZATION
         // =========================================================
 

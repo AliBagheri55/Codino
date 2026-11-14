@@ -1,279 +1,359 @@
 ﻿@{
     ViewData["Title"] = "تماس با ما | کدینو";
+    Layout = "_Layout";
 }
 
 <link rel="stylesheet"
       href="~/css/legal.css"
       asp-append-version="true" />
 
-<section class="legal-page" dir="rtl">
+<main class="legal-page contact-page" dir="rtl">
 
     <div class="legal-container">
 
-        <!-- عنوان صفحه -->
+        <!-- سربرگ صفحه -->
         <header class="legal-header">
 
+            <span class="legal-label">
+                ارتباط با مجموعه کدینو
+            </span>
+
             <h1>
-                اطلاعات تماس و ارتباط با کدینو
+                همیشه راهی برای ارتباط وجود دارد
             </h1>
 
             <p>
-                راه‌های ارتباطی با مجموعه کدینو
+                برای دریافت راهنمایی، پیگیری درخواست‌ها، گزارش مشکلات
+                و ارتباط با تیم کدینو می‌توانید از راه‌های ارتباطی زیر استفاده کنید.
             </p>
 
         </header>
 
+        <!-- کارت معرفی -->
+        <section class="contact-intro">
 
-        <!-- مشخصات مسئول وب‌سایت -->
-        <div class="legal-section">
+            <div class="contact-intro-content">
+
+                <span class="contact-intro-label">
+                    CODINO SUPPORT
+                </span>
+
+                <h2>
+                    در کنار شما هستیم
+                </h2>
+
+                <p>
+                    هدف ما در کدینو ایجاد تجربه‌ای مطمئن و حرفه‌ای
+                    در ارائه خدمات برنامه‌نویسی و فناوری است.
+                    پیام‌ها و درخواست‌های شما برای ما اهمیت دارند.
+                </p>
+
+            </div>
+
+            <div class="contact-intro-decoration" aria-hidden="true">
+                <span class="decoration-circle"></span>
+                <span class="decoration-circle"></span>
+                <span class="decoration-center">C</span>
+            </div>
+
+        </section>
+
+        <!-- راه‌های ارتباطی -->
+        <section class="contact-section">
+
+            <div class="legal-section-heading">
+
+                <span>راه‌های ارتباطی</span>
+
+                <h2>
+                    چگونه با ما در ارتباط باشید؟
+                </h2>
+
+                <p>
+                    روش مناسب خود را انتخاب کنید و مستقیماً با کدینو ارتباط بگیرید.
+                </p>
+
+            </div>
+
+            <div class="contact-grid">
+
+                <!-- ایمیل -->
+                <article class="contact-card">
+
+                    <div class="contact-icon email-icon" aria-hidden="true">
+                        @("@")
+                    </div>
+
+                    <span class="contact-card-label">
+                        پست الکترونیکی
+                    </span>
+
+                    <h3>
+                        ارتباط از طریق ایمیل
+                    </h3>
+
+                    <p>
+                        برای ارسال درخواست‌های رسمی، پرسش‌ها،
+                        پیگیری سفارش‌ها و گزارش مشکلات از ایمیل استفاده کنید.
+                    </p>
+
+                    <a href="mailto:info@co-dino.xyz"
+                       class="contact-link"
+                       dir="ltr">
+                        info@co-dino.xyz
+                    </a>
+
+                </article>
+
+                <!-- تلفن -->
+                <article class="contact-card">
+
+                    <div class="contact-icon phone-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2
+                            19.79 19.79 0 0 1-8.63-3.07
+                            19.5 19.5 0 0 1-6-6
+                            A19.79 19.79 0 0 1 2.12 4.18
+                            2 2 0 0 1 4.11 2h3
+                            a2 2 0 0 1 2 1.72
+                            c.12.96.36 1.9.7 2.8
+                            a2 2 0 0 1-.45 2.11L8.1 9.9
+                            a16 16 0 0 0 6 6l1.27-1.27
+                            a2 2 0 0 1 2.11-.45
+                            c.9.34 1.84.58 2.8.7
+                            A2 2 0 0 1 22 16.92Z" />
+                        </svg>
+                    </div>
+
+                    <span class="contact-card-label">
+                        تماس مستقیم
+                    </span>
+
+                    <h3>
+                        ارتباط تلفنی
+                    </h3>
+
+                    <p>
+                        برای برقراری ارتباط تلفنی با مسئول وب‌سایت
+                        از شماره تماس زیر استفاده کنید.
+                    </p>
+
+                    <a href="tel:09014250741"
+                       class="contact-link"
+                       dir="ltr">
+                        09014250741
+                    </a>
+
+                </article>
+
+                <!-- تلگرام پشتیبانی -->
+                <article class="contact-card">
+
+                    <div class="contact-icon telegram-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8">
+                            <path d="m22 2-7 20-4-9-9-4Z" />
+                            <path d="M22 2 11 13" />
+                        </svg>
+                    </div>
+
+                    <span class="contact-card-label">
+                        پشتیبانی آنلاین
+                    </span>
+
+                    <h3>
+                        پشتیبانی تلگرام
+                    </h3>
+
+                    <p>
+                        برای طرح پرسش‌های عمومی، گزارش مشکلات فنی
+                        و پیگیری خدمات کدینو با پشتیبانی تلگرام ارتباط بگیرید.
+                    </p>
+
+                    <a href="https://t.me/CodinoSupport"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="contact-link">
+                        ارتباط با پشتیبانی
+                    </a>
+
+                </article>
+
+                <!-- کانال تلگرام -->
+                <article class="contact-card">
+
+                    <div class="contact-icon channel-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8">
+                            <path d="M4 5h16v12H8l-4 4Z" />
+                            <path d="M8 9h8M8 13h5" />
+                        </svg>
+                    </div>
+
+                    <span class="contact-card-label">
+                        اخبار و اطلاعیه‌ها
+                    </span>
+
+                    <h3>
+                        کانال اطلاع‌رسانی
+                    </h3>
+
+                    <p>
+                        برای مشاهده اخبار، اطلاعیه‌ها و مطالب مرتبط
+                        با فعالیت‌های کدینو از کانال ما دیدن کنید.
+                    </p>
+
+                    <a href="https://t.me/Ali_Code_Pro"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="contact-link">
+                        مشاهده کانال تلگرام
+                    </a>
+
+                </article>
+
+                <!-- اینستاگرام -->
+                <article class="contact-card">
+
+                    <div class="contact-icon instagram-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8">
+                            <rect x="3" y="3" width="18" height="18" rx="5" />
+                            <circle cx="12" cy="12" r="4" />
+                            <circle cx="17.5" cy="6.5" r="1" />
+                        </svg>
+                    </div>
+
+                    <span class="contact-card-label">
+                        شبکه اجتماعی
+                    </span>
+
+                    <h3>
+                        صفحه اینستاگرام
+                    </h3>
+
+                    <p>
+                        برای مشاهده محتوای منتشرشده و آشنایی بیشتر
+                        با فعالیت‌های کدینو صفحه اینستاگرام را دنبال کنید.
+                    </p>
+
+                    <a href="https://instagram.com/a.b._.off"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="contact-link">
+                        مشاهده صفحه اینستاگرام
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- مشخصات مسئول -->
+        <section class="legal-section contact-owner">
+
+            <div class="legal-section-heading">
+
+                <span>اطلاعات مجموعه</span>
+
+                <h2>
+                    مشخصات مسئول وب‌سایت
+                </h2>
+
+            </div>
+
+            <div class="owner-info">
+
+                <div class="owner-info-row">
+                    <span>نام و نام خانوادگی</span>
+                    <strong>علی باقری</strong>
+                </div>
+
+                <div class="owner-info-row">
+                    <span>نام تجاری</span>
+                    <strong>کدینو (Codino)</strong>
+                </div>
+
+                <div class="owner-info-row">
+                    <span>نشانی محل فعالیت</span>
+                    <strong>شیراز، بلوار پاسارگاد غربی، خیابان پاییز</strong>
+                </div>
+
+                <div class="owner-info-row">
+                    <span>شماره تماس</span>
+                    <a href="tel:09014250741" dir="ltr">
+                        09014250741
+                    </a>
+                </div>
+
+                <div class="owner-info-row">
+                    <span>پست الکترونیکی</span>
+                    <a href="mailto:info@co-dino.xyz" dir="ltr">
+                        info@co-dino.xyz
+                    </a>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- پیگیری سفارش -->
+        <section class="legal-section contact-followup">
+
+            <span class="contact-card-label">
+                راهنمای پشتیبانی
+            </span>
 
             <h2>
-                مشخصات مسئول وب‌سایت
+                پیگیری سفارش‌ها و درخواست‌ها
             </h2>
 
             <p>
-                <strong>نام و نام خانوادگی:</strong>
-                علی باقری
-            </p>
-
-            <p>
-                <strong>نام تجاری وب‌سایت:</strong>
-                کدینو (Codino)
-            </p>
-
-            <p>
-                <strong>نشانی محل فعالیت:</strong>
-                شیراز، بلوار پاسارگاد غربی، خیابان پاییز
-            </p>
-
-            <p>
-                <strong>شماره تماس:</strong>
-
-                <a href="tel:09014250741"
-                   class="legal-inline-link"
-                   dir="ltr">
-
-                    ۰۹۰۱۴۲۵۰۷۴۱
-
-                </a>
-            </p>
-
-            <p>
-                <strong>نشانی پست الکترونیکی:</strong>
-
-                <a href="mailto:info@co-dino.xyz"
-                   class="legal-inline-link"
-                   dir="ltr">
-
-                    info@co-dino.xyz
-
-                </a>
-            </p>
-
-        </div>
-
-
-        <!-- ارتباط با مشتریان -->
-        <div class="contact-card">
-
-            <div class="contact-icon"
-                 aria-hidden="true">
-            </div>
-
-            <div>
-
-                <h2>
-                    واحد ارتباط با مشتریان
-                </h2>
-
-                <p>
-                    برای ارسال درخواست‌های رسمی، طرح پرسش،
-                    پیگیری سفارش‌ها و اعلام مشکلات مربوط به
-                    خدمات کدینو، از طریق ایمیل زیر مکاتبه کنید.
-                </p>
-
-                <a href="mailto:info@co-dino.xyz"
-                   class="contact-link"
-                   dir="ltr">
-
-                    info@co-dino.xyz
-
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- تماس تلفنی -->
-        <div class="contact-card">
-
-            <div class="contact-icon"
-                 aria-hidden="true">
-            </div>
-
-            <div>
-
-                <h2>
-                    تماس تلفنی
-                </h2>
-
-                <p>
-                    برای برقراری ارتباط تلفنی با مسئول
-                    وب‌سایت، از شماره تماس درج‌شده استفاده کنید.
-                </p>
-
-                <a href="tel:09014250741"
-                   class="contact-link"
-                   dir="ltr">
-
-                    09014250741
-
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- پشتیبانی تلگرام -->
-        <div class="contact-card">
-
-            <div class="contact-icon"
-                 aria-hidden="true">
-            </div>
-
-            <div>
-
-                <h2>
-                    پشتیبانی تلگرام
-                </h2>
-
-                <p>
-                    برای طرح پرسش‌های عمومی، گزارش مشکلات فنی
-                    و پیگیری درخواست‌های مرتبط با خدمات کدینو،
-                    می‌توانید از طریق حساب پشتیبانی تلگرام اقدام کنید.
-                </p>
-
-                <a href="https://t.me/CodinoSupport"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="contact-link">
-
-                    ارتباط با پشتیبانی کدینو
-
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- کانال تلگرام -->
-        <div class="contact-card">
-
-            <div class="contact-icon"
-                 aria-hidden="true">
-            </div>
-
-            <div>
-
-                <h2>
-                    کانال اطلاع‌رسانی تلگرام
-                </h2>
-
-                <p>
-                    اطلاعیه‌ها، مطالب و اخبار مرتبط با فعالیت‌های
-                    کدینو از طریق کانال تلگرام قابل مشاهده است.
-                </p>
-
-                <a href="https://t.me/Ali_Code_Pro"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="contact-link">
-
-                    مشاهده کانال اطلاع‌رسانی
-
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- اینستاگرام -->
-        <div class="contact-card">
-
-            <div class="contact-icon"
-                 aria-hidden="true">
-            </div>
-
-            <div>
-
-                <h2>
-                    صفحه اینستاگرام
-                </h2>
-
-                <p>
-                    برای مشاهده مطالب و محتوای منتشرشده،
-                    می‌توانید از طریق لینک زیر به صفحه اینستاگرام مراجعه کنید.
-                </p>
-
-                <a href="https://instagram.com/a.b._.off"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="contact-link">
-
-                    مشاهده صفحه اینستاگرام
-
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- پیگیری سفارش‌ها -->
-        <div class="legal-section">
-
-            <h2>
-                نحوه پیگیری سفارش‌ها و درخواست‌ها
-            </h2>
-
-            <p>
-                برای تسریع در رسیدگی به درخواست‌های مرتبط با خرید،
+                برای رسیدگی سریع‌تر به درخواست‌های مرتبط با خرید،
                 لطفاً موضوع درخواست، تاریخ تقریبی خرید و شماره سفارش
-                را در صورت وجود اعلام کنید. ارائه اطلاعات باید به
-                میزان لازم برای شناسایی سفارش و بررسی مشکل محدود باشد.
+                را در صورت وجود اعلام کنید.
             </p>
 
             <p>
-                برای حفاظت از امنیت حساب کاربری، از ارسال رمز عبور،
-                رمز یک‌بارمصرف، اطلاعات محرمانه کارت بانکی یا سایر
-                اطلاعات حساس از طریق ایمیل و پیام‌رسان خودداری کنید.
+                برای حفظ امنیت حساب کاربری، از ارسال رمز عبور،
+                رمز یک‌بارمصرف و اطلاعات محرمانه بانکی از طریق
+                ایمیل یا پیام‌رسان خودداری کنید.
             </p>
 
-        </div>
+            <a href="mailto:info@co-dino.xyz?subject=درخواست%20پشتیبانی"
+               class="contact-followup-button">
+                ارسال درخواست پشتیبانی
+            </a>
 
+        </section>
 
-        <!-- توضیحات پایانی -->
-        <div class="legal-footer-note">
+        <!-- توضیح پایانی -->
+        <footer class="legal-footer-note">
 
-            کدینو متعهد است درخواست‌های دریافتی را در چارچوب
-            خدمات ارائه‌شده و مقررات قابل اجرا بررسی کند.
+            <p>
+                کدینو تلاش می‌کند درخواست‌های دریافتی را در چارچوب
+                خدمات ارائه‌شده و مقررات قابل اجرا بررسی کند.
+            </p>
 
-        </div>
+            <span>
+                CODINO — BUILD YOUR DIGITAL FUTURE
+            </span>
 
+        </footer>
 
         <!-- بازگشت به صفحه اصلی -->
-        <a asp-controller="Home"
-           asp-action="Index"
-           class="legal-button">
+        <div class="legal-back-wrapper">
 
-            بازگشت به صفحه اصلی
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="legal-button">
+                بازگشت به صفحه اصلی
+            </a>
 
-        </a>
+        </div>
 
     </div>
 
-</section>
+</main>

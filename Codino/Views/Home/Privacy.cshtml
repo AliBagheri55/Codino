@@ -1,69 +1,149 @@
 ﻿@{
     ViewData["Title"] = "سیاست حفظ حریم خصوصی | کدینو";
+    Layout = "_Layout";
 }
 
 <link rel="stylesheet"
       href="~/css/legal.css"
       asp-append-version="true" />
 
-<section class="legal-page" dir="rtl">
+<main class="legal-page privacy-page" dir="rtl">
 
     <div class="legal-container">
 
-        <!-- عنوان صفحه -->
+        <!-- سربرگ -->
         <header class="legal-header">
 
+            <span class="legal-label">
+                امنیت و اعتماد در کدینو
+            </span>
+
             <h1>
-                سیاست حفظ حریم خصوصی و حفاظت از اطلاعات کاربران
+                سیاست حفظ حریم خصوصی
             </h1>
 
             <p>
-                نحوه جمع‌آوری، استفاده و حفاظت از اطلاعات کاربران کدینو
+                شفافیت در جمع‌آوری، استفاده و حفاظت از اطلاعات کاربران،
+                یکی از اصول مهم فعالیت مجموعه کدینو است.
             </p>
+
+            <div class="privacy-header-tags">
+                <span>حفاظت از اطلاعات</span>
+                <span>امنیت حساب کاربری</span>
+                <span>شفافیت خدمات</span>
+            </div>
 
         </header>
 
+        <!-- معرفی -->
+        <section class="privacy-intro">
+
+            <div class="privacy-intro-content">
+
+                <span class="privacy-eyebrow">
+                    CODINO PRIVACY POLICY
+                </span>
+
+                <h2>
+                    حریم خصوصی شما برای ما اهمیت دارد
+                </h2>
+
+                <p>
+                    این سند توضیح می‌دهد که کدینو چه اطلاعاتی را
+                    دریافت می‌کند، چگونه از آن‌ها استفاده می‌کند
+                    و برای حفاظت از اطلاعات کاربران چه اصولی را
+                    در نظر می‌گیرد.
+                </p>
+
+            </div>
+
+            <div class="privacy-shield" aria-hidden="true">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <path d="M50 7L84 20V46C84 68 70 85 50 94C30 85 16 68 16 46V20L50 7Z"
+                          stroke="currentColor"
+                          stroke-width="3" />
+                    <path d="M35 50L45 60L66 38"
+                          stroke="currentColor"
+                          stroke-width="4"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" />
+                </svg>
+            </div>
+
+        </section>
+
+        <!-- فهرست مطالب -->
+        <nav class="privacy-toc" aria-label="فهرست سیاست حریم خصوصی">
+
+            <h2>فهرست مطالب</h2>
+
+            <div class="privacy-toc-grid">
+
+                <a href="#article-1">مشخصات ارائه‌دهنده خدمات</a>
+                <a href="#article-2">دامنه شمول سیاست</a>
+                <a href="#article-3">اطلاعات ثبت‌نام</a>
+                <a href="#article-4">اهداف استفاده از اطلاعات</a>
+                <a href="#article-5">محرمانگی رمز عبور</a>
+                <a href="#article-6">سفارش‌ها و پرداخت‌ها</a>
+                <a href="#article-7">دسترسی به محصولات</a>
+                <a href="#article-8">اشخاص ثالث</a>
+                <a href="#article-9">کوکی‌ها و اطلاعات فنی</a>
+                <a href="#article-10">مدت نگهداری اطلاعات</a>
+                <a href="#article-11">درخواست‌های کاربران</a>
+                <a href="#article-12">مسئولیت کاربران</a>
+                <a href="#article-13">به‌روزرسانی سیاست</a>
+                <a href="#article-14">راه‌های ارتباطی</a>
+
+            </div>
+
+        </nav>
 
         <!-- ماده ۱ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-1">
+
+            <span class="article-number">۰۱</span>
 
             <h2>ماده ۱ ـ مشخصات ارائه‌دهنده خدمات</h2>
 
             <p>
-                <strong>نام تجاری:</strong>
-                کدینو (Codino)
+                اطلاعات هویتی و راه‌های ارتباطی ارائه‌دهنده خدمات
+                به شرح زیر است:
             </p>
 
-            <p>
-                <strong>نام و نام خانوادگی مسئول:</strong>
-                علی باقری
-            </p>
+            <div class="privacy-info-grid">
 
-            <p>
-                <strong>شماره تماس:</strong>
+                <div class="privacy-info-item">
+                    <span>نام تجاری</span>
+                    <strong>کدینو (Codino)</strong>
+                </div>
 
-                <a href="tel:09014250741"
-                   class="legal-inline-link"
-                   dir="ltr">
-                    09014250741
-                </a>
-            </p>
+                <div class="privacy-info-item">
+                    <span>نام و نام خانوادگی مسئول</span>
+                    <strong>علی باقری</strong>
+                </div>
 
-            <p>
-                <strong>پست الکترونیکی:</strong>
+                <div class="privacy-info-item">
+                    <span>شماره تماس</span>
+                    <a href="tel:09014250741" dir="ltr">
+                        09014250741
+                    </a>
+                </div>
 
-                <a href="mailto:info@co-dino.xyz"
-                   class="legal-inline-link"
-                   dir="ltr">
-                    info@co-dino.xyz
-                </a>
-            </p>
+                <div class="privacy-info-item">
+                    <span>پست الکترونیکی</span>
+                    <a href="mailto:info@co-dino.xyz" dir="ltr">
+                        info@co-dino.xyz
+                    </a>
+                </div>
 
-        </div>
+            </div>
 
+        </article>
 
         <!-- ماده ۲ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-2">
+
+            <span class="article-number">۰۲</span>
 
             <h2>ماده ۲ ـ دامنه شمول سیاست</h2>
 
@@ -76,11 +156,12 @@
                 عملکردی وب‌سایت، پردازش شوند.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۳ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-3">
+
+            <span class="article-number">۰۳</span>
 
             <h2>ماده ۳ ـ اطلاعات دریافتی هنگام ثبت‌نام</h2>
 
@@ -106,11 +187,12 @@
                 اطلاعات ورود خود هستند.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۴ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-4">
+
+            <span class="article-number">۰۴</span>
 
             <h2>ماده ۴ ـ اهداف استفاده از اطلاعات</h2>
 
@@ -129,11 +211,12 @@
                 <li>رعایت تعهدات و الزامات قانونی قابل اعمال</li>
             </ul>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۵ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-5">
+
+            <span class="article-number">۰۵</span>
 
             <h2>ماده ۵ ـ محرمانگی و حفاظت از رمز عبور</h2>
 
@@ -157,11 +240,12 @@
                 راه‌های ارتباطی کدینو اطلاع دهد.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۶ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-6">
+
+            <span class="article-number">۰۶</span>
 
             <h2>ماده ۶ ـ اطلاعات سفارش‌ها و پرداخت‌ها</h2>
 
@@ -184,11 +268,12 @@
                 پیام‌رسان برای پشتیبانی ارسال کنند.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۷ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-7">
+
+            <span class="article-number">۰۷</span>
 
             <h2>ماده ۷ ـ دسترسی به محصولات خریداری‌شده</h2>
 
@@ -200,11 +285,12 @@
                 اختلافات و انجام تعهدات قانونی نگهداری شود.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۸ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-8">
+
+            <span class="article-number">۰۸</span>
 
             <h2>ماده ۸ ـ ارائه اطلاعات به اشخاص ثالث</h2>
 
@@ -223,11 +309,12 @@
                 مطابق مقررات مربوط انجام خواهد شد.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۹ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-9">
+
+            <span class="article-number">۰۹</span>
 
             <h2>ماده ۹ ـ کوکی‌ها و اطلاعات فنی</h2>
 
@@ -239,11 +326,12 @@
                 نیازهای عملیاتی و امنیتی سامانه باشد.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۱۰ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-10">
+
+            <span class="article-number">۱۰</span>
 
             <h2>ماده ۱۰ ـ مدت نگهداری اطلاعات</h2>
 
@@ -256,11 +344,12 @@
                 قابل اعمال انجام خواهد شد.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۱۱ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-11">
+
+            <span class="article-number">۱۱</span>
 
             <h2>ماده ۱۱ ـ درخواست‌های مرتبط با اطلاعات کاربران</h2>
 
@@ -272,11 +361,12 @@
                 الزامات امنیتی و مقررات قانونی انجام خواهد شد.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۱۲ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-12">
+
+            <span class="article-number">۱۲</span>
 
             <h2>ماده ۱۲ ـ مسئولیت کاربران</h2>
 
@@ -284,15 +374,16 @@
                 کاربران موظف‌اند اطلاعات ورود خود را محرمانه
                 نگه دارند، از حساب کاربری خود به‌صورت مسئولانه
                 استفاده کنند و از هرگونه اقدام غیرمجاز که موجب
-                نقض امنیت سامانه یا حقوق سایر اشخاص شود، خودداری
-                نمایند.
+                نقض امنیت سامانه یا حقوق سایر اشخاص شود،
+                خودداری نمایند.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۱۳ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-13">
+
+            <span class="article-number">۱۳</span>
 
             <h2>ماده ۱۳ ـ اصلاح و به‌روزرسانی سیاست</h2>
 
@@ -303,11 +394,12 @@
                 کاربران قرار می‌گیرد.
             </p>
 
-        </div>
-
+        </article>
 
         <!-- ماده ۱۴ -->
-        <div class="legal-section">
+        <article class="legal-section privacy-article" id="article-14">
+
+            <span class="article-number">۱۴</span>
 
             <h2>ماده ۱۴ ـ راه‌های ارتباطی</h2>
 
@@ -316,58 +408,64 @@
                 حساب کاربری، می‌توانید از راه‌های زیر استفاده کنید:
             </p>
 
-            <p>
-                <strong>ایمیل:</strong>
+            <div class="privacy-contact-list">
 
-                <a href="mailto:info@co-dino.xyz"
-                   class="legal-inline-link"
-                   dir="ltr">
-                    info@co-dino.xyz
-                </a>
-            </p>
+                <div>
+                    <span>پست الکترونیکی</span>
+                    <a href="mailto:info@co-dino.xyz" dir="ltr">
+                        info@co-dino.xyz
+                    </a>
+                </div>
 
-            <p>
-                <strong>شماره تماس:</strong>
+                <div>
+                    <span>شماره تماس</span>
+                    <a href="tel:09014250741" dir="ltr">
+                        09014250741
+                    </a>
+                </div>
 
-                <a href="tel:09014250741"
-                   class="legal-inline-link"
-                   dir="ltr">
-                    09014250741
-                </a>
-            </p>
+                <div>
+                    <span>پشتیبانی تلگرام</span>
+                    <a href="https://t.me/CodinoSupport"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        ارتباط با پشتیبانی کدینو
+                    </a>
+                </div>
 
-            <p>
-                <strong>پشتیبانی تلگرام:</strong>
+            </div>
 
-                <a href="https://t.me/CodinoSupport"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="legal-inline-link">
-                    ارتباط با پشتیبانی کدینو
-                </a>
-            </p>
-
-        </div>
-
+        </article>
 
         <!-- یادداشت پایانی -->
-        <div class="legal-footer-note">
+        <footer class="legal-footer-note privacy-footer">
 
-            سیاست حفظ حریم خصوصی کدینو با هدف شفاف‌سازی نحوه
-            استفاده و حفاظت از اطلاعات کاربران تدوین شده است.
+            <h2>
+                امنیت و اعتماد، پایه ارتباط ما
+            </h2>
+
+            <p>
+                سیاست حفظ حریم خصوصی کدینو با هدف شفاف‌سازی نحوه
+                استفاده و حفاظت از اطلاعات کاربران تدوین شده است.
+            </p>
+
+            <span>
+                CODINO — BUILD YOUR DIGITAL FUTURE
+            </span>
+
+        </footer>
+
+        <!-- بازگشت -->
+        <div class="legal-back-wrapper">
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="legal-button">
+                بازگشت به صفحه اصلی
+            </a>
 
         </div>
-
-
-        <!-- بازگشت به صفحه اصلی -->
-        <a asp-controller="Home"
-           asp-action="Index"
-           class="legal-button">
-
-            بازگشت به صفحه اصلی
-
-        </a>
 
     </div>
 
-</section>
+</main>
