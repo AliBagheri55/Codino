@@ -4,9 +4,12 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
+	  <UserSecretsId>05d3498e-8001-474d-93f6-441f116d3dae</UserSecretsId>
+  </PropertyGroup>
 
 	<ItemGroup>
+
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
 
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.10" />
 
@@ -16,6 +19,8 @@
 		</PackageReference>
 
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.12" />
+
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
 
 	</ItemGroup>
 

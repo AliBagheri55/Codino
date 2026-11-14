@@ -10,10 +10,15 @@
 
     <div class="account-card">
 
+        <!-- =====================================================
+         LOGO
+    ====================================================== -->
+
         <div class="account-logo">
 
             <img src="~/images/codino-intro.jpg"
-                 alt="Codino" />
+                 alt="Codino"
+                 loading="eager" />
 
             <span>
                 Codino
@@ -21,26 +26,45 @@
 
         </div>
 
+
+        <!-- =====================================================
+         TITLE
+    ====================================================== -->
+
         <h1>
             ساخت حساب
         </h1>
 
-        <p class="account-description">
-            برای شروع یادگیری در Codino ثبت‌نام کنید.
-        </p>
 
+        <!-- =====================================================
+         ERROR
+    ====================================================== -->
         @if (ViewBag.Error != null)
         {
-            <div class="account-error">
+            <div class="account-error"
+                 role="alert">
+
                 @ViewBag.Error
+
             </div>
         }
 
+
+        <!-- =====================================================
+         REGISTER FORM
+    ====================================================== -->
+
         <form asp-controller="Account"
               asp-action="Register"
-              method="post">
+              method="post"
+              autocomplete="on">
 
             @Html.AntiForgeryToken()
+
+
+            <!-- =================================================
+             FULL NAME
+        ================================================== -->
 
             <div class="input-group">
 
@@ -51,10 +75,17 @@
                 <input type="text"
                        id="fullName"
                        name="fullName"
+                       maxlength="100"
+                       autocomplete="name"
                        placeholder="مثلاً علی باقری"
                        required />
 
             </div>
+
+
+            <!-- =================================================
+             PHONE
+        ================================================== -->
 
             <div class="input-group">
 
@@ -74,6 +105,11 @@
 
             </div>
 
+
+            <!-- =================================================
+             PASSWORD
+        ================================================== -->
+
             <div class="input-group">
 
                 <label for="password">
@@ -85,10 +121,16 @@
                        name="password"
                        placeholder="حداقل ۸ کاراکتر"
                        minlength="8"
+                       maxlength="128"
                        autocomplete="new-password"
                        required />
 
             </div>
+
+
+            <!-- =================================================
+             REPEAT PASSWORD
+        ================================================== -->
 
             <div class="input-group">
 
@@ -101,10 +143,16 @@
                        name="repeatPassword"
                        placeholder="رمز عبور را دوباره وارد کنید"
                        minlength="8"
+                       maxlength="128"
                        autocomplete="new-password"
                        required />
 
             </div>
+
+
+            <!-- =================================================
+             CAPTCHA
+        ================================================== -->
 
             <div class="input-group">
 
@@ -112,41 +160,48 @@
                     کد امنیتی
                 </label>
 
-                <div style="
-                    display:flex;
-                    align-items:center;
-                    gap:10px;
-                    margin-bottom:10px;
-                    ">
+                <div class="captcha-container">
 
-                    <div style="
-                        background:#111827;
-                        border:1px solid #374151;
-                        border-radius:10px;
-                        padding:10px 18px;
-                        font-size:24px;
-                        font-weight:bold;
-                        letter-spacing:6px;
-                        color:#fff;
-                        user-select:none;
-                        text-align:center;
-                        ">
+                    <div id="captchaDisplay"
+                         class="captcha-display"
+                         aria-label="کد امنیتی">
 
-                        @ViewBag.Captcha
+                        @(ViewBag.Captcha ?? "")
 
                     </div>
 
+
+                    <button type="button"
+                            class="captcha-refresh"
+                            onclick="refreshRegisterCaptcha()"
+                            title="کپچای جدید"
+                            aria-label="تولید کپچای جدید">
+
+                        ↻
+
+                    </button>
+
                 </div>
+
 
                 <input type="text"
                        id="captcha"
                        name="captcha"
                        maxlength="5"
+                       minlength="5"
+                       inputmode="text"
                        autocomplete="off"
+                       autocapitalize="characters"
+                       spellcheck="false"
                        placeholder="کد بالا را وارد کنید"
                        required />
 
             </div>
+
+
+            <!-- =================================================
+             REGISTER BUTTON
+        ================================================== -->
 
             <button type="submit"
                     class="account-button">
@@ -156,6 +211,11 @@
             </button>
 
         </form>
+
+
+        <!-- =====================================================
+         LOGIN
+    ====================================================== -->
 
         <div class="account-footer">
 
@@ -173,3 +233,101 @@
     </div>
 
 </div>
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+    function refreshRegisterCaptcha() {
+
+        window.location.href =
+            '@Url.Action("Register", "Account")';
+
+    }
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+  
+            const captchaInput =
+                document.getElementById("captcha");
+
+            if (captchaInput) {
+
+                captchaInput.addEventListener(
+                    "input",
+                    function () {
+
+                        this.value =
+                            this.value
+                                .replace(/\s/g, "")
+                                .toUpperCase();
+
+                    });
+
+            }
+
+            const phoneInput =
+                document.getElementById("phoneNumber");
+
+            if (phoneInput) {
+
+                phoneInput.addEventListener(
+                    "input",
+                    function () {
+
+                        this.value =
+                            this.value.replace(/\D/g, "");
+
+                    });
+
+            }
+
+
+            const form =
+                document.querySelector("form");
+
+            const password =
+                document.getElementById("password");
+
+            const repeatPassword =
+                document.getElementById("repeatPassword");
+
+
+            if (!form ||
+                !password ||
+                !repeatPassword) {
+
+                return;
+
+            }
+
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+
+                    if (
+                        password.value !==
+                        repeatPassword.value
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "رمز عبور و تکرار رمز عبور یکسان نیستند."
+                        );
+
+                        repeatPassword.focus();
+
+                    }
+
+                });
+
+        });
+
+</script>

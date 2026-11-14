@@ -1,1446 +1,1080 @@
-﻿/* =========================================================
-   CODINO - SITE.JS
-   ========================================================= */
+﻿
+document.addEventListener("DOMContentLoaded", function () {
 
+    /* =====================================
+       MOBILE MENU
+    ===================================== */
 
-/* =========================================================
-   MOBILE MENU
-   ========================================================= */
+    const menuButton = document.getElementById("mobileMenuButton");
+    const navMenu = document.getElementById("navMenu");
 
-const mobileMenuButton =
-    document.getElementById("mobileMenuButton");
+    if (menuButton && navMenu) {
 
-const navMenu =
-    document.getElementById("navMenu");
+        menuButton.addEventListener("click", function () {
 
+            const isOpen = navMenu.classList.toggle("active");
 
-if (mobileMenuButton && navMenu) {
+            menuButton.setAttribute("aria-expanded", String(isOpen));
+            menuButton.setAttribute(
+                "aria-label",
+                isOpen ? "بستن منو" : "باز کردن منو"
+            );   
 
-    mobileMenuButton.addEventListener(
-        "click",
-        () => {
+            menuButton.textContent = isOpen ? "✕" : "☰";
+        });
 
-            navMenu.classList.toggle("active");
+        // بستن منو بعد از انتخاب لینک
+        navMenu.querySelectorAll("a").forEach(function (link) {
 
-        }
-    );
+            link.addEventListener("click", function () {
 
+                navMenu.classList.remove("active");
 
-    const navLinks =
-        navMenu.querySelectorAll("a");
+                menuButton.setAttribute("aria-expanded", "false");
+                menuButton.setAttribute("aria-label", "باز کردن منو");
+                menuButton.textContent = "☰";
 
+            });
 
-    navLinks.forEach(link => {
+        });
 
-        link.addEventListener(
-            "click",
-            () => {
+        // بستن منو با کلیک خارج از آن
+        document.addEventListener("click", function (event) {
 
-                navMenu.classList.remove(
-                    "active"
-                );
+            const clickedInsideMenu = navMenu.contains(event.target);
+            const clickedButton = menuButton.contains(event.target);
 
-            }
-        );
+            if (!clickedInsideMenu && !clickedButton) {
 
-    });
+                navMenu.classList.remove("active");
 
-}
-
-
-/* =========================================================
-   CODE PLAYGROUND ELEMENTS
-   ========================================================= */
-
-const codeEditor =
-    document.getElementById("codeEditor");
-
-const codeOutput =
-    document.getElementById("codeOutput");
-
-const runCode =
-    document.getElementById("runCode");
-
-const clearCode =
-    document.getElementById("clearCode");
-
-const languageSelect =
-    document.getElementById("languageSelect");
-
-const currentLanguage =
-    document.getElementById("currentLanguage");
-
-const executionStatus =
-    document.getElementById("executionStatus");
-
-
-/* =========================================================
-   LANGUAGE NAMES
-   ========================================================= */
-
-const languageNames = {
-
-    html: "HTML + CSS",
-
-    javascript: "JavaScript",
-
-    csharp: "C#",
-
-    cpp: "C++",
-
-    c: "C",
-
-    python: "Python"
-
-};
-
-
-/* =========================================================
-   DEFAULT CODES
-   ========================================================= */
-
-const defaultCodes = {
-
-    /* =====================================================
-       HTML + CSS
-    ===================================================== */
-
-    html: `<!DOCTYPE html>
-<html lang="fa">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <title>
-        Codino
-    </title>
-
-    <style>
-
-        body {
-
-            background: #101827;
-
-            color: white;
-
-            font-family: Arial, sans-serif;
-
-            text-align: center;
-
-            padding: 50px;
-
-        }
-
-        h1 {
-
-            color: #7c7bff;
-
-        }
-
-        p {
-
-            color: #b8c0d0;
-
-            font-size: 18px;
-
-        }
-
-        button {
-
-            padding: 12px 24px;
-
-            border: none;
-
-            border-radius: 8px;
-
-            background: #5d5cff;
-
-            color: white;
-
-            cursor: pointer;
-
-        }
-
-        button:hover {
-
-            background: #7776ff;
-
-        }
-
-    </style>
-
-</head>
-
-
-<body>
-
-    <h1>
-        سلام Codino 👋
-    </h1>
-
-    <p>
-        این کد HTML + CSS من است.
-    </p>
-
-    <button onclick="hello()">
-        کلیک کن
-    </button>
-
-
-    <script>
-
-        function hello() {
-
-            alert(
-                "HTML + CSS + JavaScript اجرا شد 🚀"
-            );
-
-        }
-
-    <\/script>
-
-</body>
-
-</html>`,
-
-
-
-    /* =====================================================
-       JAVASCRIPT
-    ===================================================== */
-
-    javascript: `// Codino JavaScript Playground
-
-const name = "Ali";
-
-console.log("Hello " + name);
-
-document.body.innerHTML = \`
-    <div style="
-        font-family: Arial;
-        text-align: center;
-        padding: 50px;
-        background: #101827;
-        color: white;
-        min-height: 100vh;
-    ">
-
-        <h1 style="color:#7c7bff;">
-            JavaScript اجرا شد 🚀
-        </h1>
-
-        <p>
-            سلام \${name}
-        </p>
-
-        <button
-            onclick="showMessage()"
-            style="
-                padding:12px 20px;
-                border:none;
-                border-radius:8px;
-                background:#5d5cff;
-                color:white;
-                cursor:pointer;
-            "
-        >
-            کلیک کن
-        </button>
-
-    </div>
-\`;
-
-function showMessage() {
-
-    alert(
-        "کد JavaScript با موفقیت اجرا شد!"
-    );
-
-}`,
-
-
-
-    /* =====================================================
-       C#
-    ===================================================== */
-
-    csharp: `using System;
-
-class Program
-{
-    static void Main()
-    {
-        Console.WriteLine("Hello from Codino!");
-
-        int a = 10;
-        int b = 20;
-
-        int result = a + b;
-
-        Console.WriteLine(
-            "Result = " + result
-        );
-    }
-}`,
-
-
-
-    /* =====================================================
-       C++
-    ===================================================== */
-
-    cpp: `#include <iostream>
-
-using namespace std;
-
-int main()
-{
-    cout << "Hello from Codino!" << endl;
-
-    int a = 10;
-    int b = 20;
-
-    int result = a + b;
-
-    cout << "Result = "
-         << result
-         << endl;
-
-    return 0;
-}`,
-
-
-
-    /* =====================================================
-       C
-    ===================================================== */
-
-    c: `#include <stdio.h>
-
-int main()
-{
-    printf("Hello from Codino!\\n");
-
-    int a = 10;
-    int b = 20;
-
-    int result = a + b;
-
-    printf(
-        "Result = %d\\n",
-        result
-    );
-
-    return 0;
-}`,
-
-
-
-    /* =====================================================
-       PYTHON
-    ===================================================== */
-
-    python: `print("Hello from Codino!")
-
-a = 10
-b = 20
-
-result = a + b
-
-print("Result =", result)
-
-for i in range(5):
-    print("Number:", i)`
-
-};
-
-
-/* =========================================================
-   LOAD LANGUAGE
-   ========================================================= */
-
-function loadLanguage(language) {
-
-    if (!codeEditor) {
-        return;
-    }
-
-
-    const code =
-        defaultCodes[language] || "";
-
-
-    codeEditor.value =
-        code;
-
-
-    if (currentLanguage) {
-
-        currentLanguage.textContent =
-            languageNames[language] ||
-            language;
-
-    }
-
-
-    if (executionStatus) {
-
-        executionStatus.textContent =
-            "آماده اجرا";
-
-        executionStatus.className =
-            "execution-status";
-
-    }
-
-
-    if (codeOutput) {
-
-        codeOutput.innerHTML = `
-
-            <div class="empty-output">
-
-                کد خود را بنویسید
-                و روی اجرای کد کلیک کنید.
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-/* =========================================================
-   INITIAL LANGUAGE
-   ========================================================= */
-
-if (languageSelect) {
-
-    loadLanguage(
-        languageSelect.value
-    );
-
-
-    languageSelect.addEventListener(
-        "change",
-        () => {
-
-            const language =
-                languageSelect.value;
-
-            loadLanguage(
-                language
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   CREATE HTML PREVIEW
-   ========================================================= */
-
-function runHtmlCode(code) {
-
-    if (!codeOutput) {
-        return;
-    }
-
-
-    codeOutput.innerHTML = "";
-
-
-    const iframe =
-        document.createElement("iframe");
-
-
-    iframe.className =
-        "code-preview";
-
-
-    iframe.title =
-        "Codino HTML Preview";
-
-
-    iframe.setAttribute(
-        "sandbox",
-        "allow-scripts"
-    );
-
-
-    iframe.setAttribute(
-        "referrerpolicy",
-        "no-referrer"
-    );
-
-
-    codeOutput.appendChild(
-        iframe
-    );
-
-
-    /*
-     * از contentDocument استفاده نمی‌کنیم.
-     *
-     * srcdoc باعث می‌شود کد داخل iframe
-     * به‌صورت ایزوله اجرا شود.
-     */
-
-    iframe.srcdoc =
-        code;
-
-}
-
-
-/* =========================================================
-   RUN JAVASCRIPT
-   ========================================================= */
-
-function runJavaScriptCode(code) {
-
-    if (!codeOutput) {
-        return;
-    }
-
-
-    const safeCode =
-        JSON.stringify(code);
-
-
-    const html = `
-
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-    <meta charset="UTF-8">
-
-</head>
-
-
-<body>
-
-    <div
-        id="console"
-        style="
-            font-family:Consolas,monospace;
-            padding:20px;
-            background:#101827;
-            color:#ffffff;
-            min-height:100vh;
-        "
-    >
-
-        <div
-            style="
-                color:#7c7bff;
-                margin-bottom:15px;
-                font-size:18px;
-            "
-        >
-
-            JavaScript Console
-
-        </div>
-
-    </div>
-
-
-<script>
-
-const consoleBox =
-    document.getElementById("console");
-
-
-const originalLog =
-    console.log;
-
-
-console.log = function(...args) {
-
-    originalLog(...args);
-
-
-    const line =
-        document.createElement("div");
-
-
-    line.style.marginBottom =
-        "8px";
-
-
-    line.style.color =
-        "#65e69a";
-
-
-    line.textContent =
-        args
-            .map(item => {
-
-                if (
-                    typeof item ===
-                    "object"
-                ) {
-
-                    try {
-
-                        return JSON.stringify(
-                            item
-                        );
-
-                    }
-                    catch {
-
-                        return String(
-                            item
-                        );
-
-                    }
-
-                }
-
-                return String(item);
-
-            })
-            .join(" ");
-
-
-    consoleBox.appendChild(
-        line
-    );
-
-};
-
-
-window.onerror =
-    function(
-        message,
-        source,
-        line,
-        column
-    ) {
-
-        const error =
-            document.createElement("div");
-
-
-        error.style.color =
-            "#ff7773";
-
-
-        error.style.marginBottom =
-            "10px";
-
-
-        error.textContent =
-            "Error: " +
-            message;
-
-
-        consoleBox.appendChild(
-            error
-        );
-
-    };
-
-
-try {
-
-    const userCode =
-        ${safeCode};
-
-    eval(userCode);
-
-}
-catch(error) {
-
-    const errorElement =
-        document.createElement("div");
-
-
-    errorElement.style.color =
-        "#ff7773";
-
-
-    errorElement.style.marginTop =
-        "10px";
-
-
-    errorElement.textContent =
-        "Error: " +
-        error.message;
-
-
-    consoleBox.appendChild(
-        errorElement
-    );
-
-}
-
-<\/script>
-
-</body>
-
-</html>
-`;
-
-
-    runHtmlCode(
-        html
-    );
-
-}
-
-
-/* =========================================================
-   REAL BACKEND CODE EXECUTION
-   ========================================================= */
-
-async function executeBackendCode(
-    language,
-    code
-) {
-
-    if (!codeOutput) {
-        return;
-    }
-
-
-    if (executionStatus) {
-
-        executionStatus.textContent =
-            "در حال اجرا...";
-
-        executionStatus.className =
-            "execution-status running";
-
-    }
-
-
-    codeOutput.innerHTML = `
-
-        <div class="empty-output">
-
-            در حال اجرای کد...
-
-        </div>
-
-    `;
-
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/code/execute",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        language: language,
-                        code: code
-                    })
-                }
-            );
-
-
-        let result;
-
-
-        try {
-
-            result =
-                await response.json();
-
-        }
-        catch {
-
-            throw new Error(
-                "پاسخ سرور قابل خواندن نیست."
-            );
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                result.error ||
-                result.message ||
-                "خطا در ارتباط با سرور."
-            );
-
-        }
-
-
-        if (result.success) {
-
-            const output =
-                result.output ||
-                "برنامه اجرا شد اما خروجی نداشت.";
-
-
-            codeOutput.innerHTML = `
-
-                <pre class="backend-output success-output">${escapeHtml(
-                output
-            )}</pre>
-
-            `;
-
-
-            if (executionStatus) {
-
-                executionStatus.textContent =
-                    `اجرا شد - ${result.executionTimeMs ?? 0}ms`;
-
-                executionStatus.className =
-                    "execution-status success";
+                menuButton.setAttribute("aria-expanded", "false");
+                menuButton.textContent = "☰";
 
             }
 
-        }
-        else {
-
-            const error =
-                result.error ||
-                "خطای نامشخص در اجرای برنامه.";
-
-
-            codeOutput.innerHTML = `
-
-                <pre class="backend-output error-output">${escapeHtml(
-                error
-            )}</pre>
-
-            `;
-
-
-            if (executionStatus) {
-
-                executionStatus.textContent =
-                    "خطا در اجرا";
-
-                executionStatus.className =
-                    "execution-status error";
-
-            }
-
-        }
-
-    }
-    catch (error) {
-
-        codeOutput.innerHTML = `
-
-            <div class="code-message">
-
-                <h3>
-                    خطا در اجرای کد
-                </h3>
-
-                <p>
-                    ${escapeHtml(
-            error.message ||
-            "خطای نامشخص"
-        )}
-                </p>
-
-            </div>
-
-        `;
-
-
-        if (executionStatus) {
-
-            executionStatus.textContent =
-                "خطای سرور";
-
-            executionStatus.className =
-                "execution-status error";
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
-
-function escapeHtml(text) {
-
-    if (text === null ||
-        text === undefined) {
-
-        return "";
+        });
 
     }
 
 
-    return String(text)
+    /* =====================================
+       SMOOTH SCROLL
+    ===================================== */
 
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
 
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
+        link.addEventListener("click", function (event) {
 
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
+            const targetId = this.getAttribute("href");
 
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-
-}
-
-
-/* =========================================================
-   RUN CODE
-   ========================================================= */
-
-if (
-    runCode &&
-    codeEditor &&
-    codeOutput
-) {
-
-    runCode.addEventListener(
-        "click",
-        async () => {
-
-            const code =
-                codeEditor.value.trim();
-
-
-            const language =
-                languageSelect
-                    ? languageSelect.value
-                    : "html";
-
-
-            /* =========================
-               EMPTY CODE
-            ========================== */
-
-            if (!code) {
-
-                codeOutput.innerHTML = `
-
-                    <div class="empty-output">
-
-                        لطفاً ابتدا کد خود را وارد کنید.
-
-                    </div>
-
-                `;
-
-
-                if (executionStatus) {
-
-                    executionStatus.textContent =
-                        "کدی وجود ندارد";
-
-                    executionStatus.className =
-                        "execution-status error";
-
-                }
-
-
-                return;
-
-            }
-
-
-            /* =========================
-               RUNNING
-            ========================== */
-
-            if (executionStatus) {
-
-                executionStatus.textContent =
-                    "در حال اجرا...";
-
-                executionStatus.className =
-                    "execution-status running";
-
-            }
-
-
-            /* =========================
-               HTML
-            ========================== */
-
-            if (language === "html") {
-
-                runHtmlCode(
-                    code
-                );
-
-
-                if (executionStatus) {
-
-                    executionStatus.textContent =
-                        "اجرا شد";
-
-                    executionStatus.className =
-                        "execution-status success";
-
-                }
-
-
-                return;
-
-            }
-
-
-            /* =========================
-               JAVASCRIPT
-            ========================== */
-
-            if (language === "javascript") {
-
-                runJavaScriptCode(
-                    code
-                );
-
-
-                if (executionStatus) {
-
-                    executionStatus.textContent =
-                        "اجرا شد";
-
-                    executionStatus.className =
-                        "execution-status success";
-
-                }
-
-
-                return;
-
-            }
-
-
-            /* =========================
-               BACKEND LANGUAGES
-            ========================== */
-
-            if (
-                language === "csharp" ||
-                language === "cpp" ||
-                language === "c" ||
-                language === "python"
-            ) {
-
-                await executeBackendCode(
-                    language,
-                    code
-                );
-
-
-                return;
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   CLEAR CODE
-   ========================================================= */
-
-if (
-    clearCode &&
-    codeEditor &&
-    codeOutput
-) {
-
-    clearCode.addEventListener(
-        "click",
-        () => {
-
-            codeEditor.value = "";
-
-
-            codeOutput.innerHTML = `
-
-                <div class="empty-output">
-
-                    منتظر اجرای کد...
-
-                </div>
-
-            `;
-
-
-            if (executionStatus) {
-
-                executionStatus.textContent =
-                    "آماده اجرا";
-
-                executionStatus.className =
-                    "execution-status";
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   TAB SUPPORT
-   ========================================================= */
-
-if (codeEditor) {
-
-    codeEditor.addEventListener(
-        "keydown",
-        event => {
-
-            if (event.key !== "Tab") {
+            if (!targetId || targetId === "#") {
                 return;
             }
 
+            const target = document.querySelector(targetId);
 
-            event.preventDefault();
+            if (target) {
 
+                event.preventDefault();
 
-            const start =
-                codeEditor.selectionStart;
-
-
-            const end =
-                codeEditor.selectionEnd;
-
-
-            const before =
-                codeEditor.value.substring(
-                    0,
-                    start
-                );
-
-
-            const after =
-                codeEditor.value.substring(
-                    end
-                );
-
-
-            codeEditor.value =
-                before +
-                "    " +
-                after;
-
-
-            codeEditor.selectionStart =
-                start + 4;
-
-
-            codeEditor.selectionEnd =
-                start + 4;
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   COMMENT RATING
-   ========================================================= */
-
-const ratingStars =
-    document.getElementById(
-        "ratingStars"
-    );
-
-const ratingInput =
-    document.getElementById(
-        "rating"
-    );
-
-
-if (
-    ratingStars &&
-    ratingInput
-) {
-
-    const stars =
-        ratingStars.querySelectorAll(
-            "button"
-        );
-
-
-    stars.forEach(star => {
-
-        star.addEventListener(
-            "click",
-            () => {
-
-                const selectedRating =
-                    Number(
-                        star.dataset.rating
-                    );
-
-
-                ratingInput.value =
-                    selectedRating;
-
-
-                stars.forEach(item => {
-
-                    const rating =
-                        Number(
-                            item.dataset.rating
-                        );
-
-
-                    if (
-                        rating <=
-                        selectedRating
-                    ) {
-
-                        item.classList.add(
-                            "active"
-                        );
-
-                    }
-                    else {
-
-                        item.classList.remove(
-                            "active"
-                        );
-
-                    }
-
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
                 });
 
             }
-        );
+
+        });
 
     });
 
-}
 
+    /* =====================================
+       COMMENT RATING
+    ===================================== */
 
-/* =========================================================
-   COMMENT COUNTER
-   ========================================================= */
-
-const commentText =
-    document.getElementById(
-        "commentText"
+    const ratingButtons = document.querySelectorAll(
+        "#ratingStars button"
     );
 
-const commentCounter =
-    document.getElementById(
-        "commentCounter"
-    );
+    const ratingInput = document.getElementById("rating");
 
+    function updateRating(selectedRating) {
 
-if (
-    commentText &&
-    commentCounter
-) {
+        ratingButtons.forEach(function (button) {
 
-    const updateCounter =
-        () => {
+            const buttonRating = Number(button.dataset.rating);
 
-            commentCounter.textContent =
-                commentText.value.length;
+            button.classList.toggle(
+                "active",
+                buttonRating <= selectedRating
+            );
 
-        };
+            button.setAttribute(
+                "aria-pressed",
+                String(buttonRating === selectedRating)
+            );
 
+        });
 
-    commentText.addEventListener(
-        "input",
-        updateCounter
-    );
-
-
-    updateCounter();
-
-}
-
-
-/* =========================================================
-   COMMENT FORM VALIDATION
-   ========================================================= */
-
-const commentForm =
-    document.getElementById(
-        "commentForm"
-    );
-
-
-if (commentForm) {
-
-    commentForm.addEventListener(
-        "submit",
-        event => {
-
-            const rating =
-                Number(
-                    document.getElementById(
-                        "rating"
-                    )?.value || 0
-                );
-
-
-            const text =
-                document.getElementById(
-                    "commentText"
-                )?.value.trim() || "";
-
-
-            if (
-                rating < 1 ||
-                rating > 5
-            ) {
-
-                event.preventDefault();
-
-
-                alert(
-                    "لطفاً ابتدا امتیاز خود را انتخاب کنید."
-                );
-
-
-                return;
-
-            }
-
-
-            if (!text) {
-
-                event.preventDefault();
-
-
-                alert(
-                    "لطفاً متن نظر خود را وارد کنید."
-                );
-
-
-                return;
-
-            }
-
-
-            if (text.length > 500) {
-
-                event.preventDefault();
-
-
-                alert(
-                    "نظر نمی‌تواند بیشتر از ۵۰۰ کاراکتر باشد."
-                );
-
-
-                return;
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   NAVBAR SCROLL
-   ========================================================= */
-
-const navbar =
-    document.querySelector(
-        ".navbar"
-    );
-
-
-window.addEventListener(
-    "scroll",
-    () => {
-
-        if (!navbar) {
-            return;
-        }
-
-
-        if (window.scrollY > 30) {
-
-            navbar.style.boxShadow =
-                "0 10px 35px rgba(0, 0, 0, 0.25)";
-
-        }
-        else {
-
-            navbar.style.boxShadow =
-                "none";
-
+        if (ratingInput) {
+            ratingInput.value = String(selectedRating);
         }
 
     }
-);
-/* =========================================================
-   COURSE LOGIN CHECK
-   ========================================================= */
 
-const courseLoginButtons =
-    document.querySelectorAll(
-        ".course-login-required"
-    );
+    ratingButtons.forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const selectedRating = Number(this.dataset.rating);
+
+            if (selectedRating >= 1 && selectedRating <= 5) {
+                updateRating(selectedRating);
+            }
+
+        });
+
+    });
 
 
-if (courseLoginButtons.length > 0) {
+    /* =====================================
+       COMMENT CHARACTER COUNTER
+    ===================================== */
 
-    courseLoginButtons.forEach(
-        button => {
+    const commentText = document.getElementById("commentText");
+    const commentCounter = document.getElementById("commentCounter");
 
-            button.addEventListener(
-                "click",
-                event => {
+    if (commentText && commentCounter) {
 
-                    event.preventDefault();
+        function updateCommentCounter() {
 
-                    alert(
-                        "شما هنوز ثبت نام نکرده اید."
-                    );
-
-                }
+            commentCounter.textContent = String(
+                commentText.value.length
             );
 
         }
+
+        commentText.addEventListener(
+            "input",
+            updateCommentCounter
+        );
+
+        updateCommentCounter();
+
+    }
+
+
+    /* =====================================
+       COMMENT FORM VALIDATION
+    ===================================== */
+
+    const commentForm = document.getElementById("commentForm");
+
+    if (commentForm) {
+
+        commentForm.addEventListener("submit", function (event) {
+
+            const textArea = document.getElementById("commentText");
+            const rating = document.getElementById("rating");
+
+            if (!textArea || !rating) {
+                return;
+            }
+
+            if (!textArea.value.trim()) {
+
+                event.preventDefault();
+
+                alert("لطفاً متن نظر خود را وارد کنید.");
+
+                textArea.focus();
+
+                return;
+            }
+
+            if (Number(rating.value) < 1 || Number(rating.value) > 5) {
+
+                event.preventDefault();
+
+                alert("لطفاً امتیاز خود را از ۱ تا ۵ انتخاب کنید.");
+
+                return;
+            }
+
+            if (textArea.value.length > 500) {
+
+                event.preventDefault();
+
+                alert("متن نظر نمی‌تواند بیشتر از ۵۰۰ کاراکتر باشد.");
+
+                return;
+            }
+
+        });
+
+    }
+
+
+    /* =====================================
+       TRACKING FORM VALIDATION
+       در صورت وجود فرم پیگیری
+    ===================================== */
+
+    const trackingForm = document.querySelector(".tracking-form");
+
+    if (trackingForm) {
+
+        trackingForm.addEventListener("submit", function (event) {
+
+            const trackingInput = trackingForm.querySelector(
+                'input[name="trackingCode"]'
+            );
+
+            if (!trackingInput || !trackingInput.value.trim()) {
+
+                event.preventDefault();
+
+                alert("لطفاً کد پیگیری پروژه را وارد کنید.");
+
+                if (trackingInput) {
+                    trackingInput.focus();
+                }
+
+            }
+
+        });
+
+    }
+
+
+    /* =====================================
+       PREVENT HIDDEN SECTIONS
+    ===================================== */
+
+    document.querySelectorAll(
+        "main section, .codino-announcements, .footer"
+    ).forEach(function (section) {
+
+        section.style.visibility = "visible";
+
+    });
+
+    document.querySelectorAll(
+        ".reveal, .reveal-item, [data-reveal], .scroll-reveal"
+    ).forEach(function (element) {
+
+        element.style.opacity = "1";
+        element.style.visibility = "visible";
+        element.style.transform = "none";
+
+    });
+
+
+    /* =====================================
+       COMMENT MESSAGE AUTO HIGHLIGHT
+    ===================================== */
+
+    document.querySelectorAll(".comment-message").forEach(function (message) {
+
+        message.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    });
+
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    "use strict";
+
+    // دریافت عناصر فرم
+    const phoneInput = document.getElementById("phoneNumber");
+    const securityCodeInput = document.getElementById("securityCode");
+    const captchaInput = document.getElementById("captcha");
+    const form = document.querySelector(
+        'form[asp-action="ForgotPassword"]'
     );
 
-}
+    // فقط اعداد انگلیسی
+    function onlyDigits(value) {
+        return value
+            .replace(/[۰-۹]/g, function (digit) {
+                return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+            })
+            .replace(/[٠-٩]/g, function (digit) {
+                return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+            })
+            .replace(/\D/g, "");
+    }
+
+    // شماره موبایل
+    if (phoneInput) {
+
+        phoneInput.addEventListener("input", function () {
+
+            this.value = onlyDigits(this.value).slice(0, 11);
+
+        });
+
+        phoneInput.addEventListener("blur", function () {
+
+            if (this.value.length > 0 &&
+                !/^09\d{9}$/.test(this.value)) {
+
+                this.setCustomValidity(
+                    "شماره موبایل باید با 09 شروع شود و 11 رقم باشد."
+                );
+
+            } else {
+
+                this.setCustomValidity("");
+
+            }
+
+        });
+
+        phoneInput.addEventListener("input", function () {
+            this.setCustomValidity("");
+        });
+    }
+
+    // کد امنیتی چهار رقمی
+    if (securityCodeInput) {
+
+        securityCodeInput.addEventListener("input", function () {
+
+            this.value = onlyDigits(this.value).slice(0, 4);
+
+            this.setCustomValidity("");
+
+        });
+
+        securityCodeInput.addEventListener("blur", function () {
+
+            if (this.value.length > 0 &&
+                !/^\d{4}$/.test(this.value)) {
+
+                this.setCustomValidity(
+                    "کد امنیتی باید دقیقاً چهار رقم باشد."
+                );
+
+            } else {
+
+                this.setCustomValidity("");
+
+            }
+
+        });
+    }
+
+    // کپچا
+    if (captchaInput) {
+
+        captchaInput.addEventListener("input", function () {
+
+            this.value = this.value
+                .replace(/\s/g, "")
+                .toUpperCase()
+                .slice(0, 6);
+
+        });
+
+    }
+
+    // اعتبارسنجی قبل از ارسال فرم
+    if (form) {
+
+        form.addEventListener("submit", function (event) {
+
+            if (phoneInput &&
+                !/^09\d{9}$/.test(phoneInput.value)) {
+
+                event.preventDefault();
+
+                phoneInput.setCustomValidity(
+                    "شماره موبایل معتبر نیست."
+                );
+
+                phoneInput.reportValidity();
+                phoneInput.focus();
+
+                return;
+            }
+
+            if (securityCodeInput &&
+                !/^\d{4}$/.test(securityCodeInput.value)) {
+
+                event.preventDefault();
+
+                securityCodeInput.setCustomValidity(
+                    "کد امنیتی باید دقیقاً چهار رقم باشد."
+                );
+
+                securityCodeInput.reportValidity();
+                securityCodeInput.focus();
+
+                return;
+            }
+
+            if (captchaInput &&
+                captchaInput.value.trim().length === 0) {
+
+                event.preventDefault();
+
+                captchaInput.setCustomValidity(
+                    "وارد کردن کد تصویر الزامی است."
+                );
+
+                captchaInput.reportValidity();
+                captchaInput.focus();
+
+                return;
+            }
+
+        });
+
+    }
+
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    "use strict";
+
+    const phoneInput = document.getElementById("phoneNumber");
+    const captchaInput = document.getElementById("captcha");
+    const refreshButton = document.querySelector(".captcha-refresh");
+    const loginForm = document.querySelector(
+        'form[method="post"]'
+    );
+
+    // تبدیل اعداد فارسی و عربی به انگلیسی
+    function normalizeDigits(value) {
+
+        return value
+            .replace(/[۰-۹]/g, function (digit) {
+                return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+            })
+            .replace(/[٠-٩]/g, function (digit) {
+                return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+            })
+            .replace(/\D/g, "");
+
+    }
+
+    // اعتبارسنجی شماره موبایل
+    if (phoneInput) {
+
+        phoneInput.addEventListener("input", function () {
+
+            this.value = normalizeDigits(this.value).slice(0, 11);
+            this.setCustomValidity("");
+
+        });
+
+        phoneInput.addEventListener("blur", function () {
+
+            if (this.value && !/^09\d{9}$/.test(this.value)) {
+
+                this.setCustomValidity(
+                    "شماره موبایل باید با 09 شروع شود و 11 رقم باشد."
+                );
+
+            } else {
+
+                this.setCustomValidity("");
+
+            }
+
+        });
+
+    }
+
+    // مدیریت کپچا
+    if (captchaInput) {
+
+        captchaInput.addEventListener("input", function () {
+
+            this.value = this.value
+                .replace(/\s/g, "")
+                .toUpperCase()
+                .slice(0, 5);
+
+            this.setCustomValidity("");
+
+        });
+
+    }
+
+    // جلوگیری از چندبار کلیک روی دکمه تازه‌سازی
+    if (refreshButton) {
+
+        refreshButton.addEventListener("click", function () {
+
+            this.disabled = true;
+
+        });
+
+    }
+
+    // اعتبارسنجی فرم ورود
+    if (loginForm) {
+
+        loginForm.addEventListener("submit", function (event) {
+
+            if (phoneInput &&
+                !/^09\d{9}$/.test(phoneInput.value)) {
+
+                event.preventDefault();
+
+                phoneInput.setCustomValidity(
+                    "شماره موبایل معتبر نیست."
+                );
+
+                phoneInput.reportValidity();
+                phoneInput.focus();
+
+                return;
+
+            }
+
+            if (captchaInput &&
+                captchaInput.value.trim().length !== 5) {
+
+                event.preventDefault();
+
+                captchaInput.setCustomValidity(
+                    "کد امنیتی باید دقیقاً 5 کاراکتر باشد."
+                );
+
+                captchaInput.reportValidity();
+                captchaInput.focus();
+
+                return;
+
+            }
+
+            const passwordInput = document.getElementById("password");
+
+            if (passwordInput && passwordInput.value.length < 8) {
+
+                event.preventDefault();
+
+                passwordInput.setCustomValidity(
+                    "رمز عبور باید حداقل 8 کاراکتر باشد."
+                );
+
+                passwordInput.reportValidity();
+                passwordInput.focus();
+
+                return;
+
+            }
+
+        });
+
+    }
+
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    "use strict";
+
+    const logoutForm = document.querySelector(
+        '.profile-card form[asp-action="Logout"]'
+    );
+
+    const logoutButton = document.querySelector(
+        ".profile-logout-button"
+    );
+
+    if (logoutForm && logoutButton) {
+
+        logoutForm.addEventListener("submit", function () {
+
+            logoutButton.disabled = true;
+            logoutButton.textContent = "در حال خروج...";
+
+        });
+
+    }
+
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    "use strict";
+
+    // دریافت عناصر فرم
+    const form = document.querySelector(
+        '.account-card form[method="post"]'
+    );
+
+    const fullNameInput = document.getElementById("fullName");
+    const phoneInput = document.getElementById("phoneNumber");
+    const passwordInput = document.getElementById("password");
+    const repeatPasswordInput = document.getElementById("repeatPassword");
+    const captchaInput = document.getElementById("captcha");
+
+    // تبدیل اعداد فارسی و عربی به انگلیسی
+    function normalizeDigits(value) {
+
+        return value
+            .replace(/[۰-۹]/g, function (digit) {
+                return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+            })
+            .replace(/[٠-٩]/g, function (digit) {
+                return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+            })
+            .replace(/\D/g, "");
+
+    }
+
+    // شماره موبایل
+    if (phoneInput) {
+
+        phoneInput.addEventListener("input", function () {
+
+            this.value = normalizeDigits(this.value).slice(0, 11);
+            this.setCustomValidity("");
+
+        });
+
+        phoneInput.addEventListener("blur", function () {
+
+            if (this.value && !/^09\d{9}$/.test(this.value)) {
+
+                this.setCustomValidity(
+                    "شماره موبایل باید با 09 شروع شود و 11 رقم باشد."
+                );
+
+            } else {
+
+                this.setCustomValidity("");
+
+            }
+
+        });
+
+    }
+
+    // نام و نام خانوادگی
+    if (fullNameInput) {
+
+        fullNameInput.addEventListener("input", function () {
+
+            this.value = this.value
+                .replace(/\s{2,}/g, " ")
+                .slice(0, 100);
+
+            this.setCustomValidity("");
+
+        });
+
+        fullNameInput.addEventListener("blur", function () {
+
+            if (this.value.trim().length < 3) {
+
+                this.setCustomValidity(
+                    "نام و نام خانوادگی باید حداقل 3 کاراکتر باشد."
+                );
+
+            } else {
+
+                this.setCustomValidity("");
+
+            }
+
+        });
+
+    }
+
+    // کپچا
+    if (captchaInput) {
+
+        captchaInput.addEventListener("input", function () {
+
+            this.value = this.value
+                .replace(/\s/g, "")
+                .toUpperCase()
+                .slice(0, 5);
+
+            this.setCustomValidity("");
+
+        });
+
+    }
+
+    // پیام تطابق رمز عبور
+    let passwordMessage = null;
+
+    if (repeatPasswordInput) {
+
+        passwordMessage = document.createElement("small");
+
+        passwordMessage.className = "password-match-message";
+
+        passwordMessage.setAttribute("aria-live", "polite");
+
+        repeatPasswordInput.parentElement.appendChild(passwordMessage);
+
+    }
+
+    // بررسی یکسان بودن رمزها
+    function checkPasswords() {
+
+        if (!passwordInput || !repeatPasswordInput) {
+            return true;
+        }
+
+        const password = passwordInput.value;
+        const repeatedPassword = repeatPasswordInput.value;
+
+        repeatPasswordInput.setCustomValidity("");
+
+        if (!repeatedPassword) {
+
+            passwordMessage.textContent = "";
+            passwordMessage.className = "password-match-message";
+
+            return true;
+
+        }
+
+        if (password !== repeatedPassword) {
+
+            passwordMessage.textContent =
+                "رمز عبور و تکرار آن یکسان نیستند.";
+
+            passwordMessage.className =
+                "password-match-message error";
+
+            repeatPasswordInput.setCustomValidity(
+                "رمز عبور و تکرار آن یکسان نیستند."
+            );
+
+            return false;
+
+        }
+
+        passwordMessage.textContent =
+            "رمز عبور و تکرار آن یکسان هستند.";
+
+        passwordMessage.className =
+            "password-match-message success";
+
+        return true;
+
+    }
+
+    if (passwordInput && repeatPasswordInput) {
+
+        passwordInput.addEventListener("input", checkPasswords);
+
+        repeatPasswordInput.addEventListener("input", checkPasswords);
+
+    }
+
+    // تازه‌سازی کپچا
+    window.refreshRegisterCaptcha = function () {
+
+        window.location.href = window.location.pathname;
+
+    };
+
+    // اعتبارسنجی نهایی فرم
+    if (form) {
+
+        form.addEventListener("submit", function (event) {
+
+            // بررسی نام
+            if (fullNameInput &&
+                fullNameInput.value.trim().length < 3) {
+
+                event.preventDefault();
+
+                fullNameInput.setCustomValidity(
+                    "نام و نام خانوادگی معتبر نیست."
+                );
+
+                fullNameInput.reportValidity();
+                fullNameInput.focus();
+
+                return;
+
+            }
+
+            // بررسی شماره موبایل
+            if (phoneInput &&
+                !/^09\d{9}$/.test(phoneInput.value)) {
+
+                event.preventDefault();
+
+                phoneInput.setCustomValidity(
+                    "شماره موبایل معتبر نیست."
+                );
+
+                phoneInput.reportValidity();
+                phoneInput.focus();
+
+                return;
+
+            }
+
+            // بررسی رمز عبور
+            if (passwordInput &&
+                passwordInput.value.length < 8) {
+
+                event.preventDefault();
+
+                passwordInput.setCustomValidity(
+                    "رمز عبور باید حداقل 8 کاراکتر باشد."
+                );
+
+                passwordInput.reportValidity();
+                passwordInput.focus();
+
+                return;
+
+            }
+
+            // بررسی تطابق رمزها
+            if (!checkPasswords()) {
+
+                event.preventDefault();
+
+                repeatPasswordInput.reportValidity();
+                repeatPasswordInput.focus();
+
+                return;
+
+            }
+
+            // بررسی کپچا
+            if (captchaInput &&
+                captchaInput.value.length !== 5) {
+
+                event.preventDefault();
+
+                captchaInput.setCustomValidity(
+                    "کد امنیتی باید دقیقاً 5 کاراکتر باشد."
+                );
+
+                captchaInput.reportValidity();
+                captchaInput.focus();
+
+                return;
+
+            }
+
+        });
+
+    }
+
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const codeInput = document.getElementById("code");
+    const form = codeInput?.closest("form");
+    const submitButton = form?.querySelector(
+        'button[type="submit"]'
+    );
+
+    if (!codeInput || !form) {
+        return;
+    }
+
+    // تبدیل اعداد فارسی و عربی به انگلیسی
+    function normalizeDigits(value) {
+        return value
+            .replace(/[۰-۹]/g, digit =>
+                String(digit.charCodeAt(0) - 1776)
+            )
+            .replace(/[٠-٩]/g, digit =>
+                String(digit.charCodeAt(0) - 1632)
+            );
+    }
+
+    // فقط شش رقم مجاز است
+    function cleanCode(value) {
+        return normalizeDigits(value)
+            .replace(/\D/g, "")
+            .slice(0, 6);
+    }
+
+    // پاک‌سازی ورودی
+    codeInput.addEventListener("input", function () {
+
+        const cleaned = cleanCode(this.value);
+
+        this.value = cleaned;
+
+        this.classList.toggle(
+            "is-invalid",
+            cleaned.length > 0 && cleaned.length !== 6
+        );
+    });
+
+    // مدیریت Paste
+    codeInput.addEventListener("paste", function (event) {
+
+        event.preventDefault();
+
+        const clipboard =
+            event.clipboardData || window.clipboardData;
+
+        if (!clipboard) {
+            return;
+        }
+
+        this.value = cleanCode(
+            clipboard.getData("text")
+        );
+
+        this.dispatchEvent(
+            new Event("input", { bubbles: true })
+        );
+    });
+
+    // جلوگیری از Drag & Drop
+    codeInput.addEventListener("drop", function (event) {
+        event.preventDefault();
+    });
+
+    codeInput.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    });
+
+    // اعتبارسنجی هنگام ارسال فرم
+    form.addEventListener("submit", function (event) {
+
+        const code = cleanCode(codeInput.value);
+
+        codeInput.value = code;
+
+        if (code.length !== 6) {
+
+            event.preventDefault();
+
+            codeInput.classList.add("is-invalid");
+            codeInput.focus();
+
+            return;
+        }
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "در حال بررسی...";
+        }
+    });
+
+    // تمرکز خودکار روی فیلد کد
+    codeInput.focus();
+
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const codeInput = document.getElementById("code");
+    const form = codeInput?.closest("form");
+    const submitButton = form?.querySelector(
+        'button[type="submit"]'
+    );
+
+    if (!codeInput || !form) {
+        return;
+    }
+
+    // تبدیل اعداد فارسی و عربی به انگلیسی
+    function normalizeDigits(value) {
+        return value
+            .replace(/[۰-۹]/g, digit =>
+                String(digit.charCodeAt(0) - 1776)
+            )
+            .replace(/[٠-٩]/g, digit =>
+                String(digit.charCodeAt(0) - 1632)
+            );
+    }
+
+    // فقط چهار رقم مجاز است
+    function cleanCode(value) {
+        return normalizeDigits(value)
+            .replace(/\D/g, "")
+            .slice(0, 4);
+    }
+
+    // پاک‌سازی ورودی
+    codeInput.addEventListener("input", function () {
+
+        this.value = cleanCode(this.value);
+
+        this.classList.toggle(
+            "is-invalid",
+            this.value.length > 0 && this.value.length !== 4
+        );
+    });
+
+    // مدیریت Paste
+    codeInput.addEventListener("paste", function (event) {
+
+        event.preventDefault();
+
+        const clipboard =
+            event.clipboardData || window.clipboardData;
+
+        if (!clipboard) {
+            return;
+        }
+
+        this.value = cleanCode(
+            clipboard.getData("text")
+        );
+
+        this.dispatchEvent(
+            new Event("input", { bubbles: true })
+        );
+    });
+
+    // جلوگیری از Drag & Drop
+    codeInput.addEventListener("drop", function (event) {
+        event.preventDefault();
+    });
+
+    codeInput.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    });
+
+    // بررسی کد قبل از ارسال
+    form.addEventListener("submit", function (event) {
+
+        const code = cleanCode(codeInput.value);
+
+        codeInput.value = code;
+
+        if (code.length !== 4) {
+
+            event.preventDefault();
+
+            codeInput.classList.add("is-invalid");
+            codeInput.focus();
+
+            return;
+        }
+
+        // جلوگیری از ارسال چندباره فرم
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "در حال تأیید...";
+        }
+    });
+
+    // تمرکز خودکار روی کد
+    codeInput.focus();
+
+});

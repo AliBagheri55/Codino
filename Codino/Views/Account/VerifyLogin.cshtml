@@ -10,18 +10,24 @@
 
     <div class="account-card">
 
+
         <div class="account-logo">
 
             <img src="~/images/codino-intro.jpg"
-                 alt="Codino" />
+                 alt="Codino"
+                 loading="eager" />
 
-            <span>Codino</span>
+            <span>
+                Codino
+            </span>
 
         </div>
+
 
         <h1>
             تأیید ورود
         </h1>
+
 
         <p class="account-description">
 
@@ -35,9 +41,6 @@
 
         </p>
 
-        <!-- =========================
-             TEST OTP
-        ========================== -->
 
         <div class="test-otp-box">
 
@@ -57,30 +60,41 @@
 
         @if (ViewBag.Error != null)
         {
-            <div class="account-error">
+            <div class="account-error"
+                 role="alert">
+
                 @ViewBag.Error
+
             </div>
         }
 
         <form method="post"
-              action="/Account/VerifyLogin">
+              action="/Account/VerifyLogin"
+              autocomplete="off">
+
+            @Html.AntiForgeryToken()
+
 
             <div class="input-group">
 
-                <label>
+                <label for="code">
                     کد ورود
                 </label>
 
                 <input type="text"
+                       id="code"
                        name="code"
                        maxlength="6"
+                       minlength="6"
                        inputmode="numeric"
+                       pattern="[0-9]{6}"
                        autocomplete="one-time-code"
                        placeholder="123456"
                        class="otp-input"
                        required />
 
             </div>
+
 
             <button type="submit"
                     class="account-button">
@@ -91,10 +105,14 @@
 
         </form>
 
+
         <div class="account-footer">
 
-            <a href="/Account/Login">
+            <a asp-controller="Account"
+               asp-action="Login">
+
                 بازگشت به ورود
+
             </a>
 
         </div>
@@ -102,3 +120,80 @@
     </div>
 
 </div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const codeInput =
+            document.getElementById("code");
+
+
+        if (!codeInput) {
+            return;
+        }
+
+
+        codeInput.addEventListener("input", function () {
+
+            this.value = this.value
+                .replace(/[^0-9]/g, "")
+                .slice(0, 6);
+
+        });
+
+
+        codeInput.addEventListener("paste", function (event) {
+
+            event.preventDefault();
+
+
+            const clipboard =
+                event.clipboardData ||
+                window.clipboardData;
+
+
+            if (!clipboard) {
+                return;
+            }
+
+
+            const pastedText =
+                clipboard.getData("text");
+
+
+            const numericCode =
+                pastedText
+                    .replace(/[^0-9]/g, "")
+                    .slice(0, 6);
+
+
+            this.value = numericCode;
+
+
+            this.dispatchEvent(
+                new Event("input", {
+                    bubbles: true
+                })
+            );
+
+        });
+
+
+        codeInput.addEventListener("drop", function (event) {
+
+            event.preventDefault();
+
+        });
+
+
+        codeInput.addEventListener("dragover", function (event) {
+
+            event.preventDefault();
+
+        });
+
+    });
+
+</script>

@@ -1,0 +1,436 @@
+﻿
+@model Codino.Controllers.CreateProjectRequestViewModel
+
+@{
+    ViewData["Title"] = "ثبت پروژه برنامه‌نویسی | کدینو";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet"
+      href="~/css/project-request.css"
+      asp-append-version="true" />
+
+<section class="project-request-page" dir="rtl">
+
+    <div class="project-request-glow glow-one"></div>
+    <div class="project-request-glow glow-two"></div>
+
+    <div class="project-request-container">
+
+        <!-- سربرگ صفحه -->
+        <div class="project-request-heading">
+
+            <span class="project-request-badge">
+                <span class="status-dot"></span>
+                ثبت پروژه برنامه‌نویسی
+            </span>
+
+            <h1>
+                پروژه‌ات رو به <span>کدینو</span> بسپار
+            </h1>
+
+            <p>
+                اطلاعات پروژه‌ات را وارد کن تا درخواستت بررسی شود.
+            </p>
+
+        </div>
+
+        <!-- پیام موفقیت -->
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="project-alert project-alert-success"
+                 role="status"
+                 aria-live="polite">
+
+                <div>
+                    <strong>درخواست با موفقیت ثبت شد!</strong>
+                    <p>@successMessage</p>
+                </div>
+
+            </div>
+        }
+
+        <!-- پیام خطا -->
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="project-alert project-alert-error"
+                 role="alert">
+
+                <div>
+                    <strong>خطا در ثبت درخواست</strong>
+                    <p>@errorMessage</p>
+                </div>
+
+            </div>
+        }
+
+        <!-- خطاهای اعتبارسنجی -->
+        <div asp-validation-summary="ModelOnly"
+             class="project-alert project-alert-error"
+             role="alert">
+        </div>
+
+        <!-- فرم ثبت پروژه -->
+        <form asp-controller="ProjectRequests"
+              asp-action="Create"
+              method="post"
+              class="project-request-form"
+              id="projectRequestForm">
+
+            @Html.AntiForgeryToken()
+
+            <!-- اطلاعات تماس -->
+            <div class="form-section-heading">
+
+                <span class="section-number">01</span>
+
+                <div>
+                    <h2>اطلاعات تماس</h2>
+                    <p>برای ارتباط درباره جزئیات پروژه</p>
+                </div>
+
+            </div>
+
+            <div class="project-form-grid">
+
+                <div class="project-field">
+
+                    <label asp-for="CustomerName">
+                        نام و نام خانوادگی
+                    </label>
+
+                    <input asp-for="CustomerName"
+                           placeholder="مثلاً علی باقری"
+                           autocomplete="name"
+                           maxlength="100"
+                           required />
+
+                    <span asp-validation-for="CustomerName"
+                          class="field-error">
+                    </span>
+
+                </div>
+
+                <div class="project-field">
+
+                    <label asp-for="PhoneNumber">
+                        شماره موبایل
+                    </label>
+
+                    <input asp-for="PhoneNumber"
+                           type="tel"
+                           placeholder="مثلاً 09123456789"
+                           inputmode="numeric"
+                           autocomplete="tel"
+                           dir="ltr"
+                           maxlength="11"
+                           pattern="09[0-9]{9}"
+                           title="شماره موبایل باید با 09 شروع شود و ۱۱ رقم باشد."
+                           required
+                           aria-describedby="phone-hint" />
+
+                    <small id="phone-hint" class="field-hint">
+                        شماره موبایل را با 09 وارد کنید.
+                    </small>
+
+                    <span asp-validation-for="PhoneNumber"
+                          class="field-error">
+                    </span>
+
+                </div>
+
+                <div class="project-field full-width">
+
+                    <label asp-for="Email">
+                        آدرس ایمیل
+                    </label>
+
+                    <input asp-for="Email"
+                           type="email"
+                           placeholder="example@email.com"
+                           autocomplete="email"
+                           dir="ltr"
+                           maxlength="254"
+                           required />
+
+                    <span asp-validation-for="Email"
+                          class="field-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- مشخصات پروژه -->
+            <div class="form-section-heading second-section">
+
+                <span class="section-number">02</span>
+
+                <div>
+                    <h2>مشخصات پروژه</h2>
+                    <p>درباره چیزی که می‌خواهی بسازی توضیح بده</p>
+                </div>
+
+            </div>
+
+            <div class="project-form-grid">
+
+                <div class="project-field">
+
+                    <label asp-for="ProjectName">
+                        عنوان پروژه
+                    </label>
+
+                    <input asp-for="ProjectName"
+                           placeholder="مثلاً طراحی سایت فروشگاهی"
+                           maxlength="150"
+                           required />
+
+                    <span asp-validation-for="ProjectName"
+                          class="field-error">
+                    </span>
+
+                </div>
+
+                <div class="project-field">
+
+                    <label asp-for="ProjectType">
+                        نوع پروژه
+                    </label>
+
+                    <select asp-for="ProjectType" required>
+
+                        <option value="">
+                            نوع پروژه را انتخاب کن
+                        </option>
+
+                        <option value="Web Application">
+                            وب‌سایت و وب‌اپلیکیشن
+                        </option>
+
+                        <option value="Desktop Application">
+                            نرم‌افزار دسکتاپ
+                        </option>
+
+                        <option value="Mobile Application">
+                            اپلیکیشن موبایل
+                        </option>
+
+                        <option value="AI and Machine Learning">
+                            هوش مصنوعی و یادگیری ماشین
+                        </option>
+
+                        <option value="Game Development">
+                            بازی‌سازی
+                        </option>
+
+                        <option value="Automation">
+                            اتوماسیون و ابزارهای برنامه‌نویسی
+                        </option>
+
+                        <option value="Other">
+                            سایر پروژه‌ها
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="ProjectType"
+                          class="field-error">
+                    </span>
+
+                </div>
+
+                <div class="project-field full-width">
+
+                    <label asp-for="Description">
+                        توضیحات کامل پروژه
+                    </label>
+
+                    <textarea asp-for="Description"
+                              rows="6"
+                              minlength="20"
+                              maxlength="5000"
+                              required
+                              placeholder="چه امکاناتی نیاز داری؟ پروژه قرار است چه کاری انجام دهد؟ هرچه دقیق‌تر توضیح بده، بهتر می‌توانیم درخواستت را بررسی کنیم."></textarea>
+
+                    <div class="field-hint">
+                        حداقل ۲۰ و حداکثر ۵۰۰۰ کاراکتر
+                    </div>
+
+                    <span asp-validation-for="Description"
+                          class="field-error">
+                    </span>
+
+                </div>
+
+                <div class="project-field">
+
+                    <label asp-for="Budget">
+                        بودجه تقریبی
+                    </label>
+
+                    <select asp-for="Budget">
+
+                        <option value="">
+                            هنوز مشخص نکرده‌ام
+                        </option>
+
+                        <option value="کمتر از 5 میلیون تومان">
+                            کمتر از ۵ میلیون تومان
+                        </option>
+
+                        <option value="5 تا 10 میلیون تومان">
+                            ۵ تا ۱۰ میلیون تومان
+                        </option>
+
+                        <option value="10 تا 20 میلیون تومان">
+                            ۱۰ تا ۲۰ میلیون تومان
+                        </option>
+
+                        <option value="20 تا 50 میلیون تومان">
+                            ۲۰ تا ۵۰ میلیون تومان
+                        </option>
+
+                        <option value="بیشتر از 50 میلیون تومان">
+                            بیشتر از ۵۰ میلیون تومان
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="Budget"
+                          class="field-error">
+                    </span>
+
+                </div>
+
+                <div class="project-field">
+
+                    <label asp-for="DesiredDeadline">
+                        زمان تحویل دلخواه
+                    </label>
+
+                    <input asp-for="DesiredDeadline"
+                           type="date"
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+
+                    <span asp-validation-for="DesiredDeadline"
+                          class="field-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- توضیحات حریم خصوصی -->
+            <div class="project-privacy-note">
+
+                <p>
+                    این اطلاعات فقط برای بررسی و پیگیری درخواست پروژه
+                    استفاده می‌شود.
+                </p>
+
+            </div>
+
+            <div class="project-privacy-note">
+
+                <p>
+                    کدینو متعهد به حفظ محرمانگی و صیانت از اطلاعات شخصی
+                    کاربران است. اطلاعات دریافتی صرفاً در چارچوب اهداف
+                    اعلام‌شده و ارائه خدمات مرتبط مورد استفاده قرار می‌گیرد
+                    و جز در مواردی که به موجب قوانین و مقررات لازم باشد
+                    یا با رضایت صریح کاربر انجام شود، در اختیار اشخاص ثالث
+                    قرار نخواهد گرفت. همچنین، تدابیر متعارف امنیتی برای
+                    جلوگیری از دسترسی، افشا یا استفاده غیرمجاز از این
+                    اطلاعات اتخاذ می‌شود.
+                </p>
+
+            </div>
+
+            <!-- دکمه ارسال -->
+            <button type="button"
+                    class="project-submit-button"
+                    id="openProjectConfirm">
+
+                <span>ثبت درخواست پروژه</span>
+
+            </button>
+
+        </form>
+
+        <!-- دکمه بازگشت -->
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="project-back-button">
+
+            بازگشت به صفحه اصلی
+
+        </a>
+
+        <!-- پنجره تأیید -->
+        <div id="projectConfirmModal"
+             class="project-confirm-overlay"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="projectConfirmTitle"
+             aria-describedby="projectConfirmDescription"
+             hidden>
+
+            <div class="project-confirm-box">
+
+                <div class="project-confirm-icon">
+                    ?
+                </div>
+
+                <span class="project-confirm-label">
+                    تأیید نهایی
+                </span>
+
+                <h2 id="projectConfirmTitle">
+                    از ثبت درخواست مطمئنی؟
+                </h2>
+
+                <p id="projectConfirmDescription">
+                    آیا مطمئن هستی که اطلاعات واردشده صحیح است
+                    و می‌خواهی درخواست پروژه‌ات را برای کدینو ثبت کنی؟
+                </p>
+
+                <div class="project-confirm-warning">
+                    لطفاً پیش از ادامه، اطلاعات و شماره تماس خود را بررسی کن.
+                </div>
+
+                <div class="project-confirm-actions">
+
+                    <button type="button"
+                            id="confirmProjectSubmit"
+                            class="project-confirm-yes">
+
+                        بله، ثبت درخواست
+
+                    </button>
+
+                    <button type="button"
+                            id="cancelProjectSubmit"
+                            class="project-confirm-no">
+
+                        خیر، بررسی مجدد
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/js/project-request.js"
+            asp-append-version="true"></script>
+
+}

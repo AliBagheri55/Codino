@@ -1,42 +1,27 @@
-﻿<!DOCTYPE html>
-
+﻿
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
-
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Codino</title>
 
     <meta name="description"
-          content="Codino - آموزش برنامه‌نویسی ساده، کاربردی و پروژه‌محور" />
+          content="Codino - طراحی و توسعه نرم‌افزار و وب‌سایت‌های اختصاصی" />
 
-    <meta name="author"
-          content="Ali Bagheri" />
-
-    <title>
-        @ViewData["Title"] - Codino
-    </title>
+    <link rel="icon" href="~/images/codino-intro.jpg" />
 
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
-
 </head>
 
 <body>
 
     @RenderBody()
 
-    <script src="~/js/site.js"
-            asp-append-version="true"></script>
-
-    @await RenderSectionAsync(
-        "Scripts",
-        required: false
-    )
+    @await RenderSectionAsync("Scripts", required: false)
 
 </body>
-
 </html>

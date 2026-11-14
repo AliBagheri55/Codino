@@ -1,4 +1,5 @@
-﻿using Codino.Api.Models;
+﻿
+using Codino.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codino.Api.Data
@@ -11,27 +12,27 @@ namespace Codino.Api.Data
         {
         }
 
-        public DbSet<User> Users { get; set; }
+        // جداول اصلی
+        public DbSet<User> Users => Set<User>();
+        public DbSet<Comment> Comments => Set<Comment>();
+        // جدول درخواست‌های پروژه برنامه‌نویسی
+        public DbSet<ProjectRequest> ProjectRequests =>
+            Set<ProjectRequest>();
 
-        public DbSet<Comment> Comments { get; set; }
-
-        public DbSet<Course> Courses { get; set; }
-
-
-        protected override void OnModelCreating(
-            ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            ConfigureUser(modelBuilder);
+            ConfigureComment(modelBuilder);
+            ConfigureCourse(modelBuilder);
+        }
 
-            // =========================
-            // USERS
-            // =========================
-
+        private static void ConfigureUser(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("Users");
-
                 entity.HasKey(x => x.Id);
 
                 entity.Property(x => x.FullName)
@@ -42,11 +43,11 @@ namespace Codino.Api.Data
                     .HasMaxLength(20)
                     .IsRequired();
 
-                entity.HasIndex(x => x.PhoneNumber)
-                    .IsUnique();
+                entity.Property(x => x.ProfileImageUrl)
+                    .HasMaxLength(500)
+                    .IsRequired(false);
 
                 entity.Property(x => x.PasswordHash)
-                    .HasMaxLength(500)
                     .IsRequired();
 
                 entity.Property(x => x.IsPhoneVerified)
@@ -54,16 +55,45 @@ namespace Codino.Api.Data
 
                 entity.Property(x => x.CreatedAt)
                     .IsRequired();
+
+                entity.Property(x => x.SecurityCode1Hash)
+                    .IsRequired();
+
+                entity.Property(x => x.SecurityCode2Hash)
+                    .IsRequired();
+
+                // این ویژگی در دیتابیس ذخیره نمی‌شود.
+                entity.Ignore(x => x.IsActive);
+
+                entity.Property(x => x.TotalPoints)
+                    .IsRequired()
+                    .HasDefaultValue(0);
+
+                entity.Property(x => x.ShowInHallOfFame)
+                    .IsRequired()
+                    .HasDefaultValue(false);
+
+                entity.HasIndex(x => x.PhoneNumber)
+                    .IsUnique();
+
+                entity.HasIndex(x => new
+                {
+                    x.ShowInHallOfFame,
+                    x.TotalPoints
+                });
             });
+        }
 
-
-            // =========================
-            // COMMENTS
-            // =========================
-
+        private static void ConfigureComment(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Comment>(entity =>
             {
-                entity.ToTable("Comments");
+                entity.ToTable("Comments", table =>
+                {
+                    table.HasCheckConstraint(
+                        "CK_Comments_Rating",
+                        "[Rating] >= 1 AND [Rating] <= 5");
+                });
 
                 entity.HasKey(x => x.Id);
 
@@ -71,7 +101,8 @@ namespace Codino.Api.Data
                     .IsRequired();
 
                 entity.Property(x => x.Text)
-                    .HasMaxLength(1000)
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)")
                     .IsRequired();
 
                 entity.Property(x => x.Rating)
@@ -86,55 +117,31 @@ namespace Codino.Api.Data
                 entity.HasOne(x => x.User)
                     .WithMany()
                     .HasForeignKey(x => x.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => new
+                {
+                    x.IsApproved,
+                    x.CreatedAt
+                });
+
+                entity.HasIndex(x => new
+                {
+                    x.UserId,
+                    x.CreatedAt
+                });
+
+                entity.HasIndex(x => new
+                {
+                    x.IsApproved,
+                    x.Rating
+                });
             });
+        }
 
-
-            // =========================
-            // COURSES
-            // =========================
-modelBuilder.Entity<Course>(entity =>
-{
-    entity.ToTable("Courses");
-
-    entity.HasKey(x => x.Id);
-
-    entity.Property(x => x.Title)
-        .HasMaxLength(200)
-        .IsRequired();
-
-    entity.Property(x => x.Description)
-        .HasMaxLength(1000)
-        .IsRequired();
-
-    entity.Property(x => x.Image)
-        .HasMaxLength(500)
-        .IsRequired();
-
-    entity.Property(x => x.Price)
-        .HasColumnType("decimal(18,2)")
-        .IsRequired();
-
-    entity.Property(x => x.Chapters)
-        .IsRequired();
-
-    entity.Property(x => x.Sessions)
-        .IsRequired();
-
-    entity.Property(x => x.IsActive)
-        .IsRequired();
-
-    entity.Property(x => x.CreatedAt)
-        .IsRequired();
-
-    entity.Property(x => x.Slug)
-        .HasMaxLength(100)
-        .IsRequired();
-
-    entity.HasIndex(x => x.Slug)
-        .IsUnique();
-});
-
+        private static void ConfigureCourse(ModelBuilder modelBuilder)
+        {
+            
         }
     }
 }

@@ -6,6 +6,7 @@
 
         public string Message { get; set; } = string.Empty;
 
+        // در صورت موفقیت، توکن موقت تغییر رمز عبور
         public string? ResetToken { get; set; }
     }
 }

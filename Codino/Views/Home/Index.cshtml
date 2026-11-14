@@ -1,999 +1,853 @@
 ﻿@model Codino.Models.HomeViewModel
+@using Microsoft.AspNetCore.Http
 
 @{
     ViewData["Title"] = "Codino";
 
-    string? userFullName =
-        Context.Session.GetString("UserFullName");
-
-    string? userId =
-        Context.Session.GetString("UserId");
+    string? userFullName = Context.Session.GetString("UserFullName");
+    string? userId = Context.Session.GetString("UserId");
 
     bool isLoggedIn =
         !string.IsNullOrWhiteSpace(userId) &&
         !string.IsNullOrWhiteSpace(userFullName);
 
-    int coursesCount =
-        Model?.Courses?.Count ?? 0;
+    var allComments =
+        Model?.Comments ??
+        new List<Codino.Models.Api.CommentResponse>();
+
+    var displayedComments = allComments
+        .Where(x => x.Rating >= 1 && x.Rating <= 5)
+        .OrderByDescending(x => x.CreatedAt)
+        .Take(2)
+        .ToList();
+
+    int goodCommentsCount = allComments.Count(x => x.Rating >= 4);
+    int badCommentsCount = allComments.Count(x => x.Rating <= 2);
 }
 
-<!DOCTYPE html>
+<header class="navbar">
+    <div class="navbar-container">
 
-<html lang="fa" dir="rtl">
+        <!-- لوگوی کدینو -->
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="logo"
+           aria-label="صفحه اصلی کدینو">
 
-<head>
+            <img src="~/images/codino-intro.jpg"
+                 alt="Codino" />
+        </a>
 
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <meta name="description"
-          content="Codino - آموزش برنامه‌نویسی">
-
-    <meta name="author"
-          content="Ali Bagheri">
-
-    <title>
-        Codino | آموزش برنامه‌نویسی
-    </title>
-
-    <link rel="stylesheet"
-          href="~/css/style.css"
-          asp-append-version="true">
-
-</head>
-
-<body>
-
-
-    <!-- =========================
-         WARNING BAR
-    ========================== -->
-
-    <div class="warning-bar">
-
-        هر گونه مشکل در سایت را به آیدی
-
-        <strong>
-            ali_i_b_8
-        </strong>
-
-        در تلگرام گزارش دهید.
-
-    </div>
-
-
-    <!-- =========================
-         NAVBAR
-    ========================== -->
-
-    <header class="navbar">
-
-        <div class="navbar-container">
+        <!-- منوی اصلی -->
+        <nav class="nav-menu" id="navMenu">
 
             <a asp-controller="Home"
                asp-action="Index"
-               class="logo">
-
-                <img src="~/images/codino-intro.jpg"
-                     alt="Codino">
-
+               asp-fragment="about">
+                درباره من
             </a>
 
+            <a asp-controller="Home"
+               asp-action="Index"
+               asp-fragment="services">
+                خدمات
+            </a>
 
-            <nav class="nav-menu"
-                 id="navMenu">
+        @*     <a asp-controller="Home"
+               asp-action="Index"
+               asp-fragment="portfolio">
+                نمونه‌کارها
+            </a> *@
 
-                <a href="#about">
-                    درباره من
-                </a>
+            <a asp-controller="Home"
+               asp-action="Index"
+               asp-fragment="comments">
+                نظرات
+            </a>
 
-                <a href="#courses">
-                    دوره‌ها
-                </a>
+            <a asp-controller="Home"
+               asp-action="Privacy">
+                حریم خصوصی
+            </a>
 
-                <a href="#playground">
-                    محیط آنلاین کدنویسی
-                </a>
+            <a asp-controller="Home"
+               asp-action="Terms">
+                قوانین و مقررات
+            </a>
 
-                <a href="#comments">
-                    نظرات
-                </a>
+            <a asp-controller="Home"
+               asp-action="Contact">
+                تماس با ما
+            </a>
 
-            </nav>
+        </nav>
 
+        <!-- عملیات حساب کاربری -->
+        <div class="nav-actions">
 
-            <!-- =========================
-                 ACCOUNT
-            ========================== -->
-
-            <div class="nav-actions">
-
-                @if (isLoggedIn)
-                {
-                    <div class="user-menu">
-
-                        <span class="user-name">
-                            @userFullName
-                        </span>
-
-                        <a asp-controller="Account"
-                           asp-action="Logout"
-                           class="logout-button">
-
-                            خروج
-
-                        </a>
-
-                    </div>
-                }
-                else
-                {
-                    <a asp-controller="Account"
-                       asp-action="Login"
-                       class="login-button">
-
-                        ورود
-
-                    </a>
+            @if (isLoggedIn)
+            {
+                <div class="user-menu">
 
                     <a asp-controller="Account"
-                       asp-action="Register"
-                       class="register-button">
-
-                        ثبت نام
-
+                       asp-action="Profile"
+                       class="user-name">
+                        @userFullName
                     </a>
-                }
 
-            </div>
-
-
-            <button type="button"
-                    class="mobile-menu-button"
-                    id="mobileMenuButton">
-
-                ☰
-
-            </button>
-
-        </div>
-
-    </header>
-
-
-    <!-- =========================
-         MAIN
-    ========================== -->
-
-    <main>
-
-
-        <!-- =========================
-             ABOUT
-        ========================== -->
-
-        <section class="about section"
-                 id="about">
-
-            <div class="section-container">
-
-                <div class="section-heading">
-
-                    <span>
-                        ABOUT ME
-                    </span>
-
-                    <h2>
-                        درباره من
-                    </h2>
-
-                </div>
-
-
-                <div class="about-content">
-
-                    <div class="about-image">
-
-                        <div class="image-frame">
-
-                            <img src="~/images/AliBagheri.jpg"
-                                 alt="علی باقری">
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="about-text">
-
-                        <span class="about-label">
-                            ALI BAGHERI
-                        </span>
-
-                        <h3>
-                            سلام، من علی باقری هستم.
-                        </h3>
-
-                        <p>
-                            کارشناسی کامپیوتر دارم و حدود دو سال است
-                            که در زمینه برنامه‌نویسی فعالیت می‌کنم.
-                        </p>
-
-                        <p>
-                            Codino را ساخته‌ام تا مسیر یادگیری
-                            برنامه‌نویسی برای علاقه‌مندان ساده‌تر،
-                            کاربردی‌تر و پروژه‌محورتر باشد.
-                        </p>
-
-                        <p>
-                            در Codino می‌توانید زبان‌های مختلف
-                            برنامه‌نویسی را یاد بگیرید، تمرین کنید
-                            و پروژه‌های واقعی بسازید.
-                        </p>
-
-
-                        <div class="about-stats">
-
-                            <div class="stat">
-
-                                <strong>
-                                    2+
-                                </strong>
-
-                                <span>
-                                    سال تجربه
-                                </span>
-
-                            </div>
-
-
-                            <div class="stat">
-
-                                <strong>
-                                    @coursesCount
-                                </strong>
-
-                                <span>
-                                    دوره آموزشی
-                                </span>
-
-                            </div>
-
-
-                            <div class="stat">
-
-                                <strong>
-                                    20+
-                                </strong>
-
-                                <span>
-                                    جلسه آموزشی
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             COURSES
-        ========================== -->
-
-        <section class="courses section"
-                 id="courses">
-
-            <div class="section-container">
-
-                <div class="section-heading centered">
-
-                    <span>
-                        CODINO COURSES
-                    </span>
-
-                    <h2>
-                        دوره‌های آموزشی
-                    </h2>
-
-                    <p>
-                        مسیر یادگیری خودت را انتخاب کن.
-                    </p>
-
-                </div>
-
-
-                <div class="courses-grid">
-
-                    @if (Model?.Courses != null &&
-                         Model.Courses.Any())
-                    {
-                        foreach (var course in Model.Courses)
-                        {
-                            <article class="course-card">
-
-                                <div class="course-image">
-
-                                    <img src="@course.Image"
-                                         alt="@course.Title">
-
-                                    <span class="course-badge">
-                                        @course.Title
-                                    </span>
-
-                                </div>
-
-
-                                <div class="course-content">
-
-                                    <h3>
-                                        @course.Title
-                                    </h3>
-
-                                    <p>
-                                        @course.Description
-                                    </p>
-
-
-                                    <div class="course-info">
-
-                                        <span>
-                                            @course.Chapters فصل
-                                        </span>
-
-                                        <span>
-                                            @course.Sessions جلسه
-                                        </span>
-
-                                    </div>
-
-
-                                    <div class="course-footer">
-
-                                        <strong>
-                                            @course.Price.ToString("N0")
-                                            تومان
-                                        </strong>
-
-
-                                        @if (isLoggedIn)
-                                        {
-                                            <!-- =========================
-                                                 COURSE DETAILS
-                                            ========================== -->
-
-                                            <a asp-controller="Course"
-                                               asp-action="Details"
-                                               asp-route-slug="@course.Slug"
-                                               class="course-button">
-
-                                                مشاهده دوره
-
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <a href="#"
-                                               class="course-button course-login-required">
-
-                                                مشاهده دوره
-
-                                            </a>
-                                        }
-
-                                    </div>
-
-                                </div>
-
-                            </article>
-                        }
-                    }
-                    else
-                    {
-                        <div class="no-comments">
-
-                            در حال حاضر دوره‌ای برای نمایش وجود ندارد.
-
-                        </div>
-                    }
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             ONLINE CODE PLAYGROUND
-        ================================================== -->
-
-        <section class="playground section"
-                 id="playground">
-
-            <div class="section-container">
-
-                <div class="section-heading">
-
-                    <span>
-                        ONLINE CODE
-                    </span>
-
-                    <h2>
-                        محیط آنلاین کدنویسی
-                    </h2>
-
-                    <p>
-                        زبان برنامه‌نویسی خود را انتخاب کنید،
-                        کد بنویسید و اجرا کنید.
-                    </p>
-
-                </div>
-
-
-                <!-- =========================
-                     TOOLBAR
-                ========================== -->
-
-                <div class="playground-toolbar">
-
-                    <div class="language-selector">
-
-                        <label for="languageSelect">
-                            زبان:
-                        </label>
-
-                        <select id="languageSelect">
-
-                            <option value="html">
-                                HTML + CSS
-                            </option>
-
-                            <option value="javascript">
-                                JavaScript
-                            </option>
-
-                            <option value="csharp">
-                                C#
-                            </option>
-
-                            <option value="cpp">
-                                C++
-                            </option>
-
-                            <option value="c">
-                                C
-                            </option>
-
-                            <option value="python">
-                                Python
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="editor-language">
-
-                        <span id="currentLanguage">
-                            HTML + CSS
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <!-- =========================
-                     PLAYGROUND BOX
-                ========================== -->
-
-                <div class="playground-box">
-
-
-                    <!-- =========================
-                         EDITOR
-                    ========================== -->
-
-                    <div class="editor">
-
-                        <div class="editor-header">
-
-                            <div class="editor-title">
-                                CODE EDITOR
-                            </div>
-
-                            <div class="editor-dots">
-
-                                <span></span>
-                                <span></span>
-                                <span></span>
-
-                            </div>
-
-                        </div>
-
-
-                        <textarea id="codeEditor"
-                                  spellcheck="false"
-                                  autocomplete="off"
-                                  autocorrect="off"
-                                  autocapitalize="off"
-                                  placeholder="کد خود را اینجا بنویسید..."></textarea>
-
-                    </div>
-
-
-                    <!-- =========================
-                         OUTPUT
-                    ========================== -->
-
-                    <div class="output">
-
-                        <div class="output-header">
-
-                            <span>
-                                OUTPUT
-                            </span>
-
-                            <span id="executionStatus"
-                                  class="execution-status">
-
-                                آماده اجرا
-
-                            </span>
-
-                        </div>
-
-
-                        <div id="codeOutput">
-
-                            <div class="empty-output">
-
-                                کد خود را بنویسید
-                                و روی اجرای کد کلیک کنید.
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- =========================
-                     BUTTONS
-                ========================== -->
-
-                <div class="playground-actions">
-
-                    <button type="button"
-                            id="runCode"
-                            class="primary-button">
-
-                        ▶ اجرای کد
-
-                    </button>
-
-
-                    <button type="button"
-                            id="clearCode"
-                            class="secondary-button">
-
-                        پاک کردن
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             COMMENTS
-        ========================== -->
-
-        <section class="comments section"
-                 id="comments">
-
-            <div class="section-container">
-
-                <div class="section-heading centered">
-
-                    <span>
-                        COMMUNITY
-                    </span>
-
-                    <h2>
-                        نظرات کاربران
-                    </h2>
-
-                    <p>
-                        تجربه کاربران از Codino
-                    </p>
-
-                </div>
-
-
-                @if (TempData["CommentSuccess"] != null)
-                {
-                    <div class="comment-message success">
-
-                        @TempData["CommentSuccess"]
-
-                    </div>
-                }
-
-
-                @if (TempData["CommentError"] != null)
-                {
-                    <div class="comment-message error">
-
-                        @TempData["CommentError"]
-
-                    </div>
-                }
-
-
-                @if (Model?.Comments != null &&
-                     Model.Comments.Any())
-                {
-                    <div class="comments-grid">
-
-                        @foreach (var comment in Model.Comments)
-                        {
-                            <article class="comment-card">
-
-                                <div class="comment-top">
-
-                                    <div class="comment-avatar">
-
-                                        @(string.IsNullOrWhiteSpace(
-                                            comment.UserName)
-                                                ? "ک"
-                                                : comment.UserName.Substring(0, 1))
-
-                                    </div>
-
-
-                                    <div>
-
-                                        <h4>
-                                            @comment.UserName
-                                        </h4>
-
-                                        <span>
-                                            @comment.CreatedAt
-                                            .ToLocalTime()
-                                            .ToString("yyyy/MM/dd")
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div class="stars">
-
-                                    @for (int i = 1; i <= 5; i++)
-                                    {
-                                        if (i <= comment.Rating)
-                                        {
-                                            <span class="star-filled">
-                                                ★
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="star-empty">
-                                                ★
-                                            </span>
-                                        }
-                                    }
-
-                                </div>
-
-
-                                <p>
-                                    @comment.Text
-                                </p>
-
-                            </article>
-                        }
-
-                    </div>
-                }
-                else
-                {
-                    <div class="no-comments">
-
-                        هنوز نظری ثبت نشده است.
-
-                        <br>
-
-                        اولین نفری باش که نظرش را ثبت می‌کند.
-
-                    </div>
-                }
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             ADD COMMENT
-        ========================== -->
-
-        <section class="add-comment section"
-                 id="add-comment">
-
-            <div class="section-container">
-
-                <div class="section-heading centered">
-
-                    <span>
-                        YOUR OPINION
-                    </span>
-
-                    <h2>
-                        نظر خودت را ثبت کن
-                    </h2>
-
-                    <p>
-                        تجربه‌ات از Codino را با ما به اشتراک بگذار.
-                    </p>
-
-                </div>
-
-
-                @if (!isLoggedIn)
-                {
-                    <div class="login-required">
-
-                        <h3>
-                            برای ثبت نظر وارد حساب خود شوید
-                        </h3>
-
-                        <p>
-                            فقط کاربران واردشده می‌توانند
-                            نظر و امتیاز ثبت کنند.
-                        </p>
-
-
-                        <a asp-controller="Account"
-                           asp-action="Login"
-                           class="primary-button">
-
-                            ورود به حساب
-
-                        </a>
-
-                    </div>
-                }
-                else
-                {
-                    <form class="comment-form"
-                          id="commentForm"
-                          asp-controller="Home"
-                          asp-action="CreateComment"
+                    <form asp-controller="Account"
+                          asp-action="Logout"
                           method="post">
 
                         @Html.AntiForgeryToken()
 
-
-                        <div class="rating">
-
-                            <span>
-                                امتیاز شما:
-                            </span>
-
-
-                            <div class="rating-stars"
-                                 id="ratingStars">
-
-                                <button type="button"
-                                        data-rating="1">
-                                    ★
-                                </button>
-
-                                <button type="button"
-                                        data-rating="2">
-                                    ★
-                                </button>
-
-                                <button type="button"
-                                        data-rating="3">
-                                    ★
-                                </button>
-
-                                <button type="button"
-                                        data-rating="4">
-                                    ★
-                                </button>
-
-                                <button type="button"
-                                        data-rating="5">
-                                    ★
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <input type="hidden"
-                               id="rating"
-                               name="rating"
-                               value="0">
-
-
-                        <textarea id="commentText"
-                                  name="text"
-                                  maxlength="500"
-                                  required
-                                  placeholder="نظر خود را بنویسید..."></textarea>
-
-
-                        <div class="comment-counter">
-
-                            <span id="commentCounter">
-                                0
-                            </span>
-
-                            / 500
-
-                        </div>
-
-
                         <button type="submit"
-                                class="primary-button">
-
-                            ثبت نظر
-
+                                class="logout-button">
+                            خروج
                         </button>
 
                     </form>
-                }
 
+                </div>
+            }
+            else
+            {
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="login-button">
+                    ورود
+                </a>
+
+                <a asp-controller="Account"
+                   asp-action="Register"
+                   class="register-button">
+                    ثبت‌نام
+                </a>
+            }
+
+        </div>
+
+        <!-- دکمه منوی موبایل -->
+        <button type="button"
+                class="mobile-menu-button"
+                id="mobileMenuButton"
+                aria-label="باز کردن منو"
+                aria-controls="navMenu"
+                aria-expanded="false">
+
+            ☰
+
+        </button>
+
+    </div>
+</header>
+
+
+<main>
+
+    <!-- درباره من -->
+    <section class="about section" id="about">
+
+        <div class="section-container">
+
+            <div class="section-heading">
+                <h2>درباره من</h2>
             </div>
 
-        </section>
+            <div class="about-content">
 
-    </main>
+                <div class="about-image">
 
+                    <div class="image-frame">
 
-    <!-- =========================
-         FOOTER
-    ========================== -->
+                        <img src="~/images/AliBagheri.jpg"
+                             alt="علی باقری"
+                             loading="lazy" />
 
-    <footer class="footer">
+                    </div>
 
-        <div class="footer-container">
+                </div>
 
-            <div class="footer-brand">
+                <div class="about-text">
 
-                <img src="~/images/codino-intro.jpg"
-                     alt="Codino">
+                    <h3>سلام، من علی باقری هستم</h3>
 
-                <h3>
-                    CODINO
-                </h3>
+                    <p>
+                        کارشناسی کامپیوتر دارم و حدود دو سال است
+                        که در زمینه برنامه‌نویسی فعالیت می‌کنم.
+                    </p>
 
-                <p>
-                    مسیری برای یادگیری،
-                    تمرین و ساختن.
-                </p>
+                    <p>
+                        در کدینو تلاش می‌کنیم ایده‌های شما را به
+                        نرم‌افزارها و راهکارهای کاربردی تبدیل کنیم.
+                    </p>
 
-            </div>
+                    <div class="about-stats">
 
+                        <div class="stat">
+                            <strong>2+</strong>
+                            <span>سال تجربه</span>
+                        </div>
 
-            <div class="footer-links">
+                    </div>
 
-                <h4>
-                    دسترسی سریع
-                </h4>
+                    <div class="about-buttons">
 
-                <a href="#about">
-                    درباره من
-                </a>
+                        <a asp-controller="ProjectRequests"
+                           asp-action="Create"
+                           class="codino-project-button">
 
-                <a href="#courses">
-                    دوره‌ها
-                </a>
+                            <span class="codino-button-icon"
+                                  aria-hidden="true"></span>
 
-                <a href="#playground">
-                    محیط کدنویسی
-                </a>
+                            <span>ثبت پروژه</span>
 
-                <a href="#comments">
-                    نظرات
-                </a>
+                        </a>
 
-            </div>
+                        <a asp-controller="ProjectRequests"
+                           asp-action="Create"
+                           class="codino-project-button">
 
+                            <span class="codino-button-icon"
+                                  aria-hidden="true"></span>
 
-            <div class="footer-links">
+                            <span>همکاری با کدینو</span>
 
-                <h4>
-                    ارتباط با من
-                </h4>
+                        </a>
 
-                <a href="https://t.me/ali_b_i_8"
-                   target="_blank"
-                   rel="noopener noreferrer">
+                    </div>
 
-                    Telegram
-
-                </a>
-
-                <a href="https://instagram.com/a.b._.off"
-                   target="_blank"
-                   rel="noopener noreferrer">
-
-                    Instagram
-
-                </a>
-
-                <a href="https://github.com/"
-                   target="_blank"
-                   rel="noopener noreferrer">
-
-                    GitHub
-
-                </a>
-
-            </div>
-
-
-            <div class="footer-links">
-
-                <h4>
-                    Codino
-                </h4>
-
-                <p>
-                    آموزش برنامه‌نویسی
-                    به شکل ساده و کاربردی.
-                </p>
+                </div>
 
             </div>
 
         </div>
 
+    </section>
 
-        <div class="footer-bottom">
+
+    <!-- خدمات شرکت کدینو -->
+    <section class="codino-services section" id="services">
+
+        <div class="section-container">
+
+            <div class="section-heading centered">
+
+                <h2>خدمات کدینو</h2>
+
+                <p>
+                    راهکارهای نرم‌افزاری برای توسعه کسب‌وکار شما
+                </p>
+
+            </div>
+
+            <div class="services-grid">
+
+                <article class="service-card">
+
+                    <h3>طراحی وب‌سایت</h3>
+
+                    <p>
+                        طراحی و توسعه وب‌سایت‌های اختصاصی،
+                        شرکتی و خدماتی با ساختار مدرن.
+                    </p>
+
+                </article>
+
+                <article class="service-card">
+
+                    <h3>توسعه نرم‌افزار</h3>
+
+                    <p>
+                        طراحی و پیاده‌سازی نرم‌افزارهای اختصاصی
+                        متناسب با نیاز کسب‌وکارها.
+                    </p>
+
+                </article>
+
+                <article class="service-card">
+
+                    <h3>برنامه‌نویسی اختصاصی</h3>
+
+                    <p>
+                        پیاده‌سازی امکانات و سیستم‌های اختصاصی
+                        برای ایده‌ها و پروژه‌های شما.
+                    </p>
+
+                </article>
+
+                <article class="service-card">
+
+                    <h3>پشتیبانی فنی</h3>
+
+                    <p>
+                        بررسی مشکلات فنی، رفع خطاها و
+                        نگهداری پروژه‌های نرم‌افزاری.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- نمونه‌کارهای کدینو -->
+  @*   <section class="codino-portfolio section" id="portfolio">
+
+        <div class="section-container">
+
+            <div class="section-heading centered">
+
+                <h2>نمونه‌کارهای کدینو</h2>
+
+                <p>
+                    بخشی از زمینه‌های کاری و پروژه‌های قابل اجرا
+                </p>
+
+            </div>
+
+            <div class="portfolio-grid">
+
+                <article class="portfolio-card">
+
+                    <div class="portfolio-card-content">
+
+                        <span class="portfolio-category">
+                            طراحی وب
+                        </span>
+
+                        <h3>وب‌سایت‌های شرکتی</h3>
+
+                        <p>
+                            طراحی وب‌سایت‌های حرفه‌ای برای معرفی
+                            خدمات، محصولات و کسب‌وکارها.
+                        </p>
+
+                    </div>
+
+                </article>
+
+                <article class="portfolio-card">
+
+                    <div class="portfolio-card-content">
+
+                        <span class="portfolio-category">
+                            نرم‌افزار
+                        </span>
+
+                        <h3>سیستم‌های مدیریتی</h3>
+
+                        <p>
+                            توسعه سیستم‌های مدیریت اطلاعات،
+                            کاربران و فرایندهای کاری.
+                        </p>
+
+                    </div>
+
+                </article>
+
+                <article class="portfolio-card">
+
+                    <div class="portfolio-card-content">
+
+                        <span class="portfolio-category">
+                            برنامه‌نویسی
+                        </span>
+
+                        <h3>برنامه‌های اختصاصی</h3>
+
+                        <p>
+                            ساخت نرم‌افزارهای اختصاصی بر اساس
+                            نیازها و درخواست مشتریان.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+ *@
+
+    <!-- پیگیری وضعیت پروژه -->
+    @* <section class="project-tracking section" id="tracking">
+
+        <div class="section-container">
+
+            <div class="tracking-box">
+
+                <div class="tracking-content">
+
+                    <h2>پیگیری وضعیت پروژه</h2>
+
+                    <p>
+                        می‌توانید برای اطلاع از وضعیت پروژه خود
+                        از بخش پیگیری پروژه استفاده کنید.
+                    </p>
+
+                    <a asp-controller="ProjectRequests"
+                       asp-action="Track"
+                       class="primary-button">
+
+                        پیگیری پروژه
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section> *@
+
+
+    <!-- پشتیبانی و ارسال تیکت -->
+    <section class="ticket-support section" id="support">
+
+        <div class="section-container">
+
+            <div class="support-box">
+
+                <div class="support-content">
+
+
+                    <h2>پشتیبانی کدینو</h2>
+
+                    <p>
+                        اگر در استفاده از خدمات کدینو با مشکل
+                        مواجه شده‌اید، درخواست پشتیبانی خود را
+                        ثبت کنید تا بررسی شود.
+                    </p>
+
+                    <a asp-controller="Support"
+                       asp-action="Create"
+                       class="primary-button">
+
+                        ارسال تیکت پشتیبانی
+
+                    </a>
+
+                </div>
+                <img src="~/images/codino-intro.jpg" />
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- قرارداد آنلاین -->
+    <section class="online-contract section" id="contracts">
+
+        <div class="section-container">
+
+            <div class="contract-box">
+
+                <div class="contract-content">
+
+                    <h2>قرارداد آنلاین</h2>
+
+                    <p>
+                        جزئیات همکاری، شرایط انجام پروژه و
+                        توافقات کاری را از طریق بخش قراردادها
+                        دنبال کنید.
+                    </p>
+
+                    <a asp-controller="Contracts"
+                       asp-action="Index"
+                       class="primary-button">
+
+                        مشاهده قراردادها
+
+                    </a>
+
+                </div>
+                <img src="~/images/codinogharad.jpg" />
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- نظرات کاربران -->
+    <section class="comments section" id="comments">
+
+        <div class="section-container">
+
+            <div class="section-heading centered">
+
+                <h2>نظرات کاربران</h2>
+
+                <p>
+                    تجربه کاربران از Codino
+                </p>
+
+            </div>
+
+            @if (TempData["CommentSuccess"] != null)
+            {
+                <div class="comment-message success">
+                    @TempData["CommentSuccess"]
+                </div>
+            }
+
+            @if (TempData["CommentError"] != null)
+            {
+                <div class="comment-message error">
+                    @TempData["CommentError"]
+                </div>
+            }
+
+            @if (displayedComments.Any())
+            {
+                <div class="comments-grid">
+
+                    @foreach (var comment in displayedComments)
+                    {
+                        string safeUserName =
+                            string.IsNullOrWhiteSpace(comment.UserName)
+                                ? "کاربر"
+                                : comment.UserName.Trim();
+
+                        string avatarLetter =
+                            safeUserName.Length > 0
+                                ? safeUserName.Substring(0, 1)
+                                : "ک";
+
+                        <article class="comment-card">
+
+                            <div class="comment-top">
+
+                                <div class="comment-avatar">
+                                    @avatarLetter
+                                </div>
+
+                                <div class="comment-user-info">
+
+                                    <h4>
+                                        @safeUserName
+                                    </h4>
+
+                                </div>
+
+                            </div>
+
+                            <div class="stars"
+                                 aria-label="امتیاز @comment.Rating از 5">
+
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= comment.Rating)
+                                    {
+                                        <span class="star-filled">★</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="star-empty">★</span>
+                                    }
+                                }
+
+                            </div>
+
+                            <p class="comment-text">
+                                @comment.Text
+                            </p>
+
+                        </article>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="no-comments">
+                    هنوز نظری ثبت نشده است.
+                </div>
+            }
+
+        </div>
+
+    </section>
+
+
+    <!-- ثبت نظر -->
+    <section class="add-comment section" id="add-comment">
+
+        <div class="section-container">
+
+            <div class="section-heading centered">
+
+                <h2>نظر خودت را ثبت کن</h2>
+
+                <p>
+                    تجربه‌ات از Codino را با ما به اشتراک بگذار.
+                </p>
+
+            </div>
+
+            @if (!isLoggedIn)
+            {
+                <div class="login-required">
+
+                    <h3>
+                        برای ثبت نظر وارد حساب خود شوید
+                    </h3>
+
+                    <a asp-controller="Account"
+                       asp-action="Login"
+                       class="primary-button">
+
+                        ورود به حساب
+
+                    </a>
+
+                </div>
+            }
+            else
+            {
+                <form class="comment-form"
+                      id="commentForm"
+                      asp-controller="Home"
+                      asp-action="CreateComment"
+                      method="post"
+                      autocomplete="off">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="rating">
+
+                        <span>
+                            امتیاز شما:
+                        </span>
+
+                        <div class="rating-stars" id="ratingStars">
+
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <button type="button"
+                                        data-rating="@i"
+                                        aria-label="امتیاز @i از 5">
+
+                                    ★
+
+                                </button>
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <input type="hidden"
+                           id="rating"
+                           name="rating"
+                           value="0" />
+
+                    <textarea id="commentText"
+                              name="text"
+                              maxlength="500"
+                              minlength="1"
+                              required
+                              autocomplete="off"
+                              placeholder="نظر خود را بنویسید..."></textarea>
+
+                    <div class="comment-counter">
+
+                        <span id="commentCounter">0</span>
+                        / 500
+
+                    </div>
+
+                    <button type="submit"
+                            class="primary-button">
+
+                        ثبت نظر
+
+                    </button>
+
+                </form>
+            }
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- تابلو اعلانات -->
+<section class="codino-announcements">
+
+    <div class="announcements-header">
+
+        <div>
+
+            <h2>تابلو اعلانات</h2>
 
             <p>
-                © 2026 Codino
-                — تمامی حقوق محفوظ است.
+                آخرین اطلاعیه‌ها و اخبار رسمی Codino
             </p>
 
         </div>
 
-    </footer>
+    </div>
+
+    <div class="announcement-list">
+
+        <div class="announcement-item">
+
+            <div class="announcement-content">
+
+                <div class="announcement-title-row">
+
+                    <h3>
+                        اطلاعیه رسمی گزارش مشکلات سایت
+                    </h3>
+
+                </div>
+
+                <p>
+                    کاربران گرامی، در صورت مواجهه با هرگونه اختلال،
+                    خطای فنی یا مشکل در استفاده از امکانات وب‌سایت Codino،
+                    خواهشمند است موضوع را به همراه شرح دقیق مشکل و
+                    تصویر مربوطه از طریق تلگرام به واحد پشتیبانی اطلاع دهید.
+
+                    <br /><br />
+
+                    درخواست‌های ارسالی در اسرع وقت بررسی خواهند شد
+                    و اقدامات لازم برای رفع مشکلات احتمالی انجام می‌گیرد.
+
+                    <br /><br />
+
+                    از همکاری شما در بهبود کیفیت خدمات و افزایش
+                    پایداری وب‌سایت سپاسگزاریم.
+                </p>
+
+                <span class="announcement-date">
+                    واحد پشتیبانی فنی | Codino
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
 
 
-    <!-- =========================
-         SITE JS
-    ========================== -->
+<!-- فوتر -->
+<footer class="footer" id="contact">
 
-    <script src="~/js/site.js"
-            asp-append-version="true">
-    </script>
+    <div class="footer-container">
 
-</body>
+        <div class="footer-brand">
 
-</html>
+            <img src="~/images/codino-intro.jpg"
+                 alt="Codino"
+                 loading="lazy" />
+
+            <h3>CODINO</h3>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>دسترسی سریع</h4>
+
+            <a href="#about">درباره من</a>
+            <a href="#services">خدمات کدینو</a>
+@*             <a href="#portfolio">نمونه‌کارها</a>
+ *@            <a href="#comments">نظرات کاربران</a>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>ارتباط با کدینو</h4>
+
+            <a href="https://t.me/CodinoSupport"
+               target="_blank"
+               rel="noopener noreferrer">
+                پشتیبانی تلگرام
+            </a>
+
+            <a href="https://t.me/Ali_Code_Pro"
+               target="_blank"
+               rel="noopener noreferrer">
+                کانال تلگرام
+            </a>
+
+            <a href="https://instagram.com/a.b._.off"
+               target="_blank"
+               rel="noopener noreferrer">
+                اینستاگرام
+            </a>
+
+        </div>
+
+
+        <div class="footer-links footer-contact">
+
+            <h4>اطلاعات تماس</h4>
+
+            <p>
+                ایمیل:
+                <span>info@co-dino.xyz</span>
+            </p>
+
+            <p>
+                تلفن:
+                <span>09014250741</span>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- نماد اعتماد -->
+    <div class="footer-enamad">
+
+        <a referrerpolicy="origin"
+           target="_blank"
+           rel="noopener noreferrer"
+           href="https://trustseal.enamad.ir/?id=8115815&Code=QKbq6dLzIY2J2ACbA1CBHLkc5GDIZKBO">
+
+            <img referrerpolicy="origin"
+                 src="https://trustseal.enamad.ir/logo.aspx?id=8115815&Code=QKbq6dLzIY2J2ACbA1CBHLkc5GDIZKBO"
+                 alt="نماد اعتماد الکترونیکی کدینو"
+                 title="اعتبارسنجی نماد اعتماد الکترونیکی کدینو"
+                 loading="lazy"
+                 style="cursor:pointer; max-width:120px; height:auto;" />
+
+        </a>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 Codino — تمامی حقوق محفوظ است.
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script src="~/js/site.js"
+        asp-append-version="true">
+</script>

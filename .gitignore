@@ -1,8 +1,8 @@
 ﻿# Visual Studio and IDE
 .vs/
+.idea/
 *.user
 *.suo
-.idea/
 
 # Build outputs
 **/bin/
@@ -13,11 +13,11 @@
 # Local configuration and secrets
 .env
 .env.*
-**/appsettings.Development.json
-**/appsettings.Production.json
-**/appsettings.*.Local.json
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.example.json
 
-# Publishing profiles may contain credentials
+# Publishing profiles
 **/Properties/PublishProfiles/
 
 # Local security keys and protected files
@@ -28,14 +28,3 @@
 *.log
 .DS_Store
 Thumbs.db
-
-**/appsettings.json
-**/appsettings.*.json
-!**/appsettings.example.json
-
-**/bin/
-**/obj/
-**/*.user
-**/appsettings.json
-**/appsettings.*.json
-!**/appsettings.example.json

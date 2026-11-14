@@ -9,5 +9,21 @@
         public int? UserId { get; set; }
 
         public string? FullName { get; set; }
+
+        public string? AccessToken { get; set; }
+
+        public string? RefreshToken { get; set; }
+
+        public DateTime? AccessTokenExpiresAt { get; set; }
+    }
+
+    public class RefreshTokenRequest
+    {
+        public string RefreshToken { get; set; } = string.Empty;
+    }
+
+    public class LogoutRequest
+    {
+        public string RefreshToken { get; set; } = string.Empty;
     }
 }

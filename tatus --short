@@ -1,0 +1,541 @@
+ .gitignore                                         |   21 [32m+[m[31m-[m
+ Codino.Api/Codino.Api.csproj                       |    7 [32m+[m[31m-[m
+ Codino.Api/Codino.Api.csproj.user                  |    8 [31m-[m
+ Codino.Api/Controllers/AuthController.cs           | 2881 [32m++++++[m[31m---[m
+ Codino.Api/Controllers/CommentsController.cs       |  493 [32m+[m[31m-[m
+ Codino.Api/Controllers/CoursesController.cs        |  698 [32m++[m[31m-[m
+ Codino.Api/DTOs/ApiResponse.cs                     |   24 [32m+[m[31m-[m
+ Codino.Api/DTOs/CommentResponse.cs                 |   30 [32m+[m[31m-[m
+ Codino.Api/DTOs/CreateCommentRequest.cs            |   35 [32m+[m[31m-[m
+ Codino.Api/DTOs/ForgotPasswordRequest.cs           |   23 [32m+[m[31m-[m
+ Codino.Api/DTOs/ForgotPasswordResponse.cs          |    1 [32m+[m
+ Codino.Api/DTOs/LoginResponse.cs                   |   16 [32m+[m
+ Codino.Api/DTOs/RegisterRequest.cs                 |   19 [32m+[m[31m-[m
+ Codino.Api/DTOs/ResetPasswordRequest.cs            |   15 [32m+[m[31m-[m
+ Codino.Api/DTOs/VerifyRegisterRequest.cs           |   13 [32m+[m[31m-[m
+ Codino.Api/Data/CodinoDbContext.cs                 |  615 [32m+[m[31m-[m
+ Codino.Api/Models/Comment.cs                       |   78 [32m+[m[31m-[m
+ Codino.Api/Models/Course.cs                        |   81 [32m+[m[31m-[m
+ Codino.Api/Models/CourseResponse.cs                |   73 [32m+[m[31m-[m
+ Codino.Api/Models/User.cs                          |   81 [32m+[m[31m-[m
+ Codino.Api/Program.cs                              |  470 [32m+[m[31m-[m
+ Codino.Api/Properties/launchSettings.json          |    2 [32m+[m[31m-[m
+ Codino.Api/appsettings.json                        |   14 [31m-[m
+ Codino.Api/bin/Debug/net10.0/Azure.Core.dll        |  Bin [31m437304[m -> [32m0[m bytes
+ Codino.Api/bin/Debug/net10.0/Azure.Identity.dll    |  Bin [31m356912[m -> [32m0[m bytes
+ .../BuildHost-net472/Microsoft.Build.Locator.dll   |  Bin [31m34848[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe |  Bin [31m458088[m -> [32m0[m bytes
+ ...nalysis.Workspaces.MSBuild.BuildHost.exe.config |   68 [31m-[m
+ .../BuildHost-net472/Microsoft.IO.Redist.dll       |  Bin [31m131880[m -> [32m0[m bytes
+ .../net10.0/BuildHost-net472/Newtonsoft.Json.dll   |  Bin [31m722304[m -> [32m0[m bytes
+ .../net10.0/BuildHost-net472/System.Buffers.dll    |  Bin [31m23856[m -> [32m0[m bytes
+ .../System.Collections.Immutable.dll               |  Bin [31m259360[m -> [32m0[m bytes
+ .../BuildHost-net472/System.CommandLine.dll        |  Bin [31m155680[m -> [32m0[m bytes
+ .../net10.0/BuildHost-net472/System.Memory.dll     |  Bin [31m145192[m -> [32m0[m bytes
+ .../BuildHost-net472/System.Numerics.Vectors.dll   |  Bin [31m110344[m -> [32m0[m bytes
+ .../System.Runtime.CompilerServices.Unsafe.dll     |  Bin [31m19224[m -> [32m0[m bytes
+ .../System.Threading.Tasks.Extensions.dll          |  Bin [31m27944[m -> [32m0[m bytes
+ .../cs/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../de/System.CommandLine.resources.dll            |  Bin [31m18984[m -> [32m0[m bytes
+ .../es/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../fr/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../it/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../ja/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../ko/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../pl/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../pt-BR/System.CommandLine.resources.dll         |  Bin [31m18976[m -> [32m0[m bytes
+ .../ru/System.CommandLine.resources.dll            |  Bin [31m19488[m -> [32m0[m bytes
+ .../tr/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../zh-Hans/System.CommandLine.resources.dll       |  Bin [31m18984[m -> [32m0[m bytes
+ .../zh-Hant/System.CommandLine.resources.dll       |  Bin [31m18976[m -> [32m0[m bytes
+ .../BuildHost-netcore/Microsoft.Build.Locator.dll  |  Bin [31m50720[m -> [32m0[m bytes
+ ...Analysis.Workspaces.MSBuild.BuildHost.deps.json |  171 [31m-[m
+ ...t.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll |  Bin [31m450320[m -> [32m0[m bytes
+ ...Workspaces.MSBuild.BuildHost.runtimeconfig.json |   14 [31m-[m
+ .../net10.0/BuildHost-netcore/Newtonsoft.Json.dll  |  Bin [31m722776[m -> [32m0[m bytes
+ .../System.Collections.Immutable.dll               |  Bin [31m251160[m -> [32m0[m bytes
+ .../BuildHost-netcore/System.CommandLine.dll       |  Bin [31m151584[m -> [32m0[m bytes
+ .../cs/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../de/System.CommandLine.resources.dll            |  Bin [31m18984[m -> [32m0[m bytes
+ .../es/System.CommandLine.resources.dll            |  Bin [31m18984[m -> [32m0[m bytes
+ .../fr/System.CommandLine.resources.dll            |  Bin [31m18984[m -> [32m0[m bytes
+ .../it/System.CommandLine.resources.dll            |  Bin [31m18992[m -> [32m0[m bytes
+ .../ja/System.CommandLine.resources.dll            |  Bin [31m18984[m -> [32m0[m bytes
+ .../ko/System.CommandLine.resources.dll            |  Bin [31m18984[m -> [32m0[m bytes
+ .../pl/System.CommandLine.resources.dll            |  Bin [31m18976[m -> [32m0[m bytes
+ .../pt-BR/System.CommandLine.resources.dll         |  Bin [31m18976[m -> [32m0[m bytes
+ .../ru/System.CommandLine.resources.dll            |  Bin [31m19488[m -> [32m0[m bytes
+ .../tr/System.CommandLine.resources.dll            |  Bin [31m18984[m -> [32m0[m bytes
+ .../zh-Hans/System.CommandLine.resources.dll       |  Bin [31m18976[m -> [32m0[m bytes
+ .../zh-Hant/System.CommandLine.resources.dll       |  Bin [31m18976[m -> [32m0[m bytes
+ Codino.Api/bin/Debug/net10.0/Codino.Api.deps.json  | 1123 [31m----[m
+ Codino.Api/bin/Debug/net10.0/Codino.Api.dll        |  Bin [31m73216[m -> [32m0[m bytes
+ Codino.Api/bin/Debug/net10.0/Codino.Api.exe        |  Bin [31m162304[m -> [32m0[m bytes
+ Codino.Api/bin/Debug/net10.0/Codino.Api.pdb        |  Bin [31m39164[m -> [32m0[m bytes
+ .../Debug/net10.0/Codino.Api.runtimeconfig.json    |   20 [31m-[m
+ .../Codino.Api.staticwebassets.endpoints.json      |    1 [31m-[m
+ Codino.Api/bin/Debug/net10.0/Humanizer.dll         |  Bin [31m355944[m -> [32m0[m bytes
+ .../net10.0/Microsoft.Bcl.AsyncInterfaces.dll      |  Bin [31m19104[m -> [32m0[m bytes
+ .../Debug/net10.0/Microsoft.Bcl.Cryptography.dll   |  Bin [31m16688[m -> [32m0[m bytes
+ .../Debug/net10.0/Microsoft.Build.Framework.dll    |  Bin [31m269608[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.CSharp.Workspaces.dll   |  Bin [31m944904[m -> [32m0[m bytes
+ .../net10.0/Microsoft.CodeAnalysis.CSharp.dll      |  Bin [31m6839608[m -> [32m0[m bytes
+ ...t.CodeAnalysis.ExternalAccess.RazorCompiler.dll |  Bin [31m21256[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.Workspaces.MSBuild.dll  |  Bin [31m141576[m -> [32m0[m bytes
+ .../net10.0/Microsoft.CodeAnalysis.Workspaces.dll  |  Bin [31m4230448[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/Microsoft.CodeAnalysis.dll   |  Bin [31m3059000[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/Microsoft.Data.SqlClient.dll |  Bin [31m929912[m -> [32m0[m bytes
+ .../Microsoft.EntityFrameworkCore.Abstractions.dll |  Bin [31m34656[m -> [32m0[m bytes
+ .../Microsoft.EntityFrameworkCore.Design.dll       |  Bin [31m631608[m -> [32m0[m bytes
+ .../Microsoft.EntityFrameworkCore.Relational.dll   |  Bin [31m2194784[m -> [32m0[m bytes
+ .../Microsoft.EntityFrameworkCore.SqlServer.dll    |  Bin [31m641888[m -> [32m0[m bytes
+ .../net10.0/Microsoft.EntityFrameworkCore.dll      |  Bin [31m2828600[m -> [32m0[m bytes
+ ...osoft.Extensions.Caching.StackExchangeRedis.dll |  Bin [31m42280[m -> [32m0[m bytes
+ .../Microsoft.Extensions.DependencyModel.dll       |  Bin [31m84776[m -> [32m0[m bytes
+ .../Microsoft.Identity.Client.Extensions.Msal.dll  |  Bin [31m66616[m -> [32m0[m bytes
+ .../Debug/net10.0/Microsoft.Identity.Client.dll    |  Bin [31m1028656[m -> [32m0[m bytes
+ .../Microsoft.IdentityModel.Abstractions.dll       |  Bin [31m19480[m -> [32m0[m bytes
+ .../Microsoft.IdentityModel.JsonWebTokens.dll      |  Bin [31m137760[m -> [32m0[m bytes
+ .../net10.0/Microsoft.IdentityModel.Logging.dll    |  Bin [31m36896[m -> [32m0[m bytes
+ ...osoft.IdentityModel.Protocols.OpenIdConnect.dll |  Bin [31m128032[m -> [32m0[m bytes
+ .../net10.0/Microsoft.IdentityModel.Protocols.dll  |  Bin [31m40992[m -> [32m0[m bytes
+ .../net10.0/Microsoft.IdentityModel.Tokens.dll     |  Bin [31m300064[m -> [32m0[m bytes
+ .../Debug/net10.0/Microsoft.SqlServer.Server.dll   |  Bin [31m23976[m -> [32m0[m bytes
+ .../Microsoft.VisualStudio.SolutionPersistence.dll |  Bin [31m172072[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/Mono.TextTemplating.dll      |  Bin [31m177664[m -> [32m0[m bytes
+ Codino.Api/bin/Debug/net10.0/Newtonsoft.Json.dll   |  Bin [31m712464[m -> [32m0[m bytes
+ .../Debug/net10.0/Pipelines.Sockets.Unofficial.dll |  Bin [31m167424[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/StackExchange.Redis.dll      |  Bin [31m838656[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/System.ClientModel.dll       |  Bin [31m175664[m -> [32m0[m bytes
+ Codino.Api/bin/Debug/net10.0/System.CodeDom.dll    |  Bin [31m184944[m -> [32m0[m bytes
+ .../net10.0/System.Composition.AttributedModel.dll |  Bin [31m20248[m -> [32m0[m bytes
+ .../net10.0/System.Composition.Convention.dll      |  Bin [31m54040[m -> [32m0[m bytes
+ .../Debug/net10.0/System.Composition.Hosting.dll   |  Bin [31m56072[m -> [32m0[m bytes
+ .../Debug/net10.0/System.Composition.Runtime.dll   |  Bin [31m27424[m -> [32m0[m bytes
+ .../net10.0/System.Composition.TypedParts.dll      |  Bin [31m65816[m -> [32m0[m bytes
+ .../System.Configuration.ConfigurationManager.dll  |  Bin [31m443192[m -> [32m0[m bytes
+ .../net10.0/System.IdentityModel.Tokens.Jwt.dll    |  Bin [31m89016[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/System.Memory.Data.dll       |  Bin [31m30472[m -> [32m0[m bytes
+ .../System.Security.Cryptography.ProtectedData.dll |  Bin [31m38712[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/appsettings.Development.json |    8 [31m-[m
+ Codino.Api/bin/Debug/net10.0/appsettings.json      |   14 [31m-[m
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../cs/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m444168[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m41224[m -> [32m0[m bytes
+ .../cs/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m40200[m -> [32m0[m bytes
+ .../cs/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m257656[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ .../de/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m474376[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42760[m -> [32m0[m bytes
+ .../de/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41736[m -> [32m0[m bytes
+ .../de/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m267384[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ .../es/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m463120[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42248[m -> [32m0[m bytes
+ .../es/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41272[m -> [32m0[m bytes
+ .../es/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m259192[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../fr/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m475920[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m43320[m -> [32m0[m bytes
+ .../fr/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41736[m -> [32m0[m bytes
+ .../fr/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m268432[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ .../it/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m469768[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17720[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42808[m -> [32m0[m bytes
+ .../it/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41784[m -> [32m0[m bytes
+ .../it/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m260216[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ .../ja/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m515848[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m45320[m -> [32m0[m bytes
+ .../ja/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m44304[m -> [32m0[m bytes
+ .../ja/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m289400[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../ko/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m475920[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m43280[m -> [32m0[m bytes
+ .../ko/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41744[m -> [32m0[m bytes
+ .../ko/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m267416[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17712[m -> [32m0[m bytes
+ .../pl/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m476432[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42760[m -> [32m0[m bytes
+ .../pl/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41736[m -> [32m0[m bytes
+ .../pl/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m266896[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17712[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.CSharp.resources.dll    |  Bin [31m456456[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42296[m -> [32m0[m bytes
+ .../pt-BR/Microsoft.CodeAnalysis.resources.dll     |  Bin [31m40720[m -> [32m0[m bytes
+ .../pt-BR/Microsoft.Data.SqlClient.resources.dll   |  Bin [31m255128[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m18192[m -> [32m0[m bytes
+ .../ru/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m617744[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m47888[m -> [32m0[m bytes
+ .../ru/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m49464[m -> [32m0[m bytes
+ .../ru/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m344696[m -> [32m0[m bytes
+ .../unix/lib/net9.0/Microsoft.Data.SqlClient.dll   |  Bin [31m2102944[m -> [32m0[m bytes
+ .../native/Microsoft.Data.SqlClient.SNI.dll        |  Bin [31m551976[m -> [32m0[m bytes
+ .../native/Microsoft.Data.SqlClient.SNI.dll        |  Bin [31m566832[m -> [32m0[m bytes
+ .../native/Microsoft.Data.SqlClient.SNI.dll        |  Bin [31m477736[m -> [32m0[m bytes
+ .../win/lib/net9.0/Microsoft.Data.SqlClient.dll    |  Bin [31m2167440[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../tr/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m452360[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17720[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m41784[m -> [32m0[m bytes
+ .../tr/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m40240[m -> [32m0[m bytes
+ .../tr/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m250528[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.CSharp.resources.dll    |  Bin [31m405776[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m40200[m -> [32m0[m bytes
+ .../zh-Hans/Microsoft.CodeAnalysis.resources.dll   |  Bin [31m37640[m -> [32m0[m bytes
+ .../zh-Hans/Microsoft.Data.SqlClient.resources.dll |  Bin [31m225912[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17720[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.CSharp.resources.dll    |  Bin [31m405304[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m40248[m -> [32m0[m bytes
+ .../zh-Hant/Microsoft.CodeAnalysis.resources.dll   |  Bin [31m38152[m -> [32m0[m bytes
+ .../zh-Hant/Microsoft.Data.SqlClient.resources.dll |  Bin [31m229520[m -> [32m0[m bytes
+ Codino.Api/obj/Codino.Api.csproj.nuget.dgspec.json |  509 [31m--[m
+ Codino.Api/obj/Codino.Api.csproj.nuget.g.props     |   25 [31m-[m
+ Codino.Api/obj/Codino.Api.csproj.nuget.g.targets   |    7 [31m-[m
+ ....NETCoreApp,Version=v10.0.AssemblyAttributes.cs |    4 [31m-[m
+ Codino.Api/obj/Debug/net10.0/3ckmnpjr.sql          |   10 [31m-[m
+ Codino.Api/obj/Debug/net10.0/ApiEndpoints.json     |  191 [31m-[m
+ .../obj/Debug/net10.0/Codino.Api.AssemblyInfo.cs   |   23 [31m-[m
+ .../net10.0/Codino.Api.AssemblyInfoInputs.cache    |    1 [31m-[m
+ ...o.Api.GeneratedMSBuildEditorConfig.editorconfig |   32 [31m-[m
+ .../obj/Debug/net10.0/Codino.Api.GlobalUsings.g.cs |   17 [31m-[m
+ ...odino.Api.MvcApplicationPartsAssemblyInfo.cache |    0
+ .../obj/Debug/net10.0/Codino.Api.assets.cache      |  Bin [31m52216[m -> [32m0[m bytes
+ .../Codino.Api.csproj.AssemblyReference.cache      |  Bin [31m16292[m -> [32m0[m bytes
+ .../Codino.Api.csproj.BuildWithSkipAnalyzers       |    0
+ .../Codino.Api.csproj.CoreCompileInputs.cache      |    1 [31m-[m
+ .../net10.0/Codino.Api.csproj.FileListAbsolute.txt |  159 [31m-[m
+ .../obj/Debug/net10.0/Codino.Api.csproj.Up2Date    |    0
+ Codino.Api/obj/Debug/net10.0/Codino.Api.dll        |  Bin [31m73216[m -> [32m0[m bytes
+ .../net10.0/Codino.Api.genruntimeconfig.cache      |    1 [31m-[m
+ Codino.Api/obj/Debug/net10.0/Codino.Api.pdb        |  Bin [31m39164[m -> [32m0[m bytes
+ .../EndpointInfo/Codino.Api.OpenApiFiles.cache     |    1 [31m-[m
+ .../obj/Debug/net10.0/EndpointInfo/Codino.Api.json |  432 [31m--[m
+ Codino.Api/obj/Debug/net10.0/apphost.exe           |  Bin [31m162304[m -> [32m0[m bytes
+ Codino.Api/obj/Debug/net10.0/ref/Codino.Api.dll    |  Bin [31m22016[m -> [32m0[m bytes
+ Codino.Api/obj/Debug/net10.0/refint/Codino.Api.dll |  Bin [31m22016[m -> [32m0[m bytes
+ .../obj/Debug/net10.0/rjsmcshtml.dswa.cache.json   |    1 [31m-[m
+ .../obj/Debug/net10.0/rjsmrazor.dswa.cache.json    |    1 [31m-[m
+ Codino.Api/obj/Debug/net10.0/rpswa.dswa.cache.json |    1 [31m-[m
+ .../net10.0/staticwebassets.build.endpoints.json   |    1 [31m-[m
+ .../obj/Debug/net10.0/staticwebassets.build.json   |    1 [31m-[m
+ .../Debug/net10.0/staticwebassets.build.json.cache |    1 [31m-[m
+ .../staticwebassets.references.upToDateCheck.txt   |    0
+ .../obj/Debug/net10.0/staticwebassets.removed.txt  |    0
+ Codino.Api/obj/Debug/net10.0/swae.build.ex.cache   |    0
+ ....NETCoreApp,Version=v10.0.AssemblyAttributes.cs |    4 [31m-[m
+ .../obj/Release/net10.0/Codino.Api.AssemblyInfo.cs |   23 [31m-[m
+ .../net10.0/Codino.Api.AssemblyInfoInputs.cache    |    1 [31m-[m
+ ...o.Api.GeneratedMSBuildEditorConfig.editorconfig |   32 [31m-[m
+ .../Release/net10.0/Codino.Api.GlobalUsings.g.cs   |   17 [31m-[m
+ .../obj/Release/net10.0/Codino.Api.assets.cache    |  Bin [31m55526[m -> [32m0[m bytes
+ .../Codino.Api.csproj.AssemblyReference.cache      |  Bin [31m18736[m -> [32m0[m bytes
+ Codino.Api/obj/project.assets.json                 | 3706 [31m------------[m
+ Codino.Api/obj/project.nuget.cache                 |   59 [31m-[m
+ Codino/.gitignore                                  |   38 [32m+[m[31m-[m
+ Codino/Codino.csproj                               |   37 [32m+[m[31m-[m
+ Codino/Codino.csproj.user                          |   10 [31m-[m
+ Codino/Controllers/AccountController.cs            | 2425 [32m++++++[m[31m--[m
+ Codino/Controllers/CodeController.cs               |  646 [32m+[m[31m-[m
+ Codino/Controllers/CourseController.cs             |   35 [31m-[m
+ Codino/Controllers/HomeController.cs               |  451 [32m+[m[31m-[m
+ Codino/Models/Api/ApiResponse.cs                   |   22 [32m+[m[31m-[m
+ Codino/Models/Api/CommentResponse.cs               |   32 [32m+[m[31m-[m
+ Codino/Models/Api/CourseResponse.cs                |  250 [32m+[m[31m-[m
+ Codino/Models/Api/ForgotPasswordRequest.cs         |   31 [32m+[m[31m-[m
+ Codino/Models/Api/ForgotPasswordResponse.cs        |    4 [32m+[m
+ Codino/Models/Api/LoginRequest.cs                  |    9 [32m+[m[31m-[m
+ Codino/Models/Api/LoginResponse.cs                 |   22 [32m+[m
+ Codino/Models/Api/RegisterRequest.cs               |   11 [32m+[m[31m-[m
+ Codino/Models/Api/ResetPasswordRequest.cs          |   11 [32m+[m[31m-[m
+ Codino/Models/Api/VerifyRegisterRequest.cs         |   10 [32m+[m[31m-[m
+ Codino/Models/CodeExecutionRequest.cs              |    9 [32m+[m[31m-[m
+ Codino/Models/CodeExecutionResponse.cs             |   12 [32m+[m
+ Codino/Models/HomeViewModel.cs                     |   68 [32m+[m[31m-[m
+ Codino/Models/User.cs                              |   20 [32m+[m[31m-[m
+ Codino/Program.cs                                  |  346 [32m+[m[31m-[m
+ Codino/Properties/launchSettings.json              |    4 [32m+[m[31m-[m
+ Codino/Services/ApiService.cs                      | 1766 [32m+++++[m[31m-[m
+ Codino/Services/DockerCodeExecutionService.cs      |  898 [32m++[m[31m-[m
+ Codino/Services/ICodeExecutionService.cs           |   30 [32m+[m[31m-[m
+ Codino/Views/Account/ForgotPassword.cshtml         |  178 [32m+[m[31m-[m
+ Codino/Views/Account/Login.cshtml                  |  123 [32m+[m[31m-[m
+ Codino/Views/Account/Register.cshtml               |  214 [32m+[m[31m-[m
+ Codino/Views/Account/ResetPassword.cshtml          |   70 [32m+[m[31m-[m
+ Codino/Views/Account/VerifyLogin.cshtml            |  115 [32m+[m[31m-[m
+ Codino/Views/Account/VerifyRegister.cshtml         |  102 [32m+[m[31m-[m
+ Codino/Views/Course/Details.cshtml                 |  114 [31m-[m
+ Codino/Views/Home/Index.cshtml                     | 1231 [32m++[m[31m--[m
+ Codino/Views/Home/Privacy.cshtml                   |  263 [32m+[m[31m-[m
+ Codino/Views/Shared/_Layout.cshtml                 |   50 [32m+[m[31m-[m
+ Codino/appsettings.Development.json                |    8 [31m-[m
+ Codino/appsettings.json                            |   12 [31m-[m
+ Codino/bin/Debug/net10.0/Codino.deps.json          | 1061 [31m----[m
+ Codino/bin/Debug/net10.0/Codino.dll                |  Bin [31m255488[m -> [32m0[m bytes
+ Codino/bin/Debug/net10.0/Codino.exe                |  Bin [31m162304[m -> [32m0[m bytes
+ Codino/bin/Debug/net10.0/Codino.pdb                |  Bin [31m88580[m -> [32m0[m bytes
+ Codino/bin/Debug/net10.0/Codino.runtimeconfig.json |   20 [31m-[m
+ .../net10.0/Codino.staticwebassets.endpoints.json  |    1 [31m-[m
+ .../net10.0/Codino.staticwebassets.runtime.json    |    1 [31m-[m
+ Codino/bin/Debug/net10.0/Humanizer.dll             |  Bin [31m355944[m -> [32m0[m bytes
+ .../Debug/net10.0/Microsoft.Bcl.Cryptography.dll   |  Bin [31m16168[m -> [32m0[m bytes
+ .../Debug/net10.0/Microsoft.Build.Framework.dll    |  Bin [31m269608[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.CSharp.Workspaces.dll   |  Bin [31m944904[m -> [32m0[m bytes
+ .../net10.0/Microsoft.CodeAnalysis.CSharp.dll      |  Bin [31m6839608[m -> [32m0[m bytes
+ ...t.CodeAnalysis.ExternalAccess.RazorCompiler.dll |  Bin [31m21256[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.Workspaces.MSBuild.dll  |  Bin [31m141576[m -> [32m0[m bytes
+ .../net10.0/Microsoft.CodeAnalysis.Workspaces.dll  |  Bin [31m4230448[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/Microsoft.CodeAnalysis.dll   |  Bin [31m3059000[m -> [32m0[m bytes
+ ...soft.Data.SqlClient.Extensions.Abstractions.dll |  Bin [31m23448[m -> [32m0[m bytes
+ .../Microsoft.Data.SqlClient.Internal.Logging.dll  |  Bin [31m53656[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/Microsoft.Data.SqlClient.dll |  Bin [31m93120[m -> [32m0[m bytes
+ .../Microsoft.EntityFrameworkCore.Abstractions.dll |  Bin [31m34656[m -> [32m0[m bytes
+ .../Microsoft.EntityFrameworkCore.Design.dll       |  Bin [31m631608[m -> [32m0[m bytes
+ .../Microsoft.EntityFrameworkCore.Relational.dll   |  Bin [31m2194784[m -> [32m0[m bytes
+ .../Microsoft.EntityFrameworkCore.SqlServer.dll    |  Bin [31m641888[m -> [32m0[m bytes
+ .../net10.0/Microsoft.EntityFrameworkCore.dll      |  Bin [31m2828600[m -> [32m0[m bytes
+ .../Microsoft.Extensions.DependencyModel.dll       |  Bin [31m84776[m -> [32m0[m bytes
+ .../Microsoft.IdentityModel.Abstractions.dll       |  Bin [31m19528[m -> [32m0[m bytes
+ .../Microsoft.IdentityModel.JsonWebTokens.dll      |  Bin [31m173088[m -> [32m0[m bytes
+ .../net10.0/Microsoft.IdentityModel.Logging.dll    |  Bin [31m38432[m -> [32m0[m bytes
+ ...osoft.IdentityModel.Protocols.OpenIdConnect.dll |  Bin [31m137248[m -> [32m0[m bytes
+ .../net10.0/Microsoft.IdentityModel.Protocols.dll  |  Bin [31m53280[m -> [32m0[m bytes
+ .../net10.0/Microsoft.IdentityModel.Tokens.dll     |  Bin [31m391200[m -> [32m0[m bytes
+ Codino/bin/Debug/net10.0/Microsoft.OpenApi.dll     |  Bin [31m477768[m -> [32m0[m bytes
+ .../Debug/net10.0/Microsoft.SqlServer.Server.dll   |  Bin [31m23976[m -> [32m0[m bytes
+ .../Microsoft.VisualStudio.SolutionPersistence.dll |  Bin [31m172072[m -> [32m0[m bytes
+ Codino/bin/Debug/net10.0/Mono.TextTemplating.dll   |  Bin [31m177664[m -> [32m0[m bytes
+ Codino/bin/Debug/net10.0/Newtonsoft.Json.dll       |  Bin [31m712464[m -> [32m0[m bytes
+ .../net10.0/Swashbuckle.AspNetCore.Swagger.dll     |  Bin [31m17408[m -> [32m0[m bytes
+ .../net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll  |  Bin [31m157184[m -> [32m0[m bytes
+ .../net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll   |  Bin [31m724480[m -> [32m0[m bytes
+ Codino/bin/Debug/net10.0/System.CodeDom.dll        |  Bin [31m184944[m -> [32m0[m bytes
+ .../net10.0/System.Composition.AttributedModel.dll |  Bin [31m20248[m -> [32m0[m bytes
+ .../net10.0/System.Composition.Convention.dll      |  Bin [31m54040[m -> [32m0[m bytes
+ .../Debug/net10.0/System.Composition.Hosting.dll   |  Bin [31m56072[m -> [32m0[m bytes
+ .../Debug/net10.0/System.Composition.Runtime.dll   |  Bin [31m27424[m -> [32m0[m bytes
+ .../net10.0/System.Composition.TypedParts.dll      |  Bin [31m65816[m -> [32m0[m bytes
+ .../System.Configuration.ConfigurationManager.dll  |  Bin [31m442664[m -> [32m0[m bytes
+ .../net10.0/System.IdentityModel.Tokens.Jwt.dll    |  Bin [31m92232[m -> [32m0[m bytes
+ .../System.Security.Cryptography.ProtectedData.dll |  Bin [31m38184[m -> [32m0[m bytes
+ .../bin/Debug/net10.0/appsettings.Development.json |    8 [31m-[m
+ Codino/bin/Debug/net10.0/appsettings.json          |   12 [31m-[m
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../cs/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m444168[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m41224[m -> [32m0[m bytes
+ .../cs/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m40200[m -> [32m0[m bytes
+ .../cs/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m139672[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ .../de/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m474376[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42760[m -> [32m0[m bytes
+ .../de/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41736[m -> [32m0[m bytes
+ .../de/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m144792[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ .../es/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m463120[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42248[m -> [32m0[m bytes
+ .../es/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41272[m -> [32m0[m bytes
+ .../es/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m141720[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../fr/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m475920[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m43320[m -> [32m0[m bytes
+ .../fr/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41736[m -> [32m0[m bytes
+ .../fr/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m147352[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ .../it/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m469768[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17720[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42808[m -> [32m0[m bytes
+ .../it/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41784[m -> [32m0[m bytes
+ .../it/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m142272[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ .../ja/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m515848[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m45320[m -> [32m0[m bytes
+ .../ja/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m44304[m -> [32m0[m bytes
+ .../ja/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m156568[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../ko/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m475920[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m43280[m -> [32m0[m bytes
+ .../ko/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41744[m -> [32m0[m bytes
+ .../ko/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m144280[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17712[m -> [32m0[m bytes
+ .../pl/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m476432[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42760[m -> [32m0[m bytes
+ .../pl/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m41736[m -> [32m0[m bytes
+ .../pl/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m144792[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17712[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.CSharp.resources.dll    |  Bin [31m456456[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m42296[m -> [32m0[m bytes
+ .../pt-BR/Microsoft.CodeAnalysis.resources.dll     |  Bin [31m40720[m -> [32m0[m bytes
+ .../pt-BR/Microsoft.Data.SqlClient.resources.dll   |  Bin [31m138688[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m18192[m -> [32m0[m bytes
+ .../ru/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m617744[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m47888[m -> [32m0[m bytes
+ .../ru/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m49464[m -> [32m0[m bytes
+ .../ru/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m186776[m -> [32m0[m bytes
+ .../unix/lib/net9.0/Microsoft.Data.SqlClient.dll   |  Bin [31m1670040[m -> [32m0[m bytes
+ .../native/Microsoft.Data.SqlClient.SNI.dll        |  Bin [31m537496[m -> [32m0[m bytes
+ .../native/Microsoft.Data.SqlClient.SNI.dll        |  Bin [31m555416[m -> [32m0[m bytes
+ .../native/Microsoft.Data.SqlClient.SNI.dll        |  Bin [31m468880[m -> [32m0[m bytes
+ .../win/lib/net9.0/Microsoft.Data.SqlClient.dll    |  Bin [31m1670040[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../tr/Microsoft.CodeAnalysis.CSharp.resources.dll |  Bin [31m452360[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17720[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m41784[m -> [32m0[m bytes
+ .../tr/Microsoft.CodeAnalysis.resources.dll        |  Bin [31m40240[m -> [32m0[m bytes
+ .../tr/Microsoft.Data.SqlClient.resources.dll      |  Bin [31m135576[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17680[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.CSharp.resources.dll    |  Bin [31m405776[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m40200[m -> [32m0[m bytes
+ .../zh-Hans/Microsoft.CodeAnalysis.resources.dll   |  Bin [31m37640[m -> [32m0[m bytes
+ .../zh-Hans/Microsoft.Data.SqlClient.resources.dll |  Bin [31m122264[m -> [32m0[m bytes
+ ...ft.CodeAnalysis.CSharp.Workspaces.resources.dll |  Bin [31m17720[m -> [32m0[m bytes
+ .../Microsoft.CodeAnalysis.CSharp.resources.dll    |  Bin [31m405304[m -> [32m0[m bytes
+ ...t.CodeAnalysis.Workspaces.MSBuild.resources.dll |  Bin [31m17672[m -> [32m0[m bytes
+ ...Microsoft.CodeAnalysis.Workspaces.resources.dll |  Bin [31m40248[m -> [32m0[m bytes
+ .../zh-Hant/Microsoft.CodeAnalysis.resources.dll   |  Bin [31m38152[m -> [32m0[m bytes
+ .../zh-Hant/Microsoft.Data.SqlClient.resources.dll |  Bin [31m123840[m -> [32m0[m bytes
+ Codino/obj/Codino.csproj.nuget.dgspec.json         |  517 [31m--[m
+ Codino/obj/Codino.csproj.nuget.g.props             |   28 [31m-[m
+ Codino/obj/Codino.csproj.nuget.g.targets           |    8 [31m-[m
+ ....NETCoreApp,Version=v10.0.AssemblyAttributes.cs |    4 [31m-[m
+ Codino/obj/Debug/net10.0/ApiEndpoints.json         |   18 [31m-[m
+ Codino/obj/Debug/net10.0/Codino.AssemblyInfo.cs    |   24 [31m-[m
+ .../Debug/net10.0/Codino.AssemblyInfoInputs.cache  |    1 [31m-[m
+ ...odino.GeneratedMSBuildEditorConfig.editorconfig |   88 [31m-[m
+ Codino/obj/Debug/net10.0/Codino.GlobalUsings.g.cs  |   17 [31m-[m
+ .../Codino.MvcApplicationPartsAssemblyInfo.cache   |    0
+ .../Codino.MvcApplicationPartsAssemblyInfo.cs      |   17 [31m-[m
+ .../Debug/net10.0/Codino.RazorAssemblyInfo.cache   |    1 [31m-[m
+ .../obj/Debug/net10.0/Codino.RazorAssemblyInfo.cs  |   18 [31m-[m
+ Codino/obj/Debug/net10.0/Codino.assets.cache       |  Bin [31m51550[m -> [32m0[m bytes
+ .../net10.0/Codino.csproj.AssemblyReference.cache  |  Bin [31m13608[m -> [32m0[m bytes
+ .../net10.0/Codino.csproj.BuildWithSkipAnalyzers   |    0
+ .../net10.0/Codino.csproj.CoreCompileInputs.cache  |    1 [31m-[m
+ .../net10.0/Codino.csproj.FileListAbsolute.txt     |  226 [31m-[m
+ Codino/obj/Debug/net10.0/Codino.csproj.Up2Date     |    0
+ Codino/obj/Debug/net10.0/Codino.dll                |  Bin [31m255488[m -> [32m0[m bytes
+ .../Debug/net10.0/Codino.genruntimeconfig.cache    |    1 [31m-[m
+ Codino/obj/Debug/net10.0/Codino.pdb                |  Bin [31m88580[m -> [32m0[m bytes
+ Codino/obj/Debug/net10.0/apphost.exe               |  Bin [31m162304[m -> [32m0[m bytes
+ .../0szqlx964l-{0}-4v8eqarkd7-4v8eqarkd7.gz        |  Bin [31m2202[m -> [32m0[m bytes
+ .../1657ojf4dn-{0}-d7shbmvgxk-d7shbmvgxk.gz        |  Bin [31m6918[m -> [32m0[m bytes
+ .../20q37hgotz-{0}-nvvlpmu67g-nvvlpmu67g.gz        |  Bin [31m24456[m -> [32m0[m bytes
+ .../2hf6ymtpib-{0}-jj8uyg4cgr-jj8uyg4cgr.gz        |  Bin [31m18542[m -> [32m0[m bytes
+ .../2jqp2ttw71-{0}-cosvhxvwiu-cosvhxvwiu.gz        |  Bin [31m14093[m -> [32m0[m bytes
+ .../2mv8t37f91-{0}-wz9ezr2j5u-wz9ezr2j5u.gz        |  Bin [31m1226[m -> [32m0[m bytes
+ .../3gsl3laqob-{0}-mrlpezrjn3-mrlpezrjn3.gz        |  Bin [31m6382[m -> [32m0[m bytes
+ .../3siav18yx7-{0}-bqjiyaj88i-bqjiyaj88i.gz        |  Bin [31m6915[m -> [32m0[m bytes
+ .../3zm5mk1lrp-{0}-tt6s2cifde-tt6s2cifde.gz        |  Bin [31m5019[m -> [32m0[m bytes
+ .../44obmxf4cd-{0}-lzl9nlhx6b-lzl9nlhx6b.gz        |  Bin [31m14023[m -> [32m0[m bytes
+ .../4bfn97bac4-{0}-kbrnm935zg-kbrnm935zg.gz        |  Bin [31m64234[m -> [32m0[m bytes
+ .../4krpbhspuk-{0}-87fc7y1x7t-87fc7y1x7t.gz        |  Bin [31m42735[m -> [32m0[m bytes
+ .../4mp0p3i20u-{0}-ft3s53vfgj-ft3s53vfgj.gz        |  Bin [31m91866[m -> [32m0[m bytes
+ .../4v4s572kun-{0}-7333xw1mqt-7333xw1mqt.gz        |  Bin [31m4966[m -> [32m0[m bytes
+ .../5i8r3fgj8j-{0}-k8d9w2qqmf-k8d9w2qqmf.gz        |  Bin [31m6104[m -> [32m0[m bytes
+ .../5s8phcakt8-{0}-fvhpjtyr6v-fvhpjtyr6v.gz        |  Bin [31m25714[m -> [32m0[m bytes
+ .../679p7bb9pp-{0}-6cfz1n2cew-6cfz1n2cew.gz        |  Bin [31m44461[m -> [32m0[m bytes
+ .../6ewaq4zga8-{0}-6pdc2jztkx-6pdc2jztkx.gz        |  Bin [31m92277[m -> [32m0[m bytes
+ .../7hg15x7kj4-{0}-h1s4sie4z3-h1s4sie4z3.gz        |  Bin [31m64490[m -> [32m0[m bytes
+ .../824s9fxgwr-{0}-xexp4m1o2r-xexp4m1o2r.gz        |  Bin [31m527[m -> [32m0[m bytes
+ .../86yfe3f80p-{0}-ag7o75518u-ag7o75518u.gz        |  Bin [31m8053[m -> [32m0[m bytes
+ .../b7osrzlhhv-{0}-ub07r2b239-ub07r2b239.gz        |  Bin [31m3375[m -> [32m0[m bytes
+ .../cji92mhuzx-{0}-493y06b0oq-493y06b0oq.gz        |  Bin [31m23799[m -> [32m0[m bytes
+ .../cmu2274d02-{0}-c2jlpeoesf-c2jlpeoesf.gz        |  Bin [31m33080[m -> [32m0[m bytes
+ .../d03xnah6wx-{0}-xexp4m1o2r-xexp4m1o2r.gz        |  Bin [31m527[m -> [32m0[m bytes
+ .../et68j0lffo-{0}-47otxtyo56-47otxtyo56.gz        |  Bin [31m4663[m -> [32m0[m bytes
+ .../f0bag5tloq-{0}-aexeepp0ev-aexeepp0ev.gz        |  Bin [31m14072[m -> [32m0[m bytes
+ .../f6a277y2d2-{0}-61n19gt1b8-61n19gt1b8.gz        |  Bin [31m2432[m -> [32m0[m bytes
+ .../fhwrvbhq9d-{0}-x0q3zqp4vz-x0q3zqp4vz.gz        |  Bin [31m670[m -> [32m0[m bytes
+ .../fjfp0hy3hm-{0}-tdbxkamptv-tdbxkamptv.gz        |  Bin [31m12069[m -> [32m0[m bytes
+ .../fk0lk4wqze-{0}-356vix0kms-356vix0kms.gz        |  Bin [31m680[m -> [32m0[m bytes
+ .../go8qv6ctig-{0}-jd9uben2k1-jd9uben2k1.gz        |  Bin [31m15028[m -> [32m0[m bytes
+ .../h3g9nb0bix-{0}-o1o13a6vjx-o1o13a6vjx.gz        |  Bin [31m30413[m -> [32m0[m bytes
+ .../ieyj6gwjik-{0}-j5mq2jizvt-j5mq2jizvt.gz        |  Bin [31m44237[m -> [32m0[m bytes
+ .../ipyb0sw90h-{0}-notf2xhcfb-notf2xhcfb.gz        |  Bin [31m29657[m -> [32m0[m bytes
+ .../j9451fuc87-{0}-iovd86k7lj-iovd86k7lj.gz        |  Bin [31m86518[m -> [32m0[m bytes
+ .../jr4lfry2jx-{0}-ee0r1s7dh0-ee0r1s7dh0.gz        |  Bin [31m25726[m -> [32m0[m bytes
+ .../k78nncy1dp-{0}-c2oey78nd0-c2oey78nd0.gz        |  Bin [31m24487[m -> [32m0[m bytes
+ .../krza1gg3yq-{0}-ttgo8qnofa-ttgo8qnofa.gz        |  Bin [31m53929[m -> [32m0[m bytes
+ .../lg511ooo3x-{0}-0j3bgjxly4-0j3bgjxly4.gz        |  Bin [31m55524[m -> [32m0[m bytes
+ .../mu0riay9tz-{0}-pj5nd1wqec-pj5nd1wqec.gz        |  Bin [31m114902[m -> [32m0[m bytes
+ .../n7v3k0isn2-{0}-rzd6atqjts-rzd6atqjts.gz        |  Bin [31m3364[m -> [32m0[m bytes
+ .../ninwrb5p7j-{0}-erw9l3u2r3-erw9l3u2r3.gz        |  Bin [31m6102[m -> [32m0[m bytes
+ .../ov975olq1t-{0}-v0zj4ognzu-v0zj4ognzu.gz        |  Bin [31m91960[m -> [32m0[m bytes
+ .../pjztf95vgw-{0}-2z0ns9nrw6-2z0ns9nrw6.gz        |  Bin [31m68315[m -> [32m0[m bytes
+ .../qgq7fgcatz-{0}-fsbi9cje9m-fsbi9cje9m.gz        |  Bin [31m12568[m -> [32m0[m bytes
+ .../qkq6rasz63-{0}-r4e9w2rdcm-r4e9w2rdcm.gz        |  Bin [31m44266[m -> [32m0[m bytes
+ .../qpb0es7vf1-{0}-hrwsygsryq-hrwsygsryq.gz        |  Bin [31m114877[m -> [32m0[m bytes
+ .../s51cnoncla-{0}-b7pk76d08c-b7pk76d08c.gz        |  Bin [31m3199[m -> [32m0[m bytes
+ .../skldc61gpm-{0}-46ein0sx1k-46ein0sx1k.gz        |  Bin [31m31118[m -> [32m0[m bytes
+ .../sstnxxc694-{0}-lcd1t2u6c8-lcd1t2u6c8.gz        |  Bin [31m11149[m -> [32m0[m bytes
+ .../ssz5ocinmd-{0}-mlv21k5csn-mlv21k5csn.gz        |  Bin [31m669[m -> [32m0[m bytes
+ .../t7eqk4zg75-{0}-0i3buxo5is-0i3buxo5is.gz        |  Bin [31m84055[m -> [32m0[m bytes
+ .../thpdi728tn-{0}-63fj8s7r0e-63fj8s7r0e.gz        |  Bin [31m16571[m -> [32m0[m bytes
+ .../ugfq13fi3e-{0}-khv3u5hwcm-khv3u5hwcm.gz        |  Bin [31m12127[m -> [32m0[m bytes
+ .../v0zurdoohu-{0}-37tfw0ft22-37tfw0ft22.gz        |  Bin [31m33366[m -> [32m0[m bytes
+ .../w2z8qigthr-{0}-ausgxo2sd3-ausgxo2sd3.gz        |  Bin [31m33061[m -> [32m0[m bytes
+ .../w71ug687ns-{0}-vr1egmr9el-vr1egmr9el.gz        |  Bin [31m28886[m -> [32m0[m bytes
+ .../xi5ctabqsq-{0}-muycvpuwrr-muycvpuwrr.gz        |  Bin [31m24089[m -> [32m0[m bytes
+ .../xl8v238atx-{0}-y7v9cxd14o-y7v9cxd14o.gz        |  Bin [31m56385[m -> [32m0[m bytes
+ .../ybt15imv58-{0}-pk9g2wxc8p-pk9g2wxc8p.gz        |  Bin [31m31137[m -> [32m0[m bytes
+ .../yla8y11h5i-{0}-83jwlth58m-83jwlth58m.gz        |  Bin [31m13955[m -> [32m0[m bytes
+ .../z4t5bwqy8h-{0}-06098lyss8-06098lyss8.gz        |  Bin [31m11127[m -> [32m0[m bytes
+ .../zb98oe3anp-{0}-dxx9fxp4il-dxx9fxp4il.gz        |  Bin [31m3231[m -> [32m0[m bytes
+ .../zufobyutu2-{0}-s35ty4nyc5-s35ty4nyc5.gz        |  Bin [31m33478[m -> [32m0[m bytes
+ Codino/obj/Debug/net10.0/rbcswa.dswa.cache.json    |    1 [31m-[m
+ Codino/obj/Debug/net10.0/ref/Codino.dll            |  Bin [31m42496[m -> [32m0[m bytes
+ Codino/obj/Debug/net10.0/refint/Codino.dll         |  Bin [31m42496[m -> [32m0[m bytes
+ Codino/obj/Debug/net10.0/rjimswa.dswa.cache.json   |    1 [31m-[m
+ .../obj/Debug/net10.0/rjsmcshtml.dswa.cache.json   |    1 [31m-[m
+ Codino/obj/Debug/net10.0/rjsmrazor.dswa.cache.json |    1 [31m-[m
+ Codino/obj/Debug/net10.0/rpswa.dswa.cache.json     |    1 [31m-[m
+ .../Views/Shared/_Layout.cshtml.rz.scp.css         |   48 [31m-[m
+ .../net10.0/scopedcss/bundle/Codino.styles.css     |   49 [31m-[m
+ .../scopedcss/projectbundle/Codino.bundle.scp.css  |   49 [31m-[m
+ .../net10.0/staticwebassets.build.endpoints.json   |    1 [31m-[m
+ .../obj/Debug/net10.0/staticwebassets.build.json   |    1 [31m-[m
+ .../Debug/net10.0/staticwebassets.build.json.cache |    1 [31m-[m
+ .../Debug/net10.0/staticwebassets.development.json |    1 [31m-[m
+ .../staticwebassets.references.upToDateCheck.txt   |    0
+ .../obj/Debug/net10.0/staticwebassets.removed.txt  |    0
+ .../net10.0/staticwebassets.upToDateCheck.txt      |  135 [31m-[m
+ Codino/obj/Debug/net10.0/swae.build.ex.cache       |    0
+ ....NETCoreApp,Version=v10.0.AssemblyAttributes.cs |    4 [31m-[m
+ Codino/obj/Release/net10.0/Codino.AssemblyInfo.cs  |   24 [31m-[m
+ .../net10.0/Codino.AssemblyInfoInputs.cache        |    1 [31m-[m
+ ...odino.GeneratedMSBuildEditorConfig.editorconfig |   76 [31m-[m
+ .../obj/Release/net10.0/Codino.GlobalUsings.g.cs   |   17 [31m-[m
+ .../Release/net10.0/Codino.RazorAssemblyInfo.cache |    1 [31m-[m
+ .../Release/net10.0/Codino.RazorAssemblyInfo.cs    |   18 [31m-[m
+ Codino/obj/Release/net10.0/Codino.assets.cache     |  Bin [31m51550[m -> [32m0[m bytes
+ .../net10.0/Codino.csproj.AssemblyReference.cache  |  Bin [31m12444[m -> [32m0[m bytes
+ Codino/obj/project.assets.json                     | 3912 [31m------------[m
+ Codino/obj/project.nuget.cache                     |   83 [31m-[m
+ Codino/wwwroot/css/account.css                     |   78 [32m+[m
+ Codino/wwwroot/css/site.css                        | 6351 [32m++++++++++++++++++[m[31m--[m
+ Codino/wwwroot/favicon.ico                         |  Bin [31m5430[m -> [32m0[m bytes
+ Codino/wwwroot/images/python1.jpg                  |  Bin [31m11194[m -> [32m0[m bytes
+ Codino/wwwroot/js/site.js                          | 4954 [32m++++++++++++[m[31m---[m
+ 540 files changed, 22040 insertions(+), 17896 deletions(-)

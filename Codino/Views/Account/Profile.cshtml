@@ -1,0 +1,128 @@
+﻿@{
+    ViewData["Title"] = "پروفایل من";
+
+    string fullName =
+        ViewBag.UserFullName as string ?? "کاربر";
+
+    string phone =
+        ViewBag.UserPhone as string ?? "ثبت نشده";
+
+    string userId =
+        ViewBag.UserId as string ?? "-";
+}
+
+<link rel="stylesheet"
+      href="~/css/account.css"
+      asp-append-version="true" />
+
+
+<div class="account-page">
+
+    <div class="account-card profile-card">
+        <div class="account-logo">
+
+            <img src="~/images/codino-intro.jpg"
+                 alt="Codino"
+                 loading="eager" />
+
+            <span>
+                Codino
+            </span>
+
+        </div>
+        <h1>
+            پروفایل من
+        </h1>
+
+        <p class="account-description">
+            اطلاعات حساب کاربری شما
+        </p>
+        <div class="profile-avatar">
+
+            <img src="~/images/codino-intro.jpg"
+                 alt="تصویر کاربر"
+                 loading="eager" />
+
+        </div>
+        <div class="profile-info-group">
+
+            <label>
+                نام و نام خانوادگی
+            </label>
+
+            <div class="profile-info">
+
+                <span>
+                    @fullName
+                </span>
+
+                <span class="profile-readonly">
+                    فقط مشاهده
+                </span>
+
+            </div>
+
+        </div>
+        <div class="profile-info-group">
+
+            <label>
+                شماره موبایل
+            </label>
+
+            <div class="profile-info">
+
+                <span dir="ltr">
+                    @phone
+                </span>
+
+                <span class="profile-readonly">
+                    فقط مشاهده
+                </span>
+
+            </div>
+
+        </div>
+        <div class="profile-security-box">
+
+            <strong>
+                اطلاعات حساب
+            </strong>
+
+            <p>
+                اطلاعات این صفحه فقط برای مشاهده هستند
+                و از این بخش امکان تغییر آن‌ها وجود ندارد.
+            </p>
+
+        </div>
+        <div class="account-footer">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+
+                بازگشت به Codino
+
+            </a>
+
+        </div>
+        <div class="account-footer">
+
+            <form asp-controller="Account"
+                  asp-action="Logout"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="profile-logout-button">
+
+                    خروج از حساب
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

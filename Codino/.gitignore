@@ -1,5 +1,33 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build
+[Bb]in/
+[Oo]bj/
+
+# Rider
+.idea/
+
+# NuGet
+packages/
+*.nupkg
+
+# Logs
+*.log
+
+# ASP.NET
+wwwroot/uploads/
+
+# Environment / secrets
+.env
+.env.*
+appsettings.Development.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test results
+TestResults/

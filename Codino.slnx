@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Codino.Api/Codino.Api.csproj" />
+  <Project Path="Codino/Codino.csproj" />
+</Solution>
