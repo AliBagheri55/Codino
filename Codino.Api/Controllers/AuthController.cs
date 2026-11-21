@@ -3,16 +3,14 @@ using Codino.Api.DTOs;
 using Codino.Api.Models;
 using Codino.Api.Services;
 using Codino.Api.Settings;
-
 using Microsoft.AspNetCore.Authorization;
+using Codino.Api.Models.Api;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-
 using StackExchange.Redis;
-
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -713,6 +711,8 @@ namespace Codino.Api.Controllers
         // POST: api/Auth/login
         // =========================================================
 
+
+
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(
@@ -720,76 +720,61 @@ namespace Codino.Api.Controllers
         {
             try
             {
+                // بررسی خالی نبودن درخواست
                 if (request == null)
                 {
-                    return BadRequest(new LoginResponse
+                    return BadRequest(new Codino.Api.Models.Api.LoginResponse
                     {
                         Success = false,
-                        Message =
-                            "اطلاعات ورود ارسال نشده است."
+                        Message = "اطلاعات ورود ارسال نشده است."
                     });
                 }
 
-                string ipAddress =
-                    GetClientIp();
+                string ipAddress = GetClientIp();
 
                 string phoneNumber =
-                    NormalizePhoneNumber(
-                        request.PhoneNumber);
+                    NormalizePhoneNumber(request.PhoneNumber ?? string.Empty);
 
-                string password =
-                    request.Password ??
-                    string.Empty;
+                string password = request.Password ?? string.Empty;
 
-                // =====================================================
-                // VALIDATION
-                // =====================================================
-
+                // اعتبارسنجی شماره موبایل
                 if (!IsValidPhoneNumber(phoneNumber))
                 {
-                    return BadRequest(new LoginResponse
+                    return BadRequest(new Codino.Api.Models.Api.LoginResponse
                     {
                         Success = false,
-                        Message =
-                            "شماره موبایل معتبر نیست."
+                        Message = "شماره موبایل معتبر نیست."
                     });
                 }
 
+                // اعتبارسنجی رمز عبور
                 if (string.IsNullOrWhiteSpace(password))
                 {
-                    return BadRequest(new LoginResponse
+                    return BadRequest(new Codino.Api.Models.Api.LoginResponse
                     {
                         Success = false,
-                        Message =
-                            "رمز عبور را وارد کنید."
+                        Message = "رمز عبور را وارد کنید."
                     });
                 }
 
-                if (password.Length >
-                    MaxPasswordLength)
+                if (password.Length > MaxPasswordLength)
                 {
-                    return BadRequest(new LoginResponse
+                    return BadRequest(new Codino.Api.Models.Api.LoginResponse
                     {
                         Success = false,
-                        Message =
-                            "رمز عبور بیش از حد طولانی است."
+                        Message = "رمز عبور بیش از حد طولانی است."
                     });
                 }
 
-                // =====================================================
-                // RATE LIMIT
-                // =====================================================
-
+                // بررسی محدودیت تعداد درخواست‌های ورود
                 bool allowed =
-                    await _loginRateLimit
-                        .IsAllowedAsync(
-                            ipAddress);
+                    await _loginRateLimit.IsAllowedAsync(ipAddress);
 
                 if (!allowed)
                 {
                     return StatusCode(
                         StatusCodes.Status429TooManyRequests,
-                        new LoginResponse
+                        new Codino.Api.Models.Api.LoginResponse
                         {
                             Success = false,
                             Message =
@@ -797,27 +782,21 @@ namespace Codino.Api.Controllers
                         });
                 }
 
-                // =====================================================
-                // LOGIN LOCK
-                // =====================================================
-
+                // بررسی قفل بودن ورود کاربر
                 TimeSpan? lockTime =
-                    await _loginAttempt
-                        .GetLockTimeAsync(
-                            ipAddress,
-                            phoneNumber);
+                    await _loginAttempt.GetLockTimeAsync(
+                        ipAddress,
+                        phoneNumber);
 
                 if (lockTime.HasValue)
                 {
-                    int minutes =
-                        Math.Max(
-                            1,
-                            (int)Math.Ceiling(
-                                lockTime.Value.TotalMinutes));
+                    int minutes = Math.Max(
+                        1,
+                        (int)Math.Ceiling(lockTime.Value.TotalMinutes));
 
                     return StatusCode(
                         StatusCodes.Status423Locked,
-                        new LoginResponse
+                        new Codino.Api.Models.Api.LoginResponse
                         {
                             Success = false,
                             Message =
@@ -825,35 +804,20 @@ namespace Codino.Api.Controllers
                         });
                 }
 
-                // =====================================================
-                // FIND USER
-                // =====================================================
+                // جست‌وجوی کاربر در دیتابیس
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(
+                        x => x.PhoneNumber == phoneNumber);
 
-                var user =
-                    await _context.Users
-                        .FirstOrDefaultAsync(
-                            x =>
-                                x.PhoneNumber ==
-                                phoneNumber);
+                var passwordHasher = new PasswordHasher<User>();
 
-                var passwordHasher =
-                    new PasswordHasher<User>();
-
-                // =====================================================
-                // NON EXISTING USER
-                // =====================================================
-
+                // اگر کاربر وجود نداشت، بررسی ساختگی رمز برای کاهش اختلاف زمانی
                 if (user == null)
                 {
-                    // برای جلوگیری از اختلاف زمانی
-                    // PasswordHasher را حتی برای User غیرموجود
-                    // اجرا می‌کنیم.
-                    var fakeUser =
-                        new User
-                        {
-                            PhoneNumber =
-                                phoneNumber
-                        };
+                    var fakeUser = new User
+                    {
+                        PhoneNumber = phoneNumber
+                    };
 
                     string dummyHash =
                         passwordHasher.HashPassword(
@@ -866,12 +830,11 @@ namespace Codino.Api.Controllers
                         password);
 
                     await _loginAttempt.RegisterFailedAttemptAsync(
-      ipAddress,
-      phoneNumber
-  );
+                        ipAddress,
+                        phoneNumber);
 
                     return Unauthorized(
-                        new LoginResponse
+                        new Codino.Api.Models.Api.LoginResponse
                         {
                             Success = false,
                             Message =
@@ -879,14 +842,15 @@ namespace Codino.Api.Controllers
                         });
                 }
 
-                // =====================================================
-                // PHONE VERIFIED
-                // =====================================================
-
+                // بررسی تأیید شماره موبایل
                 if (!user.IsPhoneVerified)
                 {
+                    await _loginAttempt.RegisterFailedAttemptAsync(
+                        ipAddress,
+                        phoneNumber);
+
                     return Unauthorized(
-                        new LoginResponse
+                        new Codino.Api.Models.Api.LoginResponse
                         {
                             Success = false,
                             Message =
@@ -894,20 +858,30 @@ namespace Codino.Api.Controllers
                         });
                 }
 
-                // =====================================================
-                // PASSWORD VERIFY
-                // =====================================================
+                // بررسی هش رمز عبور
+                if (string.IsNullOrWhiteSpace(user.PasswordHash))
+                {
+                    await _loginAttempt.RegisterFailedAttemptAsync(
+                        ipAddress,
+                        phoneNumber);
+
+                    return Unauthorized(
+                        new Codino.Api.Models.Api.LoginResponse
+                        {
+                            Success = false,
+                            Message =
+                                "شماره موبایل یا رمز عبور اشتباه است."
+                        });
+                }
 
                 PasswordVerificationResult result;
 
                 try
                 {
-                    result =
-                        passwordHasher
-                            .VerifyHashedPassword(
-                                user,
-                                user.PasswordHash,
-                                password);
+                    result = passwordHasher.VerifyHashedPassword(
+                        user,
+                        user.PasswordHash,
+                        password);
                 }
                 catch (Exception ex)
                 {
@@ -920,24 +894,19 @@ namespace Codino.Api.Controllers
                         "خطایی هنگام بررسی رمز عبور رخ داد.");
                 }
 
-                // =====================================================
-                // WRONG PASSWORD
-                // =====================================================
-
-                if (result ==
-                    PasswordVerificationResult.Failed)
+                // در صورت اشتباه بودن رمز عبور
+                if (result == PasswordVerificationResult.Failed)
                 {
                     int failedAttempts =
-       await _loginAttempt.RegisterFailedAttemptAsync(
-           ipAddress,
-           phoneNumber
-       );
+                        await _loginAttempt.RegisterFailedAttemptAsync(
+                            ipAddress,
+                            phoneNumber);
 
                     if (failedAttempts >= 3)
                     {
                         return StatusCode(
                             StatusCodes.Status423Locked,
-                            new LoginResponse
+                            new Codino.Api.Models.Api.LoginResponse
                             {
                                 Success = false,
                                 Message =
@@ -946,7 +915,7 @@ namespace Codino.Api.Controllers
                     }
 
                     return Unauthorized(
-                        new LoginResponse
+                        new Codino.Api.Models.Api.LoginResponse
                         {
                             Success = false,
                             Message =
@@ -954,42 +923,38 @@ namespace Codino.Api.Controllers
                         });
                 }
 
-                // =====================================================
-                // REHASH
-                // =====================================================
-
-                if (result ==
-                    PasswordVerificationResult.SuccessRehashNeeded)
+                // به‌روزرسانی هش رمز عبور در صورت نیاز
+                if (result == PasswordVerificationResult.SuccessRehashNeeded)
                 {
                     user.PasswordHash =
-                        passwordHasher.HashPassword(
-                            user,
-                            password);
+                        passwordHasher.HashPassword(user, password);
 
                     await _context.SaveChangesAsync();
                 }
 
-                // =====================================================
-                // CLEAR FAILED ATTEMPTS
-                // =====================================================
+                // بررسی معتبر بودن نقش کاربر
+                string role = user.Role?.Trim() ?? string.Empty;
 
-                await _loginAttempt
-                    .ClearAttemptsAsync(
-                        ipAddress,
-                        phoneNumber);
+                if (role != "Admin" && role != "User")
+                {
+                    _logger.LogWarning(
+                        "Invalid user role. UserId={UserId}",
+                        user.Id);
 
-                // =====================================================
-                // CREATE ACCESS TOKEN
-                // =====================================================
+                    return ServerError(
+                        "نقش حساب کاربری معتبر نیست.");
+                }
 
+                // پاک کردن تلاش‌های ناموفق
+                await _loginAttempt.ClearAttemptsAsync(
+                    ipAddress,
+                    phoneNumber);
+
+                // ساخت توکن دسترسی
                 string accessToken =
-                    _jwtService.CreateAccessToken(
-                        user);
+                    _jwtService.CreateAccessToken(user);
 
-                // =====================================================
-                // CREATE REFRESH TOKEN
-                // =====================================================
-
+                // ساخت توکن تمدید
                 string refreshToken =
                     _jwtService.CreateRefreshToken();
 
@@ -997,38 +962,28 @@ namespace Codino.Api.Controllers
                     user.Id,
                     refreshToken);
 
+                // ثبت ورود موفق
                 _logger.LogInformation(
-                    "Successful login. UserId={UserId}, IP={IP}",
+                    "Successful login. UserId={UserId}, Role={Role}, IP={IP}",
                     user.Id,
+                    role,
                     ipAddress);
 
-                // =====================================================
-                // RESPONSE
-                // =====================================================
-
-                return Ok(new LoginResponse
-                {
-                    Success = true,
-
-                    Message =
-                        "ورود با موفقیت انجام شد.",
-
-                    UserId =
-                        user.Id,
-
-                    FullName =
-                        user.FullName,
-
-                    AccessToken =
-                        accessToken,
-
-                    RefreshToken =
-                        refreshToken,
-
-                    AccessTokenExpiresAt =
-                        DateTime.UtcNow.AddMinutes(
-                            _jwtSettings.AccessTokenMinutes)
-                });
+                // ارسال اطلاعات کاربر، نقش و توکن‌ها
+                return Ok(
+                    new Codino.Api.Models.Api.LoginResponse
+                    {
+                        Success = true,
+                        Message = "ورود با موفقیت انجام شد.",
+                        UserId = user.Id,
+                        FullName = user.FullName,
+                        Role = role,
+                        AccessToken = accessToken,
+                        RefreshToken = refreshToken,
+                        AccessTokenExpiresAt =
+                            DateTime.UtcNow.AddMinutes(
+                                _jwtSettings.AccessTokenMinutes)
+                    });
             }
             catch (RedisConnectionException ex)
             {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace Codino.Api.Controllers
@@ -53,10 +54,15 @@ namespace Codino.Api.Controllers
             _logger = logger;
         }
 
+        // =========================================================
+        // CREATE PROJECT REQUEST
+        // =========================================================
+
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Create(
             [FromBody] CreateProjectRequestDto? request,
@@ -69,6 +75,44 @@ namespace Codino.Api.Controllers
                     success = false,
                     message = "اطلاعات درخواست ارسال نشده است."
                 });
+            }
+
+            // اگر هدر احراز هویت ارسال شده ولی معتبر نیست،
+            // درخواست نباید به‌عنوان درخواست مهمان پذیرفته شود.
+            var authorizationHeader =
+                Request.Headers.Authorization.ToString();
+
+            var isAuthenticated =
+                User.Identity?.IsAuthenticated == true;
+
+            if (!string.IsNullOrWhiteSpace(authorizationHeader) &&
+                !isAuthenticated)
+            {
+                return Unauthorized(new
+                {
+                    success = false,
+                    message = "توکن ورود معتبر نیست."
+                });
+            }
+
+            // دریافت شناسه کاربر از توکن JWT
+            int? userId = null;
+
+            if (isAuthenticated)
+            {
+                var userIdClaim =
+                    User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (!int.TryParse(userIdClaim, out var authenticatedUserId))
+                {
+                    return Unauthorized(new
+                    {
+                        success = false,
+                        message = "شناسه کاربر در توکن معتبر نیست."
+                    });
+                }
+
+                userId = authenticatedUserId;
             }
 
             // اعتبارسنجی نوع پروژه
@@ -138,6 +182,10 @@ namespace Codino.Api.Controllers
 
             var projectRequest = new ProjectRequest
             {
+                // اتصال پروژه به حساب کاربری احراز هویت‌شده
+                // برای کاربران مهمان مقدار null ذخیره می‌شود.
+                UserId = userId,
+
                 CustomerName = customerName,
                 Email = email,
                 PhoneNumber = phoneNumber,
@@ -167,7 +215,6 @@ namespace Codino.Api.Controllers
                     ex,
                     "Project request saving was canceled.");
 
-                // درخواست لغوشده را به‌عنوان ثبت موفق گزارش نمی‌کنیم.
                 throw;
             }
             catch (DbUpdateException ex)
@@ -202,7 +249,6 @@ namespace Codino.Api.Controllers
             }
 
             // مرحله دوم: ارسال اعلان تلگرام
-            // شکست اعلان نباید درخواست ذخیره‌شده را ناموفق جلوه دهد.
             try
             {
                 await SendTelegramNotificationAsync(projectRequest);
@@ -225,6 +271,59 @@ namespace Codino.Api.Controllers
                 status = projectRequest.Status
             });
         }
+
+        // =========================================================
+        // GET MY PROJECT REQUESTS
+        // =========================================================
+
+        [Authorize]
+        [HttpGet("my-requests")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetMyRequests(
+            CancellationToken cancellationToken)
+        {
+            // دریافت شناسه کاربر از JWT
+            var userIdClaim =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new
+                {
+                    success = false,
+                    message = "اطلاعات حساب کاربری معتبر نیست."
+                });
+            }
+
+            // فقط پروژه‌های متعلق به کاربر واردشده دریافت می‌شوند.
+            var projects = await _context.ProjectRequests
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.ProjectName,
+                    x.ProjectType,
+                    x.Description,
+                    x.Budget,
+                    x.DesiredDeadline,
+                    x.Status,
+                    x.CreatedAtUtc
+                })
+                .ToListAsync(cancellationToken);
+
+            return Ok(new
+            {
+                success = true,
+                data = projects
+            });
+        }
+
+        // =========================================================
+        // TELEGRAM NOTIFICATION
+        // =========================================================
 
         private async Task SendTelegramNotificationAsync(
             ProjectRequest request)
@@ -253,16 +352,16 @@ namespace Codino.Api.Controllers
                 : request.Description;
 
             var message =
-                $"🆕 درخواست پروژه جدید کدینو\n\n" +
-                $"🆔 شماره درخواست: {request.Id}\n" +
-                $"👤 نام: {request.CustomerName}\n" +
-                $"📧 ایمیل: {request.Email}\n" +
-                $"📱 تلفن: {request.PhoneNumber}\n" +
-                $"💻 پروژه: {request.ProjectName}\n" +
-                $"🧩 نوع: {request.ProjectType}\n" +
-                $"💰 بودجه: {request.Budget ?? "مشخص نشده"}\n" +
-                $"📅 مهلت: {deadline}\n\n" +
-                $"📝 توضیحات:\n{description}\n\n" +
+                $"درخواست پروژه جدید کدینو\n\n" +
+                $"شماره درخواست: {request.Id}\n" +
+                $"نام: {request.CustomerName}\n" +
+                $"ایمیل: {request.Email}\n" +
+                $"تلفن: {request.PhoneNumber}\n" +
+                $"پروژه: {request.ProjectName}\n" +
+                $"نوع: {request.ProjectType}\n" +
+                $"بودجه: {request.Budget ?? "مشخص نشده"}\n" +
+                $"مهلت: {deadline}\n\n" +
+                $"توضیحات:\n{description}\n\n" +
                 $"وضعیت: در انتظار بررسی";
 
             var payload = new
@@ -277,13 +376,13 @@ namespace Codino.Api.Controllers
                         {
                             new
                             {
-                                text = " تأیید درخواست",
+                                text = "تأیید درخواست",
                                 callback_data =
                                     $"project:approve:{request.Id}"
                             },
                             new
                             {
-                                text = " رد درخواست",
+                                text = "رد درخواست",
                                 callback_data =
                                     $"project:reject:{request.Id}"
                             }
@@ -325,7 +424,6 @@ namespace Codino.Api.Controllers
             }
             catch (OperationCanceledException ex)
             {
-                // شامل timeout درخواست تلگرام می‌شود.
                 _logger.LogWarning(
                     ex,
                     "Telegram notification timed out or was canceled for project {ProjectId}.",
@@ -347,6 +445,10 @@ namespace Codino.Api.Controllers
             }
         }
     }
+
+    // =========================================================
+    // CREATE PROJECT REQUEST DTO
+    // =========================================================
 
     public class CreateProjectRequestDto
     {

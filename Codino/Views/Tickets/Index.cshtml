@@ -1,0 +1,238 @@
+﻿@using System.Text.Json
+@model List<JsonElement>
+
+@{
+    ViewData["Title"] = "تیکت‌های پشتیبانی";
+
+    var tickets = Model ?? new List<JsonElement>();
+
+    string GetValue(JsonElement item, string property)
+    {
+        if (item.ValueKind == JsonValueKind.Object &&
+            item.TryGetProperty(property, out var value) &&
+            value.ValueKind != JsonValueKind.Null &&
+            value.ValueKind != JsonValueKind.Undefined)
+        {
+            return value.ToString();
+        }
+
+        return "-";
+    }
+
+    string GetStatusText(string status)
+    {
+        return status.ToLowerInvariant() switch
+        {
+            "open" => "باز",
+            "waitingforadmin" => "در انتظار پاسخ پشتیبانی",
+            "waitingforuser" => "در انتظار پاسخ شما",
+            "closed" => "بسته شده",
+            _ => "نامشخص"
+        };
+    }
+
+    string GetStatusClass(string status)
+    {
+        return status.ToLowerInvariant() switch
+        {
+            "open" => "ticket-status-open",
+            "waitingforadmin" => "ticket-status-waiting",
+            "waitingforuser" => "ticket-status-user",
+            "closed" => "ticket-status-closed",
+            _ => "ticket-status-unknown"
+        };
+    }
+
+    string GetPriorityText(string priority)
+    {
+        return priority.ToLowerInvariant() switch
+        {
+            "low" => "کم",
+            "normal" => "معمولی",
+            "high" => "زیاد",
+            _ => priority
+        };
+    }
+
+    string FormatDate(string date)
+    {
+        if (DateTime.TryParse(date, out var result))
+        {
+            return result.ToLocalTime().ToString("yyyy/MM/dd HH:mm");
+        }
+
+        return "ثبت نشده";
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/account.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/tickets.css"
+          asp-append-version="true" />
+}
+
+<div class="account-page tickets-page">
+
+    <div class="account-card tickets-card">
+
+        <div class="account-logo">
+            <img src="~/images/codino-intro.jpg" alt="Codino" />
+            <span>Codino</span>
+        </div>
+
+        <h1>تیکت‌های پشتیبانی</h1>
+
+        <p class="account-description">
+            درخواست‌های پشتیبانی خود را مدیریت و پیگیری کنید.
+        </p>
+
+        <div class="tickets-toolbar">
+
+            <div class="tickets-count">
+                <span>تعداد درخواست‌ها</span>
+                <strong>@tickets.Count</strong>
+            </div>
+
+            <a asp-controller="Tickets"
+               asp-action="Create"
+               class="ticket-create-button">
+
+                <span>+</span>
+                ثبت تیکت جدید
+
+            </a>
+
+        </div>
+
+        @if (TempData["TicketError"] != null)
+        {
+            <div class="account-error">
+                @TempData["TicketError"]
+            </div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="account-success">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (tickets.Count > 0)
+        {
+            <div class="ticket-list">
+
+                @foreach (var ticket in tickets)
+                {
+                    string number = GetValue(ticket, "ticketNumber");
+                    string subject = GetValue(ticket, "subject");
+                    string category = GetValue(ticket, "category");
+                    string priority = GetValue(ticket, "priority");
+                    string status = GetValue(ticket, "status");
+                    string createdAt = GetValue(ticket, "createdAtUtc");
+                    string ticketId = GetValue(ticket, "id");
+
+                    <article class="ticket-item">
+
+                        <div class="ticket-item-header">
+
+                            <div class="ticket-number">
+                                <span>شماره تیکت</span>
+                                <strong dir="ltr">@number</strong>
+                            </div>
+
+                            <span class="ticket-status @GetStatusClass(status)">
+                                @GetStatusText(status)
+                            </span>
+
+                        </div>
+
+                        <h3>@subject</h3>
+
+                        <div class="ticket-meta">
+
+                            <div>
+                                <span>دسته‌بندی</span>
+                                <strong>@category</strong>
+                            </div>
+
+                            <div>
+                                <span>اولویت</span>
+                                <strong>@GetPriorityText(priority)</strong>
+                            </div>
+
+                            <div>
+                                <span>تاریخ ثبت</span>
+                                <strong>@FormatDate(createdAt)</strong>
+                            </div>
+
+                        </div>
+
+                        <div class="ticket-item-footer">
+
+                            <span>
+                                شناسه: @ticketId
+                            </span>
+
+                            @if (int.TryParse(ticketId, out var id))
+                            {
+                                <a asp-controller="Tickets"
+                                   asp-action="Details"
+                                   asp-route-id="@id">
+
+                                    مشاهده گفتگو
+                                    <span>←</span>
+
+                                </a>
+                            }
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="profile-empty-state tickets-empty">
+
+                <div class="ticket-empty-icon">✉</div>
+
+                <strong>
+                    هنوز تیکتی ثبت نکرده‌اید
+                </strong>
+
+                <p>
+                    اگر در استفاده از خدمات کدینو با مشکلی مواجه شدید،
+                    می‌توانید درخواست پشتیبانی خود را ثبت کنید.
+                </p>
+
+                <a asp-controller="Tickets"
+                   asp-action="Create">
+
+                    ایجاد اولین تیکت
+
+                </a>
+
+            </div>
+        }
+
+        <div class="account-footer">
+
+            <a asp-controller="Account"
+               asp-action="Profile">
+
+                بازگشت به پروفایل
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

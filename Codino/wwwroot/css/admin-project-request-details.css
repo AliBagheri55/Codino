@@ -1,0 +1,474 @@
+﻿
+/* =========================================
+   CODINO - PROJECT REQUEST DETAILS
+   Dark / Emerald / Glass UI
+========================================= */
+
+.project-details-page {
+    direction: rtl;
+    color: #e8f3ef;
+    padding-bottom: 40px;
+}
+
+/* Header */
+
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(16, 185, 129, .17);
+    border-radius: 20px;
+    background: linear-gradient( 120deg, rgba(16, 185, 129, .10), rgba(15, 23, 42, .85) );
+}
+
+.details-eyebrow {
+    display: inline-block;
+    color: #10b981;
+    font-size: 11px;
+    letter-spacing: 2px;
+    direction: ltr;
+}
+
+.details-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 12px 0 8px;
+}
+
+.details-header p {
+    color: #94a3b8;
+    font-size: 13px;
+    margin: 0;
+}
+
+.details-header-icon {
+    width: 65px;
+    height: 65px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: rgba(16, 185, 129, .13);
+    color: #10b981;
+    font-size: 27px;
+}
+
+/* Alerts */
+
+.details-alert {
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+    .details-alert.success {
+        color: #6ee7b7;
+        background: rgba(16, 185, 129, .10);
+        border: 1px solid rgba(16, 185, 129, .25);
+    }
+
+    .details-alert.error {
+        color: #fca5a5;
+        background: rgba(239, 68, 68, .10);
+        border: 1px solid rgba(239, 68, 68, .25);
+    }
+
+/* Overview */
+
+.request-overview {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.overview-item {
+    padding: 19px;
+    border-radius: 15px;
+    background: rgba(15, 23, 42, .78);
+    border: 1px solid rgba(148, 163, 184, .12);
+}
+
+    .overview-item > span:first-child {
+        display: block;
+        color: #94a3b8;
+        font-size: 11px;
+        margin-bottom: 12px;
+    }
+
+    .overview-item strong {
+        font-size: 15px;
+    }
+
+.request-number {
+    color: #34d399;
+    font-size: 19px !important;
+}
+
+/* Status */
+
+.detail-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 30px;
+    font-size: 11px;
+}
+
+    .detail-status > span {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .detail-status.pending {
+        color: #fbbf24;
+        background: rgba(245, 158, 11, .10);
+    }
+
+    .detail-status.approved {
+        color: #34d399;
+        background: rgba(16, 185, 129, .10);
+    }
+
+    .detail-status.rejected {
+        color: #f87171;
+        background: rgba(239, 68, 68, .10);
+    }
+
+/* Main Grid */
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.details-card {
+    background: rgba(15, 23, 42, .78);
+    border: 1px solid rgba(148, 163, 184, .12);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+/* Card Header */
+
+.details-card-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 22px;
+    border-bottom: 1px solid rgba(148, 163, 184, .10);
+}
+
+.card-heading-icon {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    font-size: 21px;
+}
+
+    .card-heading-icon.emerald {
+        color: #34d399;
+        background: rgba(16, 185, 129, .13);
+    }
+
+    .card-heading-icon.blue {
+        color: #60a5fa;
+        background: rgba(59, 130, 246, .13);
+    }
+
+    .card-heading-icon.purple {
+        color: #c084fc;
+        background: rgba(168, 85, 247, .13);
+    }
+
+.details-card-header h2 {
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0 0 6px;
+}
+
+.details-card-header p {
+    color: #94a3b8;
+    font-size: 11px;
+    margin: 0;
+}
+
+/* Card Body */
+
+.details-card-body {
+    padding: 8px 22px;
+}
+
+.detail-field {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 17px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, .08);
+}
+
+    .detail-field:last-child {
+        border-bottom: none;
+    }
+
+    .detail-field > span {
+        width: 135px;
+        flex-shrink: 0;
+        color: #94a3b8;
+        font-size: 12px;
+    }
+
+    .detail-field strong {
+        color: #e2e8f0;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+.field-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: auto;
+    color: #34d399;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+    .field-action:hover {
+        color: #6ee7b7;
+    }
+
+/* Description */
+
+.description-card {
+    margin-top: 2px;
+}
+
+.project-description {
+    padding: 25px;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 2.3;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    min-height: 120px;
+}
+
+/* Management */
+
+.management-content {
+    padding: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.management-current-status {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+    .management-current-status > span {
+        color: #94a3b8;
+        font-size: 11px;
+    }
+
+.status-text {
+    font-size: 14px;
+}
+
+.pending-text {
+    color: #fbbf24;
+}
+
+.approved-text {
+    color: #34d399;
+}
+
+.rejected-text {
+    color: #f87171;
+}
+
+.status-update-form {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+    .status-update-form label {
+        display: block;
+        width: 100%;
+        color: #94a3b8;
+        font-size: 11px;
+    }
+
+    .status-update-form select {
+        height: 43px;
+        min-width: 180px;
+        padding: 0 12px;
+        border: 1px solid #263449;
+        border-radius: 10px;
+        background: #0b1220;
+        color: #e2e8f0;
+        outline: none;
+        font-size: 12px;
+    }
+
+        .status-update-form select:focus {
+            border-color: #10b981;
+        }
+
+.save-status-btn {
+    height: 43px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 10px;
+    background: #059669;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+    .save-status-btn:hover {
+        background: #10b981;
+    }
+
+/* Footer Actions */
+
+.management-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 20px 22px;
+    border-top: 1px solid rgba(148, 163, 184, .10);
+}
+
+.back-to-list-btn,
+.delete-request-btn {
+    height: 43px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 0 17px;
+    border-radius: 10px;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.back-to-list-btn {
+    color: #cbd5e1;
+    background: #1e293b;
+}
+
+    .back-to-list-btn:hover {
+        color: white;
+        background: #334155;
+    }
+
+.delete-request-btn {
+    color: #f87171;
+    background: rgba(239, 68, 68, .10);
+    border: 1px solid rgba(239, 68, 68, .20);
+}
+
+    .delete-request-btn:hover {
+        color: white;
+        background: #dc2626;
+    }
+
+.management-footer form {
+    margin: 0;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .request-overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .details-header {
+        padding: 20px;
+    }
+
+        .details-header h1 {
+            font-size: 19px;
+        }
+
+    .details-header-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 21px;
+    }
+
+    .request-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-field {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+        .detail-field > span {
+            width: auto;
+        }
+
+    .field-action {
+        margin-right: 0;
+    }
+
+    .management-content {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .status-update-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+        .status-update-form select,
+        .save-status-btn {
+            width: 100%;
+        }
+
+    .management-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .back-to-list-btn,
+    .delete-request-btn {
+        width: 100%;
+    }
+
+    .management-footer form {
+        width: 100%;
+    }
+}

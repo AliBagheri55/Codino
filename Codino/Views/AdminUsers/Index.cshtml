@@ -1,0 +1,272 @@
+﻿
+@model Codino.Controllers.AdminUsersPageViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "مدیریت کاربران";
+    ViewData["PageTitle"] = "مدیریت کاربران";
+
+    var pagination = Model.Pagination;
+    var currentPage = pagination?.Page ?? 1;
+    var totalPages = pagination?.TotalPages ?? 1;
+}
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/admin-users.css"
+          asp-append-version="true" />
+}
+
+<div class="admin-users-page">
+
+    <div class="users-header">
+        <div>
+            <h2>مدیریت کاربران</h2>
+            <p>مشاهده، جست‌وجو و مدیریت حساب‌های کاربری سایت</p>
+        </div>
+
+        <div class="users-total">
+            <span>تعداد کل کاربران</span>
+            <strong>@(pagination?.TotalCount ?? 0)</strong>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="users-alert success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="users-alert error">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="users-toolbar">
+
+        <form asp-controller="AdminUsers"
+              asp-action="Index"
+              method="get"
+              class="users-search-form">
+
+            <div class="search-input-wrapper">
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       name="search"
+                       value="@Model.Search"
+                       placeholder="جست‌وجو بر اساس نام یا شماره موبایل..." />
+            </div>
+
+            <button type="submit" class="users-search-button">
+                جست‌وجو
+            </button>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Search))
+            {
+                <a asp-controller="AdminUsers"
+                   asp-action="Index"
+                   class="users-clear-button">
+                    پاک کردن
+                </a>
+            }
+
+        </form>
+
+    </div>
+
+    <div class="users-table-wrapper">
+
+        <table class="users-table">
+
+            <thead>
+                <tr>
+                    <th>شناسه</th>
+                    <th>نام و نام خانوادگی</th>
+                    <th>شماره موبایل</th>
+                    <th>نقش</th>
+                    <th>وضعیت موبایل</th>
+                    <th>تاریخ عضویت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (Model.Users != null && Model.Users.Any())
+                {
+                    foreach (var user in Model.Users)
+                    {
+                        <tr>
+
+                            <td>
+                                <span class="user-id">
+                                    #@user.Id
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="user-name-cell">
+
+                                    <div class="user-avatar">
+                                        @(string.IsNullOrWhiteSpace(user.FullName)
+                                            ? "؟"
+                                            : user.FullName.Substring(0, 1))
+                                    </div>
+
+                                    <strong>
+                                        @(string.IsNullOrWhiteSpace(user.FullName)
+                                            ? "بدون نام"
+                                            : user.FullName)
+                                    </strong>
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="user-phone">
+                                    @user.PhoneNumber
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (user.Role == "Admin")
+                                {
+                                    <span class="role-badge admin-role">
+                                        مدیر
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="role-badge user-role">
+                                        کاربر
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (user.IsPhoneVerified)
+                                {
+                                    <span class="verification-badge verified">
+                                        تأیید شده
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="verification-badge unverified">
+                                        تأیید نشده
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <span class="user-date">
+                                    @user.CreatedAt.ToString("yyyy/MM/dd")
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="user-actions">
+
+                                    <a asp-controller="AdminUsers"
+                                       asp-action="Details"
+                                       asp-route-id="@user.Id"
+                                       class="user-action details-action">
+                                        جزئیات
+                                    </a>
+
+                                    @if (user.Role != "Admin")
+                                    {
+                                        <form asp-controller="AdminUsers"
+                                              asp-action="Delete"
+                                              asp-route-id="@user.Id"
+                                              method="post"
+                                              onsubmit="return confirm('آیا از حذف این کاربر اطمینان دارید؟ این عملیات قابل بازگشت نیست.');">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="user-action delete-action">
+                                                حذف
+                                            </button>
+
+                                        </form>
+                                    }
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">
+
+                            <div class="users-empty">
+                                <span>⌕</span>
+                                <strong>کاربری پیدا نشد</strong>
+                                <p>موردی برای نمایش وجود ندارد.</p>
+                            </div>
+
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    @if (totalPages > 1)
+    {
+        <div class="users-pagination">
+
+            <span class="pagination-info">
+                صفحه @currentPage از @totalPages
+            </span>
+
+            <div class="pagination-buttons">
+
+                @if (currentPage > 1)
+                {
+                    <a asp-controller="AdminUsers"
+                       asp-action="Index"
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-search="@Model.Search">
+                        قبلی
+                    </a>
+                }
+
+                @for (int pageNumber = 1; pageNumber <= totalPages; pageNumber++)
+                {
+                    <a asp-controller="AdminUsers"
+                       asp-action="Index"
+                       asp-route-page="@pageNumber"
+                       asp-route-search="@Model.Search"
+                       class="@(pageNumber == currentPage ? "active" : "")">
+                        @pageNumber
+                    </a>
+                }
+
+                @if (currentPage < totalPages)
+                {
+                    <a asp-controller="AdminUsers"
+                       asp-action="Index"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-search="@Model.Search">
+                        بعدی
+                    </a>
+                }
+
+            </div>
+
+        </div>
+    }
+
+</div>

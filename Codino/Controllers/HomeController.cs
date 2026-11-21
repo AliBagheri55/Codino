@@ -37,13 +37,18 @@ namespace Codino.Controllers
         // HOME PAGE
         // =========================================================
 
+
         [HttpGet]
         public async Task<IActionResult> Index(
             CancellationToken cancellationToken)
         {
             List<CommentResponse> comments = new();
+            List<AnnouncementResponse> announcements = new();
 
+            // =====================================================
             // LOAD COMMENTS
+            // =====================================================
+
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -68,24 +73,6 @@ namespace Codino.Controllers
             {
                 throw;
             }
-            catch (OperationCanceledException ex)
-            {
-                _logger.LogWarning(
-                    ex,
-                    "Timeout while loading comments.");
-
-                TempData["HomeCommentsError"] =
-                    "دریافت نظرات بیش از حد طول کشید.";
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "HTTP error while loading comments.");
-
-                TempData["HomeCommentsError"] =
-                    "ارتباط با سرور نظرات برقرار نشد.";
-            }
             catch (Exception ex)
             {
                 _logger.LogError(
@@ -96,7 +83,43 @@ namespace Codino.Controllers
                     "دریافت نظرات با مشکل مواجه شد.";
             }
 
+            // =====================================================
+            // LOAD ANNOUNCEMENTS
+            // =====================================================
+
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                announcements =
+                    await _apiService.GetPublishedAnnouncementsAsync(
+                        cancellationToken);
+
+                announcements = (announcements ?? new List<AnnouncementResponse>())
+                    .Where(announcement => announcement != null)
+                    .OrderByDescending(announcement => announcement.CreatedAtUtc)
+                    .ToList();
+
+                _logger.LogInformation(
+                    "Announcements loaded from API. Count: {Count}",
+                    announcements.Count);
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to load announcements from API.");
+            }
+
+            // =====================================================
             // LOAD COURSES
+            // =====================================================
+
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -106,41 +129,21 @@ namespace Codino.Controllers
             {
                 throw;
             }
-            catch (OperationCanceledException ex)
-            {
-                _logger.LogWarning(
-                    ex,
-                    "Timeout while loading courses.");
 
-                TempData["HomeCoursesError"] =
-                    "دریافت دوره‌ها بیش از حد طول کشید.";
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "HTTP error while loading courses.");
-
-                TempData["HomeCoursesError"] =
-                    "ارتباط با سرور دوره‌ها برقرار نشد.";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to load courses from API.");
-
-                TempData["HomeCoursesError"] =
-                    "دریافت دوره‌ها با مشکل مواجه شد.";
-            }
-
+            // =====================================================
             // HOME VIEW MODEL
+            // =====================================================
+
             HomeViewModel model = new()
             {
                 Comments = comments,
+                Announcements = announcements
             };
 
-            // اطلاعات دوره متنی C#
+            // =====================================================
+            // C# COURSE INFORMATION
+            // =====================================================
+
             ViewBag.CSharpCourseSlug = "csharp";
             ViewBag.CSharpCourseHasVideos = false;
             ViewBag.CSharpCourseHasPdf = false;
@@ -152,8 +155,10 @@ namespace Codino.Controllers
 
             ViewBag.CSharpCourseTotalTopics = 60;
             ViewBag.CSharpCourseTotalQuestions = 60;
+
             return View(model);
         }
+
 
         // =========================================================
         // PRIVACY POLICY

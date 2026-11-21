@@ -1,109 +1,423 @@
-﻿@{
+﻿@using System.Text.Json
+
+@{
     ViewData["Title"] = "پروفایل من";
 
-    string fullName =
-        ViewBag.UserFullName as string ?? "کاربر";
+    string fullName = ViewBag.UserFullName as string ?? "کاربر";
+    string phone = ViewBag.UserPhone as string ?? "ثبت نشده";
+    string userId = ViewBag.UserId?.ToString() ?? "-";
 
-    string phone =
-        ViewBag.UserPhone as string ?? "ثبت نشده";
+    JsonElement? projectData = ViewBag.MyProjectRequests as JsonElement?;
+    List<JsonElement> projects = new();
 
-    string userId =
-        ViewBag.UserId as string ?? "-";
+    if (projectData.HasValue &&
+        projectData.Value.ValueKind == JsonValueKind.Array)
+    {
+        projects = projectData.Value.EnumerateArray().ToList();
+    }
+
+    JsonElement? collaborationData =
+        ViewBag.MyCollaborationRequest as JsonElement?;
+
+    JsonElement collaboration = collaborationData ?? default;
+
+    bool hasCollaboration =
+        collaborationData.HasValue &&
+        collaborationData.Value.ValueKind == JsonValueKind.Object;
+
+    string GetStatusText(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "pending" => "در انتظار بررسی",
+            "approved" => "تأیید شده",
+            "rejected" => "رد شده",
+            "completed" => "تکمیل شده",
+            "inprogress" => "در حال انجام",
+            _ => string.IsNullOrWhiteSpace(status) ? "نامشخص" : status
+        };
+    }
+
+    string GetStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "pending" => "status-pending",
+            "approved" => "status-approved",
+            "rejected" => "status-rejected",
+            "completed" => "status-approved",
+            "inprogress" => "status-progress",
+            _ => "status-unknown"
+        };
+    }
+
+    string GetString(JsonElement element, string property)
+    {
+        if (element.ValueKind == JsonValueKind.Object &&
+            element.TryGetProperty(property, out JsonElement value) &&
+            value.ValueKind != JsonValueKind.Null)
+        {
+            return value.ToString();
+        }
+
+        return "-";
+    }
+
+    string FormatDate(string date)
+    {
+        if (DateTime.TryParse(date, out DateTime result))
+        {
+            return result.ToLocalTime().ToString("yyyy/MM/dd");
+        }
+
+        return "ثبت نشده";
+    }
 }
 
-<link rel="stylesheet"
-      href="~/css/account.css"
-      asp-append-version="true" />
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/account.css"
+          asp-append-version="true" />
 
+    <link rel="stylesheet"
+          href="~/css/tickets.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/profile-support.css"
+          asp-append-version="true" />
+}
 
 <div class="account-page">
 
     <div class="account-card profile-card">
-        <div class="account-logo">
 
+        <!-- سربرگ پروفایل -->
+        <div class="account-logo">
             <img src="~/images/codino-intro.jpg"
                  alt="Codino"
                  loading="eager" />
 
-            <span>
-                Codino
-            </span>
-
+            <span>Codino</span>
         </div>
-        <h1>
-            پروفایل من
-        </h1>
+
+        <h1>پروفایل من</h1>
 
         <p class="account-description">
-            اطلاعات حساب کاربری شما
+            مدیریت و مشاهده اطلاعات حساب کاربری
         </p>
-        <div class="profile-avatar">
 
+        <!-- تصویر کاربر -->
+        <div class="profile-avatar">
             <img src="~/images/codino-intro.jpg"
                  alt="تصویر کاربر"
                  loading="eager" />
-
         </div>
-        <div class="profile-info-group">
 
-            <label>
-                نام و نام خانوادگی
-            </label>
+        <!-- اطلاعات حساب -->
+        <section class="profile-section">
 
-            <div class="profile-info">
-
-                <span>
-                    @fullName
-                </span>
-
-                <span class="profile-readonly">
-                    فقط مشاهده
-                </span>
-
-            </div>
-
-        </div>
-        <div class="profile-info-group">
-
-            <label>
-                شماره موبایل
-            </label>
-
-            <div class="profile-info">
-
-                <span dir="ltr">
-                    @phone
-                </span>
-
-                <span class="profile-readonly">
-                    فقط مشاهده
-                </span>
-
-            </div>
-
-        </div>
-        <div class="profile-security-box">
-
-            <strong>
+            <h2 class="profile-section-title">
                 اطلاعات حساب
-            </strong>
+            </h2>
 
-            <p>
-                اطلاعات این صفحه فقط برای مشاهده هستند
-                و از این بخش امکان تغییر آن‌ها وجود ندارد.
-            </p>
+            <div class="profile-info-group">
+                <label>شناسه کاربری</label>
 
-        </div>
+                <div class="profile-info">
+                    <span>@userId</span>
+                    <span class="profile-readonly">فقط مشاهده</span>
+                </div>
+            </div>
+
+            <div class="profile-info-group">
+                <label>نام و نام خانوادگی</label>
+
+                <div class="profile-info">
+                    <span>@fullName</span>
+                    <span class="profile-readonly">فقط مشاهده</span>
+                </div>
+            </div>
+
+            <div class="profile-info-group">
+                <label>شماره موبایل</label>
+
+                <div class="profile-info">
+                    <span dir="ltr">@phone</span>
+                    <span class="profile-readonly">فقط مشاهده</span>
+                </div>
+            </div>
+
+            <div class="profile-security-box">
+                <strong>امنیت حساب</strong>
+
+                <p>
+                    اطلاعات حساب شما از طریق سامانه کدینو
+                    مدیریت می‌شود و در این صفحه فقط قابل مشاهده است.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- پروژه‌های ثبت‌شده -->
+        <section class="profile-section">
+
+            <div class="profile-section-heading">
+
+                <h2 class="profile-section-title">
+                    پروژه‌های من
+                </h2>
+
+                <span class="profile-count">
+                    @projects.Count پروژه
+                </span>
+
+            </div>
+
+            @if (projects.Count > 0)
+            {
+                <div class="profile-project-list">
+
+                    @foreach (var project in projects)
+                    {
+                        string projectName = GetString(project, "projectName");
+                        string projectType = GetString(project, "projectType");
+                        string projectStatus = GetString(project, "status");
+                        string projectDate = GetString(project, "createdAtUtc");
+                        string projectBudget = GetString(project, "budget");
+
+                        <article class="profile-project-item">
+
+                            <div class="profile-project-header">
+
+                                <h3>@projectName</h3>
+
+                                <span class="profile-status @GetStatusClass(projectStatus)">
+                                    @GetStatusText(projectStatus)
+                                </span>
+
+                            </div>
+
+                            <div class="profile-project-details">
+
+                                <div>
+                                    <span>نوع پروژه</span>
+                                    <strong>@projectType</strong>
+                                </div>
+
+                                <div>
+                                    <span>بودجه</span>
+                                    <strong>@projectBudget</strong>
+                                </div>
+
+                                <div>
+                                    <span>تاریخ ثبت</span>
+                                    <strong>@FormatDate(projectDate)</strong>
+                                </div>
+
+                            </div>
+
+                            <p class="profile-project-description">
+                                @GetString(project, "description")
+                            </p>
+
+                        </article>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="profile-empty-state">
+
+                    <strong>هنوز پروژه‌ای ثبت نکرده‌اید</strong>
+
+                    <p>
+                        پروژه‌هایی که از طریق حساب کاربری خود ثبت کنید،
+                        در این قسمت نمایش داده می‌شوند.
+                    </p>
+
+                    <a asp-controller="ProjectRequests"
+                       asp-action="Create">
+                        ثبت پروژه جدید
+                    </a>
+
+                </div>
+            }
+
+        </section>
+
+        <!-- درخواست همکاری -->
+        <section class="profile-section">
+
+            <h2 class="profile-section-title">
+                درخواست همکاری من
+            </h2>
+
+            @if (hasCollaboration)
+            {
+                string collaborationStatus =
+                    GetString(collaboration, "status");
+
+                <article class="profile-collaboration-card">
+
+                    <div class="profile-project-header">
+
+                        <h3>درخواست همکاری</h3>
+
+                        <span class="profile-status @GetStatusClass(collaborationStatus)">
+                            @GetStatusText(collaborationStatus)
+                        </span>
+
+                    </div>
+
+                    <div class="profile-project-details">
+
+                        <div>
+                            <span>تخصص</span>
+                            <strong>@GetString(collaboration, "specialty")</strong>
+                        </div>
+
+                        <div>
+                            <span>سابقه فعالیت</span>
+                            <strong>@GetString(collaboration, "experience")</strong>
+                        </div>
+
+                        <div>
+                            <span>مهارت‌ها</span>
+                            <strong>@GetString(collaboration, "skills")</strong>
+                        </div>
+
+                        <div>
+                            <span>تاریخ ثبت</span>
+                            <strong>@FormatDate(GetString(collaboration, "createdAt"))</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="profile-project-description">
+                        <strong>توضیحات درخواست</strong>
+
+                        <p>
+                            @GetString(collaboration, "description")
+                        </p>
+                    </div>
+
+                    @{
+                        string portfolio =
+                            GetString(collaboration, "portfolioUrl");
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(portfolio) &&
+                         portfolio != "-")
+                    {
+                        <div class="profile-portfolio">
+
+                            <span>نمونه کار:</span>
+
+                            <a href="@portfolio"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                مشاهده نمونه کار
+                            </a>
+
+                        </div>
+                    }
+
+                </article>
+            }
+            else
+            {
+                <div class="profile-empty-state">
+
+                    <strong>درخواست همکاری ثبت نکرده‌اید</strong>
+
+                    <p>
+                        اگر تمایل به همکاری با تیم کدینو دارید،
+                        می‌توانید درخواست خود را ثبت کنید.
+                    </p>
+
+                    <a asp-controller="Collaboration"
+                       asp-action="Index">
+                        ثبت درخواست همکاری
+                    </a>
+
+                </div>
+            }
+
+        </section>
+
+        <!-- پشتیبانی و ارسال تیکت -->
+        <section class="profile-section">
+
+            <div class="profile-section-heading">
+
+                <h2 class="profile-section-title">
+                    پشتیبانی و ارتباط با ما
+                </h2>
+
+                <span class="profile-count">
+                    مرکز پشتیبانی کدینو
+                </span>
+
+            </div>
+
+            <div class="profile-support-card">
+
+                <div class="profile-support-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+
+                <div class="profile-support-content">
+
+                    <h3>به کمک نیاز دارید؟</h3>
+
+                    <p>
+                        اگر در استفاده از خدمات کدینو مشکلی دارید،
+                        سوالی دارید یا نیاز به راهنمایی دارید،
+                        می‌توانید یک درخواست پشتیبانی ثبت کنید.
+                        تیم ما از طریق همین بخش به شما پاسخ خواهد داد.
+                    </p>
+
+                    <div class="profile-support-actions">
+
+                        <a asp-controller="Tickets"
+                           asp-action="Create"
+                           class="profile-ticket-create">
+
+                            <i class="fas fa-plus-circle"></i>
+                            ارسال تیکت جدید
+
+                        </a>
+
+                        <a asp-controller="Tickets"
+                           asp-action="Index"
+                           class="profile-ticket-list">
+
+                            <i class="fas fa-ticket-alt"></i>
+                            مشاهده تیکت‌های من
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- بازگشت به سایت -->
         <div class="account-footer">
 
             <a asp-controller="Home"
                asp-action="Index">
-
                 بازگشت به Codino
-
             </a>
 
         </div>
+
+        <!-- خروج از حساب -->
         <div class="account-footer">
 
             <form asp-controller="Account"
@@ -114,9 +428,7 @@
 
                 <button type="submit"
                         class="profile-logout-button">
-
                     خروج از حساب
-
                 </button>
 
             </form>

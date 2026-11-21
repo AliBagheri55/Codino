@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "ثبت تیکت جدید";
+}
+
+<link rel="stylesheet"
+      href="~/css/account.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/tickets.css"
+      asp-append-version="true" />
+
+<div class="account-page tickets-page">
+
+    <div class="account-card tickets-card ticket-form-card">
+
+        <div class="account-logo">
+            <img src="~/images/codino-intro.jpg" alt="Codino" />
+            <span>Codino</span>
+        </div>
+
+        <h1>ثبت تیکت جدید</h1>
+
+        <p class="account-description">
+            درخواست خود را ثبت کنید تا تیم پشتیبانی آن را بررسی کند.
+        </p>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="account-error">
+                @Html.ValidationSummary(false)
+            </div>
+        }
+
+        <form asp-controller="Tickets"
+              asp-action="Create"
+              method="post"
+              class="ticket-form">
+
+            @Html.AntiForgeryToken()
+
+            <div class="ticket-form-group">
+                <label for="subject">موضوع تیکت</label>
+
+                <input type="text"
+                       id="subject"
+                       name="subject"
+                       maxlength="150"
+                       minlength="3"
+                       placeholder="مثلاً مشکل در ورود به حساب کاربری"
+                       required />
+            </div>
+
+            <div class="ticket-form-row">
+
+                <div class="ticket-form-group">
+                    <label for="category">دسته‌بندی</label>
+
+                    <select id="category"
+                            name="category"
+                            required>
+
+                        <option value="General">عمومی</option>
+                        <option value="Technical">فنی</option>
+                        <option value="Billing">مالی و پرداخت</option>
+                        <option value="Account">حساب کاربری</option>
+                        <option value="Other">سایر موارد</option>
+
+                    </select>
+                </div>
+
+                <div class="ticket-form-group">
+                    <label for="priority">اولویت</label>
+
+                    <select id="priority"
+                            name="priority"
+                            required>
+
+                        <option value="Low">کم</option>
+                        <option value="Normal" selected>معمولی</option>
+                        <option value="High">زیاد</option>
+
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="ticket-form-group">
+                <label for="message">شرح درخواست</label>
+
+                <textarea id="message"
+                          name="message"
+                          rows="7"
+                          minlength="10"
+                          maxlength="5000"
+                          placeholder="مشکل یا درخواست خود را با جزئیات توضیح دهید..."
+                          required></textarea>
+
+                <small>
+                    حداقل ۱۰ و حداکثر ۵۰۰۰ کاراکتر
+                </small>
+            </div>
+
+            <button type="submit"
+                    class="ticket-submit-button">
+
+                ثبت درخواست پشتیبانی
+
+            </button>
+
+        </form>
+
+        <div class="account-footer">
+            <a asp-controller="Tickets"
+               asp-action="Index">
+                بازگشت به تیکت‌ها
+            </a>
+        </div>
+
+    </div>
+
+</div>

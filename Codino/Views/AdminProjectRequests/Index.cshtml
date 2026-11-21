@@ -1,0 +1,308 @@
+﻿@model Codino.Controllers.ProjectRequestsPageViewModel
+
+@{
+    ViewData["Title"] = "مدیریت درخواست‌های پروژه";
+    ViewData["PageTitle"] = "درخواست‌های پروژه";
+
+    var currentPage = Model.Pagination.Page;
+    var totalPages = Model.Pagination.TotalPages;
+}
+
+<link rel="stylesheet" href="~/css/admin-project-requests.css" asp-append-version="true" />
+
+<div class="admin-requests">
+
+    <div class="requests-header">
+        <div>
+            <span class="requests-eyebrow">CODINO / PROJECT MANAGEMENT</span>
+            <h1>مدیریت درخواست‌های پروژه</h1>
+            <p>درخواست‌های مشتریان را بررسی و مدیریت کنید.</p>
+        </div>
+
+        <div class="requests-header-icon">
+            <i class="bi bi-kanban"></i>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="request-alert success">
+            <i class="bi bi-check-circle-fill"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="request-alert error">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="request-stats">
+
+        <div class="request-stat-card">
+            <div class="stat-icon emerald">
+                <i class="bi bi-folder2-open"></i>
+            </div>
+            <div>
+                <span>کل درخواست‌ها</span>
+                <strong>@Model.Pagination.TotalCount</strong>
+            </div>
+        </div>
+
+        <div class="request-stat-card">
+            <div class="stat-icon blue">
+                <i class="bi bi-list-check"></i>
+            </div>
+            <div>
+                <span>صفحه فعلی</span>
+                <strong>@currentPage از @Math.Max(totalPages, 1)</strong>
+            </div>
+        </div>
+
+        <div class="request-stat-card">
+            <div class="stat-icon purple">
+                <i class="bi bi-collection"></i>
+            </div>
+            <div>
+                <span>تعداد نمایش در هر صفحه</span>
+                <strong>@Model.Pagination.PageSize</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="request-filter-card">
+        <form method="get" asp-controller="AdminProjectRequests"
+              asp-action="Index" class="request-filter-form">
+
+            <div class="filter-search">
+                <i class="bi bi-search"></i>
+                <input type="text"
+                       name="search"
+                       value="@Model.Search"
+                       placeholder="جست‌وجوی نام، شماره تماس یا پروژه..." />
+            </div>
+
+            <div class="filter-status">
+                <select name="status">
+                    <option value="">تمام وضعیت‌ها</option>
+                    <option value="Pending" selected="@(Model.Status == "Pending")">
+                        در انتظار بررسی
+                    </option>
+                    <option value="Approved" selected="@(Model.Status == "Approved")">
+                        تأیید شده
+                    </option>
+                    <option value="Rejected" selected="@(Model.Status == "Rejected")">
+                        رد شده
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="filter-submit">
+                <i class="bi bi-funnel"></i>
+                اعمال فیلتر
+            </button>
+
+            <a asp-action="Index" class="filter-reset">
+                <i class="bi bi-arrow-counterclockwise"></i>
+                پاک‌سازی
+            </a>
+
+        </form>
+    </div>
+
+    <div class="request-table-card">
+
+        <div class="table-card-header">
+            <div>
+                <h3>فهرست درخواست‌ها</h3>
+                <span>اطلاعات ثبت‌شده توسط مشتریان</span>
+            </div>
+
+            <span class="table-count">
+                @Model.Requests.Count درخواست
+            </span>
+        </div>
+
+        @if (Model.Requests.Any())
+        {
+            <div class="table-responsive">
+                <table class="requests-table">
+                    <thead>
+                        <tr>
+                            <th>شناسه</th>
+                            <th>مشتری</th>
+                            <th>نام پروژه</th>
+                            <th>نوع پروژه</th>
+                            <th>بودجه</th>
+                            <th>تاریخ ثبت</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.Requests)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="request-id">#@item.Id</span>
+                                </td>
+
+                                <td>
+                                    <div class="customer-cell">
+                                        <div class="customer-avatar">
+                                            @(!string.IsNullOrWhiteSpace(item.CustomerName)
+                                                ? item.CustomerName.Substring(0, 1)
+                                                : "?")
+                                        </div>
+
+                                        <div>
+                                            <strong>@item.CustomerName</strong>
+                                            <small>@item.PhoneNumber</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <strong class="project-name">
+                                        @item.ProjectName
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <span class="project-type">
+                                        @item.ProjectType
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="project-budget">
+                                        @(string.IsNullOrWhiteSpace(item.Budget)
+                                            ? "تعیین نشده"
+                                            : item.Budget)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="request-date">
+                                        @item.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <span class="status-badge pending">
+                                            <span></span>
+                                            در انتظار
+                                        </span>
+                                    }
+                                    else if (item.Status == "Approved")
+                                    {
+                                        <span class="status-badge approved">
+                                            <span></span>
+                                            تأیید شده
+                                        </span>
+                                    }
+                                    else if (item.Status == "Rejected")
+                                    {
+                                        <span class="status-badge rejected">
+                                            <span></span>
+                                            رد شده
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge">@item.Status</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a asp-controller="AdminProjectRequests"
+                                       asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="request-details-btn">
+                                        <i class="bi bi-eye"></i>
+                                        مشاهده
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (totalPages > 1)
+            {
+                <div class="request-pagination">
+
+                    <div class="pagination-info">
+                        صفحه @currentPage از @totalPages
+                    </div>
+
+                    <div class="pagination-buttons">
+
+                        @if (currentPage > 1)
+                        {
+                            <a asp-action="Index"
+                               asp-route-page="@(currentPage - 1)"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status">
+                                قبلی
+                            </a>
+                        }
+
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            if (i == currentPage)
+                            {
+                                <span class="active-page">@i</span>
+                            }
+                            else if (i == 1 || i == totalPages ||
+                                     Math.Abs(i - currentPage) <= 1)
+                            {
+                                <a asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-search="@Model.Search"
+                                   asp-route-status="@Model.Status">
+                                    @i
+                                </a>
+                            }
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <a asp-action="Index"
+                               asp-route-page="@(currentPage + 1)"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status">
+                                بعدی
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-requests">
+                <div class="empty-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+
+                <h3>درخواستی پیدا نشد</h3>
+                <p>هنوز درخواستی ثبت نشده یا نتیجه‌ای برای جست‌وجوی شما وجود ندارد.</p>
+
+                <a asp-action="Index">
+                    مشاهده تمام درخواست‌ها
+                </a>
+            </div>
+        }
+
+    </div>
+</div>

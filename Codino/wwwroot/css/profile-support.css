@@ -1,0 +1,125 @@
+﻿
+/* =========================================
+   Profile Support Section
+========================================= */
+
+.profile-support-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px;
+    border-radius: 16px;
+    background: rgba(16, 185, 129, .06);
+    border: 1px solid rgba(16, 185, 129, .2);
+    transition: .25s ease;
+}
+
+    .profile-support-card:hover {
+        border-color: rgba(16, 185, 129, .45);
+        box-shadow: 0 10px 35px rgba(16, 185, 129, .06);
+    }
+
+.profile-support-icon {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: rgba(16, 185, 129, .13);
+    color: #10b981;
+    font-size: 25px;
+}
+
+.profile-support-content {
+    flex: 1;
+    min-width: 0;
+}
+
+    .profile-support-content h3 {
+        margin: 0 0 12px;
+        color: #e5e7eb;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .profile-support-content p {
+        color: #94a3b8;
+        font-size: 13px;
+        line-height: 2;
+        margin: 0 0 20px;
+    }
+
+.profile-support-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.profile-ticket-create,
+.profile-ticket-list {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px 17px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.profile-ticket-create {
+    color: #052e22;
+    background: #10b981;
+}
+
+    .profile-ticket-create:hover {
+        background: #34d399;
+        color: #052e22;
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px rgba(16, 185, 129, .2);
+    }
+
+.profile-ticket-list {
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, .35);
+    background: rgba(16, 185, 129, .07);
+}
+
+    .profile-ticket-list:hover {
+        color: #052e22;
+        background: #10b981;
+        border-color: #10b981;
+    }
+
+/* =========================================
+   Responsive
+========================================= */
+
+@media (max-width: 600px) {
+
+    .profile-support-card {
+        flex-direction: column;
+        padding: 18px;
+    }
+
+    .profile-support-icon {
+        width: 52px;
+        height: 52px;
+        font-size: 22px;
+    }
+
+    .profile-support-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .profile-ticket-create,
+    .profile-ticket-list {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}

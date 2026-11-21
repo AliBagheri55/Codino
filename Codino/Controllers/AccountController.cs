@@ -1,6 +1,9 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using Codino.Models.Api;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Codino.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +15,7 @@ namespace Codino.Controllers
         // =========================================================
         // DEPENDENCIES
         // =========================================================
-
+        private const string UserRoleKey = "UserRole";
         private readonly ApiService _apiService;
         private readonly RedisRateLimitService _rateLimit;
         private readonly ILogger<AccountController> _logger;
@@ -963,7 +966,30 @@ namespace Codino.Controllers
                         "توکن ورود دریافت نشد.");
                 }
 
+                // =====================================================
+                // VALIDATE USER ROLE
+                // =====================================================
 
+                // فقط دو نقش مجاز هستند.
+                string role = response.Role?.Trim() ?? string.Empty;
+
+                if (!string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(role, "User", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogError(
+                        "Login succeeded but user role is invalid.");
+
+                    return await LoginError(
+                        "نقش حساب کاربری معتبر نیست.");
+                }
+
+                // یکسان‌سازی نام نقش
+                role = string.Equals(
+                    role,
+                    "Admin",
+                    StringComparison.OrdinalIgnoreCase)
+                        ? "Admin"
+                        : "User";
                 // =====================================================
                 // SUCCESSFUL LOGIN
                 // =====================================================
@@ -1014,7 +1040,9 @@ namespace Codino.Controllers
                     AccessTokenKey,
                     response.AccessToken);
 
-
+                HttpContext.Session.SetString(
+    UserRoleKey,
+    role);
                 if (!string.IsNullOrWhiteSpace(
                     response.RefreshToken))
                 {
@@ -1029,16 +1057,66 @@ namespace Codino.Controllers
                 // =====================================================
 
                 await HttpContext.Session.CommitAsync();
+                // =====================================================
+                // CREATE AUTHENTICATION COOKIE
+                // =====================================================
 
+                // ساخت اطلاعات هویتی کاربر برای احراز هویت MVC
+                var claims = new List<Claim>
+{
+    new Claim(
+        ClaimTypes.NameIdentifier,
+        response.UserId.Value.ToString()),
+
+    new Claim(
+        ClaimTypes.Name,
+        NormalizeText(response.FullName)),
+
+    new Claim(
+        ClaimTypes.Role,
+        role),
+
+    new Claim(
+        ClaimTypes.MobilePhone,
+        normalizedPhone)
+};
+
+                var identity = new ClaimsIdentity(
+                    claims,
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var principal = new ClaimsPrincipal(identity);
+
+                // حذف احراز هویت قبلی و ثبت ورود جدید
+                await HttpContext.SignOutAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    principal,
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        AllowRefresh = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
+                    });
 
                 _logger.LogInformation(
                     "User {UserId} logged in successfully.",
                     response.UserId.Value);
 
 
+                // مدیر مستقیماً وارد پنل مدیریت می‌شود.
+                if (role == "Admin")
+                {
+                    return RedirectToAction(
+                        "Index",
+                        "Admin");
+                }
+
+                // کاربران عادی وارد پروفایل خود می‌شوند.
                 return RedirectToAction(
-                    "Index",
-                    "Home");
+                    nameof(Profile));
             }
             catch (RedisException ex)
             {
@@ -1103,12 +1181,21 @@ namespace Codino.Controllers
         // LOGOUT
         // =========================================================
 
+        // =========================================================
+        // LOGOUT
+        // =========================================================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             try
             {
+                // حذف کوکی احراز هویت
+                await HttpContext.SignOutAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+
+                // پاک کردن اطلاعات نشست
                 ClearAuthenticationSession();
 
                 ClearRegistrationSession();
@@ -1123,8 +1210,7 @@ namespace Codino.Controllers
 
                 await HttpContext.Session.CommitAsync();
 
-                Response.Cookies.Delete(
-                    ".Codino.Session");
+                Response.Cookies.Delete(".Codino.Session");
 
                 _logger.LogInformation(
                     "User logged out successfully.");
@@ -1139,16 +1225,21 @@ namespace Codino.Controllers
                     ex,
                     "Error during logout.");
 
+                // حتی در صورت خطا، تلاش برای حذف کوکی احراز هویت
                 try
                 {
+                    await HttpContext.SignOutAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme);
+
                     HttpContext.Session.Clear();
 
-                    Response.Cookies.Delete(
-                        ".Codino.Session");
+                    Response.Cookies.Delete(".Codino.Session");
                 }
-                catch
+                catch (Exception signOutException)
                 {
-                    // عمداً خالی است.
+                    _logger.LogError(
+                        signOutException,
+                        "Error while clearing authentication during logout.");
                 }
 
                 return RedirectToAction(
@@ -1156,7 +1247,6 @@ namespace Codino.Controllers
                     "Home");
             }
         }
-
 
         // =========================================================
         // FORGOT PASSWORD - GET
@@ -1782,26 +1872,14 @@ namespace Codino.Controllers
 
         private void ClearAuthenticationSession()
         {
-            HttpContext.Session.Remove(
-                UserIdKey);
-
-            HttpContext.Session.Remove(
-                UserFullNameKey);
-
-            HttpContext.Session.Remove(
-                UserPhoneKey);
-
-            HttpContext.Session.Remove(
-                UserPhoneNumberKey);
-
-            HttpContext.Session.Remove(
-                AccessTokenKey);
-
-            HttpContext.Session.Remove(
-                RefreshTokenKey);
+            HttpContext.Session.Remove(UserIdKey);
+            HttpContext.Session.Remove(UserFullNameKey);
+            HttpContext.Session.Remove(UserPhoneKey);
+            HttpContext.Session.Remove(UserPhoneNumberKey);
+            HttpContext.Session.Remove(AccessTokenKey);
+            HttpContext.Session.Remove(RefreshTokenKey);
+            HttpContext.Session.Remove(UserRoleKey);
         }
-
-
         // =========================================================
         // NORMALIZE CAPTCHA
         // =========================================================
@@ -2121,60 +2199,114 @@ namespace Codino.Controllers
         // USER PROFILE
         // =========================================================
 
+
+        // =========================================================
+        // USER PROFILE
+        // =========================================================
+
         [HttpGet]
-        public IActionResult Profile()
+        public async Task<IActionResult> Profile(
+            CancellationToken cancellationToken)
         {
-            string? userId =
-                HttpContext.Session.GetString(
-                    UserIdKey);
-
-            string? userFullName =
-                HttpContext.Session.GetString(
-                    UserFullNameKey);
-
-            string? userPhone =
-                HttpContext.Session.GetString(
-                    UserPhoneKey);
-
-            if (string.IsNullOrWhiteSpace(userPhone))
+            try
             {
-                userPhone =
+                // =====================================================
+                // دریافت اطلاعات حساب از نشست
+                // =====================================================
+
+                string? userId =
                     HttpContext.Session.GetString(
-                        UserPhoneNumberKey);
+                        UserIdKey);
+
+                string? userFullName =
+                    HttpContext.Session.GetString(
+                        UserFullNameKey);
+
+                string? userPhone =
+                    HttpContext.Session.GetString(
+                        UserPhoneKey);
+
+                if (string.IsNullOrWhiteSpace(userPhone))
+                {
+                    userPhone =
+                        HttpContext.Session.GetString(
+                            UserPhoneNumberKey);
+                }
+
+                // =====================================================
+                // بررسی احراز هویت
+                // =====================================================
+
+                if (string.IsNullOrWhiteSpace(userId) ||
+                    !int.TryParse(
+                        userId,
+                        out int parsedUserId) ||
+                    parsedUserId <= 0 ||
+                    string.IsNullOrWhiteSpace(userFullName))
+                {
+                    return RedirectToAction(
+                        nameof(Login));
+                }
+
+                // =====================================================
+                // اطلاعات اصلی پروفایل
+                // =====================================================
+
+                ViewBag.UserId =
+                    parsedUserId;
+
+                ViewBag.UserFullName =
+                    userFullName;
+
+                ViewBag.UserPhone =
+                    string.IsNullOrWhiteSpace(userPhone)
+                        ? "شماره موبایل در نشست فعلی موجود نیست."
+                        : userPhone;
+
+                ViewBag.ProfileImage =
+                    Url.Content(
+                        "~/images/codino-intro.jpg");
+
+                // =====================================================
+                // دریافت پروژه‌های ثبت‌شده توسط کاربر
+                // =====================================================
+
+                ViewBag.MyProjectRequests =
+                    await _apiService.GetMyProjectRequestsAsync(
+                        cancellationToken);
+
+                // =====================================================
+                // دریافت آخرین درخواست همکاری کاربر
+                // =====================================================
+
+                ViewBag.MyCollaborationRequest =
+                    await _apiService.GetMyCollaborationRequestAsync(
+                        cancellationToken);
+
+                // =====================================================
+                // نمایش صفحه پروفایل
+                // =====================================================
+
+                return View("Profile");
             }
-
-
-            // =====================================================
-            // AUTH CHECK
-            // =====================================================
-
-            if (string.IsNullOrWhiteSpace(userId) ||
-                !int.TryParse(
-                    userId,
-                    out int parsedUserId) ||
-                parsedUserId <= 0 ||
-                string.IsNullOrWhiteSpace(userFullName))
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
             {
-                return RedirectToAction(
-                    nameof(Login));
+                throw;
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Error while loading user profile.");
 
-            ViewBag.UserId =
-                parsedUserId;
+                // در صورت بروز خطا، اطلاعات اصلی حساب حفظ می‌شود.
+                ViewBag.MyProjectRequests = null;
+                ViewBag.MyCollaborationRequest = null;
 
-            ViewBag.UserFullName =
-                userFullName;
-
-            ViewBag.UserPhone =
-                string.IsNullOrWhiteSpace(userPhone)
-                    ? "شماره موبایل در نشست فعلی موجود نیست."
-                    : userPhone;
-
-            ViewBag.ProfileImage =
-                Url.Content(
-                    "~/images/codino-intro.jpg");
-
-            return View("Profile");
+                return View("Profile");
+            }
         }
+
     }
 }

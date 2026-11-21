@@ -690,7 +690,82 @@ public async Task<List<CommentResponse>> GetCommentsAsync(
         // =========================================================
         // CREATE COMMENT
         // =========================================================
+        public async Task<List<AnnouncementResponse>> GetPublishedAnnouncementsAsync(
+    CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using HttpResponseMessage response = await _httpClient.GetAsync(
+                    "api/announcements",
+                    cancellationToken);
 
+                string content = await response.Content.ReadAsStringAsync(
+                    cancellationToken);
+
+                LogResponse("GET PUBLISHED ANNOUNCEMENTS", response, content);
+
+                if (!response.IsSuccessStatusCode ||
+                    string.IsNullOrWhiteSpace(content))
+                {
+                    return new List<AnnouncementResponse>();
+                }
+
+                using JsonDocument document = JsonDocument.Parse(content);
+
+                if (!TryGetPropertyIgnoreCase(
+                        document.RootElement,
+                        "data",
+                        out JsonElement data) ||
+                    data.ValueKind != JsonValueKind.Array)
+                {
+                    _logger.LogWarning(
+                        "GET PUBLISHED ANNOUNCEMENTS: data array not found.");
+
+                    return new List<AnnouncementResponse>();
+                }
+
+                return JsonSerializer.Deserialize<List<AnnouncementResponse>>(
+                    data.GetRawText(),
+                    JsonOptions) ?? new List<AnnouncementResponse>();
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "GET PUBLISHED ANNOUNCEMENTS timed out.");
+
+                return new List<AnnouncementResponse>();
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "GET PUBLISHED ANNOUNCEMENTS HTTP request failed.");
+
+                return new List<AnnouncementResponse>();
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "GET PUBLISHED ANNOUNCEMENTS returned invalid JSON.");
+
+                return new List<AnnouncementResponse>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Unexpected error while getting announcements.");
+
+                return new List<AnnouncementResponse>();
+            }
+        }
         public async Task<ApiResponse> CreateCommentAsync(
             CreateCommentRequest request,
             CancellationToken cancellationToken = default)
@@ -787,12 +862,366 @@ public async Task<List<CommentResponse>> GetCommentsAsync(
                 return Failure("خطایی هنگام ثبت نظر رخ داد.");
             }
         }
-// =========================================================
-// GET COURSES
-// =========================================================
-// =========================================================
-// GET COURSES
-// =========================================================
+        // =========================================================
+        // GET COURSES
+        // =========================================================
+        // =========================================================
+        // GET COURSES
+        // =========================================================
+
+        // =========================================================
+        // GET MY PROJECT REQUESTS
+        // =========================================================
+
+        public async Task<JsonElement?> GetMyProjectRequestsAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await GetAuthenticatedDataAsync(
+                "api/project-requests/my-requests",
+                "GET MY PROJECT REQUESTS",
+                cancellationToken);
+        }
+
+        // =========================================================
+        // GET MY COLLABORATION REQUEST
+        // =========================================================
+
+        public async Task<JsonElement?> GetMyCollaborationRequestAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await GetAuthenticatedDataAsync(
+                "api/Collaboration/my-request",
+                "GET MY COLLABORATION REQUEST",
+                cancellationToken);
+        }
+
+        // =========================================================
+        // SUPPORT TICKETS
+        // =========================================================
+
+        // دریافت فهرست تیکت‌های کاربر
+        public async Task<JsonElement?> GetMyTicketsAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await GetAuthenticatedDataAsync(
+                "api/tickets/my-tickets",
+                "GET MY TICKETS",
+                cancellationToken);
+        }
+
+        // دریافت جزئیات یک تیکت
+        public async Task<JsonElement?> GetTicketDetailsAsync(
+            int ticketId,
+            CancellationToken cancellationToken = default)
+        {
+            if (ticketId <= 0)
+                return null;
+
+            return await GetAuthenticatedDataAsync(
+                $"api/tickets/{ticketId}",
+                "GET TICKET DETAILS",
+                cancellationToken);
+        }
+
+        // ایجاد تیکت جدید
+        public async Task<JsonElement?> CreateTicketAsync(
+            string subject,
+            string category,
+            string priority,
+            string message,
+            CancellationToken cancellationToken = default)
+        {
+            var requestData = new
+            {
+                Subject = subject?.Trim(),
+                Category = category?.Trim(),
+                Priority = priority?.Trim(),
+                Message = message?.Trim()
+            };
+
+            return await PostAuthenticatedDataAsync(
+                "api/tickets",
+                requestData,
+                "CREATE TICKET",
+                cancellationToken);
+        }
+
+        // ارسال پیام جدید در تیکت
+        public async Task<JsonElement?> SendTicketMessageAsync(
+            int ticketId,
+            string message,
+            CancellationToken cancellationToken = default)
+        {
+            if (ticketId <= 0 ||
+                string.IsNullOrWhiteSpace(message))
+            {
+                return null;
+            }
+
+            var requestData = new
+            {
+                Message = message.Trim()
+            };
+
+            return await PostAuthenticatedDataAsync(
+                $"api/tickets/{ticketId}/messages",
+                requestData,
+                "SEND TICKET MESSAGE",
+                cancellationToken);
+        }
+
+        // =========================================================
+        // POST AUTHENTICATED DATA
+        // =========================================================
+
+        private async Task<JsonElement?> PostAuthenticatedDataAsync(
+            string url,
+            object requestData,
+            string operation,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(GetAccessToken()))
+            {
+                _logger.LogWarning(
+                    "{Operation}: Access token is missing.",
+                    operation);
+
+                return null;
+            }
+
+            try
+            {
+                using HttpRequestMessage request =
+                    CreateAuthenticatedRequest(
+                        HttpMethod.Post,
+                        url);
+
+                request.Content = JsonContent.Create(
+                    requestData,
+                    options: JsonOptions);
+
+                using HttpResponseMessage response =
+                    await _httpClient.SendAsync(
+                        request,
+                        cancellationToken);
+
+                string content =
+                    await response.Content.ReadAsStringAsync(
+                        cancellationToken);
+
+                LogResponse(operation, response, content);
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized ||
+                    response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    _logger.LogWarning(
+                        "{Operation}: Authentication or authorization failed.",
+                        operation);
+
+                    return null;
+                }
+
+                if (!response.IsSuccessStatusCode ||
+                    string.IsNullOrWhiteSpace(content))
+                {
+                    _logger.LogWarning(
+                        "{Operation}: API request failed. Status={StatusCode}",
+                        operation,
+                        (int)response.StatusCode);
+
+                    return null;
+                }
+
+                using JsonDocument document =
+                    JsonDocument.Parse(content);
+
+                if (!document.RootElement.TryGetProperty(
+                    "data",
+                    out JsonElement data))
+                {
+                    _logger.LogWarning(
+                        "{Operation}: Data property was not found.",
+                        operation);
+
+                    return null;
+                }
+
+                return data.Clone();
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "{Operation}: Request timed out.",
+                    operation);
+
+                return null;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "{Operation}: HTTP request failed.",
+                    operation);
+
+                return null;
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "{Operation}: Invalid JSON response.",
+                    operation);
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "{Operation}: Unexpected error.",
+                    operation);
+
+                return null;
+            }
+        }
+
+        // =========================================================
+        // GET AUTHENTICATED DATA
+        // =========================================================
+
+        private async Task<JsonElement?> GetAuthenticatedDataAsync(
+            string url,
+            string operation,
+            CancellationToken cancellationToken)
+        {
+            // بررسی توکن ورود کاربر
+            if (string.IsNullOrWhiteSpace(GetAccessToken()))
+            {
+                _logger.LogWarning(
+                    "{Operation}: Access token is missing.",
+                    operation);
+
+                return null;
+            }
+
+            try
+            {
+                using HttpRequestMessage request =
+                    CreateAuthenticatedRequest(
+                        HttpMethod.Get,
+                        url);
+
+                using HttpResponseMessage response =
+                    await _httpClient.SendAsync(
+                        request,
+                        cancellationToken);
+
+                string content =
+                    await response.Content.ReadAsStringAsync(
+                        cancellationToken);
+
+                LogResponse(operation, response, content);
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    _logger.LogWarning(
+                        "{Operation}: User session has expired.",
+                        operation);
+
+                    return null;
+                }
+
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    _logger.LogWarning(
+                        "{Operation}: Access denied.",
+                        operation);
+
+                    return null;
+                }
+
+                // نبودن درخواست همکاری یعنی کاربر هنوز درخواستی ندارد.
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
+
+                if (!response.IsSuccessStatusCode ||
+                    string.IsNullOrWhiteSpace(content))
+                {
+                    _logger.LogWarning(
+                        "{Operation}: API returned an unsuccessful or empty response.",
+                        operation);
+
+                    return null;
+                }
+
+                using JsonDocument document =
+                    JsonDocument.Parse(content);
+
+                // استخراج بخش data از پاسخ API
+                if (!document.RootElement.TryGetProperty(
+                        "data",
+                        out JsonElement data))
+                {
+                    _logger.LogWarning(
+                        "{Operation}: Data property was not found.",
+                        operation);
+
+                    return null;
+                }
+
+                // Clone برای مستقل شدن داده از JsonDocument
+                return data.Clone();
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "{Operation}: Request timed out.",
+                    operation);
+
+                return null;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "{Operation}: HTTP request failed.",
+                    operation);
+
+                return null;
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "{Operation}: Invalid JSON response.",
+                    operation);
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "{Operation}: Unexpected error.",
+                    operation);
+
+                return null;
+            }
+        }
 
 
         // =========================================================

@@ -1,0 +1,328 @@
+﻿@model Codino.Controllers.ProjectRequestViewModel
+
+@{
+    ViewData["Title"] = "جزئیات درخواست پروژه";
+    ViewData["PageTitle"] = "جزئیات درخواست";
+
+    var isPending = Model.Status == "Pending";
+    var isApproved = Model.Status == "Approved";
+    var isRejected = Model.Status == "Rejected";
+}
+
+<link rel="stylesheet"
+      href="~/css/admin-project-request-details.css"
+      asp-append-version="true" />
+
+<div class="project-details-page">
+
+    <!-- سربرگ -->
+    <div class="details-header">
+        <div>
+            <span class="details-eyebrow">CODINO / REQUEST DETAILS</span>
+            <h1>جزئیات درخواست پروژه</h1>
+            <p>بررسی اطلاعات مشتری و مدیریت درخواست ثبت‌شده</p>
+        </div>
+
+        <div class="details-header-icon">
+            <i class="bi bi-file-earmark-text"></i>
+        </div>
+    </div>
+
+    <!-- پیام‌ها -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="details-alert success">
+            <i class="bi bi-check-circle-fill"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="details-alert error">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- نوار اطلاعات اصلی -->
+    <div class="request-overview">
+
+        <div class="overview-item">
+            <span>شناسه درخواست</span>
+            <strong class="request-number">#@Model.Id</strong>
+        </div>
+
+        <div class="overview-item">
+            <span>تاریخ ثبت</span>
+            <strong>
+                @Model.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd - HH:mm")
+            </strong>
+        </div>
+
+        <div class="overview-item">
+            <span>وضعیت درخواست</span>
+
+            @if (isPending)
+            {
+                <span class="detail-status pending">
+                    <span></span>
+                    در انتظار بررسی
+                </span>
+            }
+            else if (isApproved)
+            {
+                <span class="detail-status approved">
+                    <span></span>
+                    تأیید شده
+                </span>
+            }
+            else if (isRejected)
+            {
+                <span class="detail-status rejected">
+                    <span></span>
+                    رد شده
+                </span>
+            }
+            else
+            {
+                <span class="detail-status">
+                    @Model.Status
+                </span>
+            }
+        </div>
+
+    </div>
+
+    <div class="details-grid">
+
+        <!-- اطلاعات مشتری -->
+        <section class="details-card">
+
+            <div class="details-card-header">
+                <div class="card-heading-icon emerald">
+                    <i class="bi bi-person"></i>
+                </div>
+
+                <div>
+                    <h2>اطلاعات مشتری</h2>
+                    <p>مشخصات فرد ثبت‌کننده درخواست</p>
+                </div>
+            </div>
+
+            <div class="details-card-body">
+
+                <div class="detail-field">
+                    <span>نام و نام خانوادگی</span>
+                    <strong>@Model.CustomerName</strong>
+                </div>
+
+                <div class="detail-field">
+                    <span>شماره تماس</span>
+                    <strong dir="ltr">@Model.PhoneNumber</strong>
+                    <a href="tel:@Model.PhoneNumber" class="field-action">
+                        <i class="bi bi-telephone"></i>
+                        تماس با مشتری
+                    </a>
+                </div>
+
+                <div class="detail-field">
+                    <span>آدرس ایمیل</span>
+                    <strong dir="ltr">@Model.Email</strong>
+                    <a href="mailto:@Model.Email" class="field-action">
+                        <i class="bi bi-envelope"></i>
+                        ارسال ایمیل
+                    </a>
+                </div>
+
+                <div class="detail-field">
+                    <span>شناسه کاربری</span>
+                    <strong>
+                        @(Model.UserId.HasValue
+                            ? Model.UserId.Value.ToString()
+                            : "مهمان")
+                    </strong>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- اطلاعات پروژه -->
+        <section class="details-card">
+
+            <div class="details-card-header">
+                <div class="card-heading-icon blue">
+                    <i class="bi bi-code-slash"></i>
+                </div>
+
+                <div>
+                    <h2>اطلاعات پروژه</h2>
+                    <p>مشخصات فنی و اجرایی پروژه</p>
+                </div>
+            </div>
+
+            <div class="details-card-body">
+
+                <div class="detail-field">
+                    <span>نام پروژه</span>
+                    <strong>@Model.ProjectName</strong>
+                </div>
+
+                <div class="detail-field">
+                    <span>نوع پروژه</span>
+                    <strong>@Model.ProjectType</strong>
+                </div>
+
+                <div class="detail-field">
+                    <span>بودجه پیشنهادی</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Budget)
+                            ? "تعیین نشده"
+                            : Model.Budget)
+                    </strong>
+                </div>
+
+                <div class="detail-field">
+                    <span>مهلت تحویل موردنظر</span>
+                    <strong>
+                        @(Model.DesiredDeadline.HasValue
+                            ? Model.DesiredDeadline.Value.ToString("yyyy/MM/dd")
+                            : "مشخص نشده")
+                    </strong>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <!-- توضیحات پروژه -->
+    <section class="details-card description-card">
+
+        <div class="details-card-header">
+            <div class="card-heading-icon purple">
+                <i class="bi bi-card-text"></i>
+            </div>
+
+            <div>
+                <h2>توضیحات کامل پروژه</h2>
+                <p>شرحی که مشتری هنگام ثبت درخواست وارد کرده است</p>
+            </div>
+        </div>
+
+        <div class="project-description">
+            @Model.Description
+        </div>
+
+    </section>
+
+    <!-- مدیریت وضعیت -->
+    <section class="details-card management-card">
+
+        <div class="details-card-header">
+            <div class="card-heading-icon emerald">
+                <i class="bi bi-sliders"></i>
+            </div>
+
+            <div>
+                <h2>مدیریت درخواست</h2>
+                <p>تغییر وضعیت و انجام عملیات مدیریتی</p>
+            </div>
+        </div>
+
+        <div class="management-content">
+
+            <div class="management-current-status">
+                <span>وضعیت فعلی درخواست</span>
+
+                @if (isPending)
+                {
+                    <strong class="status-text pending-text">
+                        در انتظار بررسی
+                    </strong>
+                }
+                else if (isApproved)
+                {
+                    <strong class="status-text approved-text">
+                        تأیید شده
+                    </strong>
+                }
+                else if (isRejected)
+                {
+                    <strong class="status-text rejected-text">
+                        رد شده
+                    </strong>
+                }
+                else
+                {
+                    <strong>@Model.Status</strong>
+                }
+            </div>
+
+            <form asp-controller="AdminProjectRequests"
+                  asp-action="UpdateStatus"
+                  method="post"
+                  class="status-update-form">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <label for="status">انتخاب وضعیت جدید</label>
+
+                <select id="status" name="status" required>
+                    <option value="Pending"
+                            selected="@(Model.Status == "Pending")">
+                        در انتظار بررسی
+                    </option>
+
+                    <option value="Approved"
+                            selected="@(Model.Status == "Approved")">
+                        تأیید درخواست
+                    </option>
+
+                    <option value="Rejected"
+                            selected="@(Model.Status == "Rejected")">
+                        رد درخواست
+                    </option>
+                </select>
+
+                <button type="submit" class="save-status-btn">
+                    <i class="bi bi-check2-circle"></i>
+                    ذخیره وضعیت
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="management-footer">
+
+            <a asp-controller="AdminProjectRequests"
+               asp-action="Index"
+               class="back-to-list-btn">
+                <i class="bi bi-arrow-right"></i>
+                بازگشت به درخواست‌ها
+            </a>
+
+            <form asp-controller="AdminProjectRequests"
+                  asp-action="Delete"
+                  method="post"
+                  onsubmit="return confirm('آیا از حذف این درخواست مطمئن هستید؟ این عملیات قابل بازگشت نیست.');">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <button type="submit" class="delete-request-btn">
+                    <i class="bi bi-trash3"></i>
+                    حذف درخواست
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</div>

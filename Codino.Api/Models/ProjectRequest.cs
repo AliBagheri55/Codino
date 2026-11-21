@@ -8,6 +8,10 @@ namespace Codino.Api.Models
     {
         public int Id { get; set; }
 
+        // شناسه صاحب پروژه
+        // برای کاربران مهمان مقدار این فیلد null خواهد بود.
+        public int? UserId { get; set; }
+
         [Required(ErrorMessage = "نام شما الزامی است.")]
         [StringLength(
             100,

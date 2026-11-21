@@ -151,7 +151,11 @@ namespace Codino.Api.Services
 
                     new Claim(
                         JwtRegisteredClaimNames.Jti,
-                        tokenId)
+                        tokenId),
+                    // نقش کاربر از دیتابیس داخل JWT ثبت می‌شود.
+new Claim(
+    ClaimTypes.Role,
+    user.Role?.Trim() ?? "User"),
                 };
 
             var token =

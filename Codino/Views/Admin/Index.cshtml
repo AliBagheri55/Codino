@@ -1,0 +1,141 @@
+﻿@{
+    Layout = "_AdminLayout";
+
+    ViewData["Title"] = "داشبورد مدیریت";
+    ViewData["PageTitle"] = "داشبورد مدیریت";
+}
+
+<!-- معرفی داشبورد -->
+<div class="dashboard-welcome">
+
+    <div>
+        <h2>به مرکز مدیریت کدینو خوش آمدید</h2>
+        <p>از این قسمت می‌توانی بخش‌های مختلف وب‌سایت را مدیریت کنی.</p>
+    </div>
+
+    <div class="welcome-date">
+        @DateTime.Now.ToString("yyyy/MM/dd")
+    </div>
+
+</div>
+
+<!-- آمار کلی -->
+<div class="dashboard-stats">
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <span>کاربران سایت</span>
+            <h3>---</h3>
+            <small>آمار ثبت‌نام کاربران</small>
+        </div>
+
+        <div class="stat-icon">01</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <span>درخواست‌های پروژه</span>
+            <h3>---</h3>
+            <small>درخواست‌های ثبت‌شده</small>
+        </div>
+
+        <div class="stat-icon">02</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <span>پیام‌های دریافتی</span>
+            <h3>---</h3>
+            <small>پیام‌های کاربران</small>
+        </div>
+
+        <div class="stat-icon">03</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <span>وضعیت وب‌سایت</span>
+            <h3 class="online-status">فعال</h3>
+            <small>وضعیت نمایش سایت</small>
+        </div>
+
+        <div class="stat-icon">04</div>
+    </div>
+
+</div>
+
+<!-- دسترسی سریع -->
+<div class="dashboard-section">
+
+    <h3 class="admin-section-title">
+        دسترسی <span>سریع</span>
+    </h3>
+
+    <div class="quick-actions">
+
+        <!-- مدیریت کاربران -->
+        <a asp-controller="AdminUsers"
+           asp-action="Index"
+           class="quick-action">
+
+            <strong>مدیریت کاربران</strong>
+            <span>مشاهده و مدیریت حساب‌های کاربری</span>
+
+        </a>
+
+        <!-- مدیریت درخواست‌های پروژه -->
+        <a asp-controller="AdminProjectRequests"
+           asp-action="Index"
+           class="quick-action">
+
+            <strong>درخواست‌های پروژه</strong>
+            <span>بررسی و مدیریت درخواست‌های مشتریان</span>
+
+        </a>
+
+        <!-- مدیریت خدمات -->
+        <div class="quick-action disabled-action">
+            <strong>مدیریت خدمات</strong>
+            <span>در حال توسعه</span>
+        </div>
+
+        <!-- مدیریت نمونه‌کارها -->
+        <div class="quick-action disabled-action">
+            <strong>نمونه‌کارها</strong>
+            <span>در حال توسعه</span>
+        </div>
+
+        <!-- مدیریت مقالات -->
+        <div class="quick-action disabled-action">
+            <strong>مدیریت مقالات</strong>
+            <span>در حال توسعه</span>
+        </div>
+
+        <!-- مدیریت پیام‌ها -->
+        <div class="quick-action disabled-action">
+            <strong>پیام‌ها و تیکت‌ها</strong>
+            <span>در حال توسعه</span>
+        </div>
+
+        <!-- تنظیمات سایت -->
+        <div class="quick-action disabled-action">
+            <strong>تنظیمات سایت</strong>
+            <span>در حال توسعه</span>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- وضعیت پنل -->
+<div class="admin-card dashboard-notice">
+
+    <h3>مرکز مدیریت کدینو</h3>
+
+    <p>
+        پنل مدیریت کدینو برای کنترل بخش‌های مختلف وب‌سایت طراحی شده است.
+        در حال حاضر بخش مدیریت کاربران و درخواست‌های پروژه به سیستم متصل هستند.
+        سایر بخش‌ها در مراحل بعدی توسعه و به دیتابیس متصل خواهند شد.
+    </p>
+
+</div>

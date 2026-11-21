@@ -1,0 +1,259 @@
+﻿@using System.Text.Json
+@model JsonElement
+
+@{
+    ViewData["Title"] = "جزئیات تیکت";
+
+    // بررسی معتبر بودن مدل دریافتی
+    bool hasModel = Model.ValueKind == JsonValueKind.Object;
+
+    string GetValue(JsonElement element, string property)
+    {
+        if (element.ValueKind == JsonValueKind.Object &&
+            element.TryGetProperty(property, out var value) &&
+            value.ValueKind != JsonValueKind.Null &&
+            value.ValueKind != JsonValueKind.Undefined)
+        {
+            return value.ToString();
+        }
+
+        return "-";
+    }
+
+    string GetStatusText(string status)
+    {
+        return status.ToLowerInvariant() switch
+        {
+            "open" => "باز",
+            "waitingforadmin" => "در انتظار پاسخ پشتیبانی",
+            "waitingforuser" => "در انتظار پاسخ شما",
+            "closed" => "بسته شده",
+            _ => "نامشخص"
+        };
+    }
+
+    string GetStatusClass(string status)
+    {
+        return status.ToLowerInvariant() switch
+        {
+            "open" => "ticket-status-open",
+            "waitingforadmin" => "ticket-status-waiting",
+            "waitingforuser" => "ticket-status-user",
+            "closed" => "ticket-status-closed",
+            _ => "ticket-status-unknown"
+        };
+    }
+
+    string FormatDate(string date)
+    {
+        if (DateTime.TryParse(date, out var result))
+        {
+            return result.ToLocalTime().ToString("yyyy/MM/dd HH:mm");
+        }
+
+        return "ثبت نشده";
+    }
+
+    string status = hasModel ? GetValue(Model, "status") : "-";
+
+    bool isClosed = status.Equals(
+        "Closed",
+        StringComparison.OrdinalIgnoreCase);
+
+    string number = hasModel ? GetValue(Model, "ticketNumber") : "-";
+    string subject = hasModel ? GetValue(Model, "subject") : "-";
+    string category = hasModel ? GetValue(Model, "category") : "-";
+    string priority = hasModel ? GetValue(Model, "priority") : "-";
+    string createdAt = hasModel ? GetValue(Model, "createdAtUtc") : "-";
+    string ticketId = hasModel ? GetValue(Model, "id") : "";
+
+    JsonElement messages = default;
+
+    bool hasMessages =
+        hasModel &&
+        Model.TryGetProperty("messages", out messages) &&
+        messages.ValueKind == JsonValueKind.Array;
+}
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/account.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/tickets.css"
+          asp-append-version="true" />
+}
+
+<div class="account-page tickets-page">
+
+    <div class="account-card tickets-card ticket-details-card">
+
+        <div class="account-logo">
+            <img src="~/images/codino-intro.jpg" alt="Codino" />
+            <span>Codino</span>
+        </div>
+
+        <h1>گفت‌وگوی پشتیبانی</h1>
+
+        <p class="account-description">
+            پیام‌های مربوط به درخواست خود را مشاهده و پیگیری کنید.
+        </p>
+
+        @if (!hasModel)
+        {
+            <div class="account-error">
+                اطلاعات تیکت دریافت نشد. لطفاً دوباره تلاش کنید.
+            </div>
+        }
+        else
+        {
+            <section class="ticket-information">
+
+                <div class="ticket-detail-heading">
+
+                    <div>
+                        <span>شماره تیکت</span>
+                        <strong dir="ltr">@number</strong>
+                    </div>
+
+                    <span class="ticket-status @GetStatusClass(status)">
+                        @GetStatusText(status)
+                    </span>
+
+                </div>
+
+                <h2>@subject</h2>
+
+                <div class="ticket-meta">
+
+                    <div>
+                        <span>دسته‌بندی</span>
+                        <strong>@category</strong>
+                    </div>
+
+                    <div>
+                        <span>اولویت</span>
+                        <strong>@priority</strong>
+                    </div>
+
+                    <div>
+                        <span>تاریخ ثبت</span>
+                        <strong>@FormatDate(createdAt)</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="ticket-conversation">
+
+                <h2 class="ticket-conversation-title">
+                    تاریخچه گفتگو
+                </h2>
+
+                @if (hasMessages && messages.GetArrayLength() > 0)
+                {
+                    <div class="ticket-message-list">
+
+                        @foreach (var item in messages.EnumerateArray())
+                        {
+                            string message = GetValue(item, "message");
+                            string messageDate = GetValue(item, "createdAtUtc");
+
+                            bool isAdmin = GetValue(item, "isAdmin")
+                                .Equals("True", StringComparison.OrdinalIgnoreCase);
+
+                            <article class="ticket-message @(isAdmin ? "admin-message" : "user-message")">
+
+                                <div class="ticket-message-header">
+
+                                    <strong>
+                                        @(isAdmin ? "پشتیبانی کدینو" : "شما")
+                                    </strong>
+
+                                    <span>
+                                        @FormatDate(messageDate)
+                                    </span>
+
+                                </div>
+
+                                <p>@message</p>
+
+                            </article>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="profile-empty-state">
+                        <strong>پیامی برای نمایش وجود ندارد.</strong>
+                    </div>
+                }
+
+            </section>
+
+            @if (TempData["TicketError"] != null)
+            {
+                <div class="account-error">
+                    @TempData["TicketError"]
+                </div>
+            }
+
+            @if (!isClosed)
+            {
+                <section class="ticket-reply-section">
+
+                    <h2>ارسال پیام جدید</h2>
+
+                    <form asp-controller="Tickets"
+                          asp-action="SendMessage"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="ticketId"
+                               value="@ticketId" />
+
+                        <div class="ticket-form-group">
+
+                            <textarea name="message"
+                                      rows="5"
+                                      minlength="10"
+                                      maxlength="5000"
+                                      placeholder="پیام خود را بنویسید..."
+                                      required></textarea>
+
+                        </div>
+
+                        <button type="submit"
+                                class="ticket-submit-button">
+                            ارسال پیام
+                        </button>
+
+                    </form>
+
+                </section>
+            }
+            else
+            {
+                <div class="ticket-closed-notice">
+                    این تیکت بسته شده است و امکان ارسال پیام جدید وجود ندارد.
+                </div>
+            }
+        }
+
+        <div class="account-footer">
+
+            <a asp-controller="Tickets"
+               asp-action="Index">
+                بازگشت به فهرست تیکت‌ها
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

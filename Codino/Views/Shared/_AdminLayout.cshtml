@@ -1,0 +1,321 @@
+﻿@{
+    Layout = null;
+
+    ViewData["Title"] ??= "مدیریت کدینو";
+    ViewData["PageTitle"] ??= "داشبورد مدیریت";
+
+    var adminName = User.Identity?.Name;
+
+    if (string.IsNullOrWhiteSpace(adminName))
+    {
+        adminName = "مدیر سایت";
+    }
+
+    var avatarLetter = adminName.Length > 0
+        ? adminName.Substring(0, 1)
+        : "A";
+
+    var currentController =
+        ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    bool IsActive(string action)
+    {
+        return currentAction.Equals(
+            action,
+            StringComparison.OrdinalIgnoreCase);
+    }
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - مدیریت کدینو</title>
+
+    <meta name="robots" content="noindex, nofollow" />
+
+    <link rel="icon" href="~/images/codino-intro.jpg" />
+
+    <link rel="stylesheet"
+          href="~/css/admin.css"
+          asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body class="admin-body">
+
+    <div class="admin-overlay" id="adminOverlay"></div>
+
+    <div class="admin-container">
+
+        <aside class="admin-sidebar" id="adminSidebar">
+
+            <div class="admin-brand">
+
+                <a href="/Admin" class="brand-link">
+                    <span class="brand-name">CODINO</span>
+                    <span class="brand-label">ADMIN CONTROL CENTER</span>
+                </a>
+
+                <button type="button"
+                        class="sidebar-toggle"
+                        id="sidebarToggle"
+                        aria-label="جمع کردن منو">
+                    ☰
+                </button>
+
+            </div>
+
+            <div class="admin-profile">
+
+                <div class="admin-avatar">
+                    @avatarLetter
+                </div>
+
+                <div class="admin-profile-info">
+                    <strong>@adminName</strong>
+                    <small>مدیر سیستم</small>
+                </div>
+
+                <span class="admin-online-indicator"></span>
+
+            </div>
+
+            <nav class="admin-navigation">
+
+                <span class="nav-section-title">
+                    مدیریت اصلی
+                </span>
+
+                <a href="/Admin"
+                   class="nav-link @(IsActive("Index") && currentController == "Admin" ? "active" : "")">
+                    <span class="nav-icon">⌂</span>
+                    <span>داشبورد</span>
+                </a>
+
+                <a asp-controller="AdminUsers"
+                   asp-action="Index"
+                   class="nav-link @(currentController == "AdminUsers" ? "active" : "")">
+                    <span class="nav-icon">♙</span>
+                    <span>مدیریت کاربران</span>
+                </a>
+
+                <a href="/AdminProjectRequests/Index"
+                   class="nav-link @(currentController == "AdminProjectRequests" ? "active" : "")">
+                    <span class="nav-icon">▤</span>
+                    <span>درخواست‌های پروژه</span>
+                </a>
+
+                <span class="nav-section-title">
+                    مدیریت محتوا
+                </span>
+
+                <a href="/Admin/Services"
+                   class="nav-link @(IsActive("Services") ? "active" : "")">
+                    <span class="nav-icon">◇</span>
+                    <span>مدیریت خدمات</span>
+                </a>
+
+                <a href="/Admin/Portfolio"
+                   class="nav-link @(IsActive("Portfolio") ? "active" : "")">
+                    <span class="nav-icon">▣</span>
+                    <span>نمونه‌کارها</span>
+                </a>
+
+                <a href="/Admin/Articles"
+                   class="nav-link @(IsActive("Articles") ? "active" : "")">
+                    <span class="nav-icon">▧</span>
+                    <span>مقالات و وبلاگ</span>
+                </a>
+
+                <span class="nav-section-title">
+                    ارتباطات
+                </span>
+
+                <a href="/Admin/Messages"
+                   class="nav-link @(IsActive("Messages") ? "active" : "")">
+                    <span class="nav-icon">✉</span>
+                    <span>پیام‌ها و تیکت‌ها</span>
+                </a>
+
+                <span class="nav-section-title">
+                    مدیریت سیستم
+                </span>
+
+                <a href="/Admin/Settings"
+                   class="nav-link @(IsActive("Settings") ? "active" : "")">
+                    <span class="nav-icon">⚙</span>
+                    <span>تنظیمات سایت</span>
+                </a>
+
+            </nav>
+
+            <div class="admin-sidebar-footer">
+
+                <a href="/" class="nav-link">
+                    <span class="nav-icon">↗</span>
+                    <span>بازگشت به سایت</span>
+                </a>
+
+                <form asp-controller="Account"
+                      asp-action="Logout"
+                      method="post"
+                      class="admin-logout-form">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="nav-link logout-link">
+
+                        <span class="nav-icon">⇥</span>
+                        <span>خروج از حساب</span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-topbar">
+
+                <div class="admin-topbar-right">
+
+                    <button type="button"
+                            class="mobile-menu-toggle"
+                            id="mobileMenuToggle"
+                            aria-label="باز کردن منو"
+                            aria-expanded="false">
+                        ☰
+                    </button>
+
+                    <div>
+                        <h1>@ViewData["PageTitle"]</h1>
+
+                        <p>
+                            به مرکز مدیریت کدینو خوش آمدید.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="admin-topbar-actions">
+
+                    <div class="admin-status">
+                        <span class="status-dot"></span>
+                        <span>سیستم فعال</span>
+                    </div>
+
+                    <div class="admin-topbar-profile">
+                        <span class="topbar-avatar">
+                            @avatarLetter
+                        </span>
+
+                        <span>@adminName</span>
+                    </div>
+
+                </div>
+
+            </header>
+
+            <section class="admin-content">
+
+                @RenderBody()
+
+            </section>
+
+            <footer class="admin-footer">
+
+                <span>
+                    © @DateTime.Now.Year Codino
+                </span>
+
+                <span>
+                    تمامی حقوق محفوظ است.
+                </span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                const sidebar =
+                    document.getElementById("adminSidebar");
+
+                const overlay =
+                    document.getElementById("adminOverlay");
+
+                const sidebarToggle =
+                    document.getElementById("sidebarToggle");
+
+                const mobileMenuToggle =
+                    document.getElementById("mobileMenuToggle");
+
+                // جمع و باز کردن منو در دسکتاپ
+                sidebarToggle?.addEventListener("click", function() {
+                    document.body.classList.toggle("sidebar-collapsed");
+                });
+
+                // باز کردن منو در موبایل
+                mobileMenuToggle?.addEventListener("click", function() {
+
+                    sidebar?.classList.add("mobile-open");
+                    overlay?.classList.add("active");
+
+                    mobileMenuToggle.setAttribute(
+                        "aria-expanded",
+                        "true"
+                    );
+
+                });
+
+                // بستن منوی موبایل
+                function closeMobileMenu() {
+
+                    sidebar?.classList.remove("mobile-open");
+                    overlay?.classList.remove("active");
+
+                    mobileMenuToggle?.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                }
+
+                overlay?.addEventListener(
+                    "click",
+                    closeMobileMenu
+                );
+
+                // بستن منو پس از انتخاب یک لینک
+                sidebar?.querySelectorAll(".nav-link").forEach(
+                    function(link) {
+
+                        link.addEventListener("click", function() {
+                            closeMobileMenu();
+                        });
+
+                    }
+                );
+
+            });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

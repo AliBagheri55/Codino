@@ -2,14 +2,13 @@
 using System;
 using System.IO;
 using System.Net;
-
+using System.Security.Claims;
 using Codino.Services;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,11 +48,37 @@ builder.Services.AddControllersWithViews(options =>
         new AutoValidateAntiforgeryTokenAttribute());
 });
 
-builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
-
-// پشتیبانی از IHttpClientFactory برای کنترلرها
 builder.Services.AddHttpClient();
+
+// =========================================================
+// AUTHENTICATION - COOKIE
+// =========================================================
+
+builder.Services
+    .AddAuthentication(
+        CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = ".Codino.Auth";
+        options.Cookie.Path = "/";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+
+        options.Cookie.SecurePolicy =
+            builder.Environment.IsDevelopment()
+                ? CookieSecurePolicy.SameAsRequest
+                : CookieSecurePolicy.Always;
+
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+
+builder.Services.AddAuthorization();
 
 // =========================================================
 // FORWARDED HEADERS
@@ -141,8 +166,6 @@ var redisLogger =
 redisLogger.LogInformation(
     "Redis configuration loaded. Environment: {Environment}",
     builder.Environment.EnvironmentName);
-
-// رشته اتصال Redis عمداً در لاگ نمایش داده نمی‌شود.
 
 // =========================================================
 // REDIS CACHE
@@ -241,9 +264,6 @@ builder.Services.AddSession(options =>
 // API BASE URL
 // =========================================================
 
-// اولویت با ApiSettings:BaseUrl است.
-// تنظیم قدیمی Api:BaseUrl نیز برای سازگاری پشتیبانی می‌شود.
-
 string apiBaseUrl =
     builder.Configuration["ApiSettings:BaseUrl"]
     ?? builder.Configuration["Api:BaseUrl"]
@@ -267,7 +287,10 @@ if (!apiBaseUrl.EndsWith("/", StringComparison.Ordinal))
     apiBaseUrl += "/";
 }
 
-// کلاینت اختصاصی سرویس فعلی API
+// =========================================================
+// API HTTP CLIENT
+// =========================================================
+
 builder.Services.AddHttpClient<ApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
@@ -365,6 +388,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

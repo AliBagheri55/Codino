@@ -291,192 +291,6 @@
 
     </section>
 
-
-    <!-- نمونه‌کارهای کدینو -->
-  @*   <section class="codino-portfolio section" id="portfolio">
-
-        <div class="section-container">
-
-            <div class="section-heading centered">
-
-                <h2>نمونه‌کارهای کدینو</h2>
-
-                <p>
-                    بخشی از زمینه‌های کاری و پروژه‌های قابل اجرا
-                </p>
-
-            </div>
-
-            <div class="portfolio-grid">
-
-                <article class="portfolio-card">
-
-                    <div class="portfolio-card-content">
-
-                        <span class="portfolio-category">
-                            طراحی وب
-                        </span>
-
-                        <h3>وب‌سایت‌های شرکتی</h3>
-
-                        <p>
-                            طراحی وب‌سایت‌های حرفه‌ای برای معرفی
-                            خدمات، محصولات و کسب‌وکارها.
-                        </p>
-
-                    </div>
-
-                </article>
-
-                <article class="portfolio-card">
-
-                    <div class="portfolio-card-content">
-
-                        <span class="portfolio-category">
-                            نرم‌افزار
-                        </span>
-
-                        <h3>سیستم‌های مدیریتی</h3>
-
-                        <p>
-                            توسعه سیستم‌های مدیریت اطلاعات،
-                            کاربران و فرایندهای کاری.
-                        </p>
-
-                    </div>
-
-                </article>
-
-                <article class="portfolio-card">
-
-                    <div class="portfolio-card-content">
-
-                        <span class="portfolio-category">
-                            برنامه‌نویسی
-                        </span>
-
-                        <h3>برنامه‌های اختصاصی</h3>
-
-                        <p>
-                            ساخت نرم‌افزارهای اختصاصی بر اساس
-                            نیازها و درخواست مشتریان.
-                        </p>
-
-                    </div>
-
-                </article>
-
-            </div>
-
-        </div>
-
-    </section>
- *@
-
-    <!-- پیگیری وضعیت پروژه -->
-    @* <section class="project-tracking section" id="tracking">
-
-        <div class="section-container">
-
-            <div class="tracking-box">
-
-                <div class="tracking-content">
-
-                    <h2>پیگیری وضعیت پروژه</h2>
-
-                    <p>
-                        می‌توانید برای اطلاع از وضعیت پروژه خود
-                        از بخش پیگیری پروژه استفاده کنید.
-                    </p>
-
-                    <a asp-controller="ProjectRequests"
-                       asp-action="Track"
-                       class="primary-button">
-
-                        پیگیری پروژه
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section> *@
-
-
-@*     <!-- پشتیبانی و ارسال تیکت -->
-    <section class="ticket-support section" id="support">
-
-        <div class="section-container">
-
-            <div class="support-box">
-
-                <div class="support-content">
-
-
-                    <h2>پشتیبانی کدینو</h2>
-
-                    <p>
-                        اگر در استفاده از خدمات کدینو با مشکل
-                        مواجه شده‌اید، درخواست پشتیبانی خود را
-                        ثبت کنید تا بررسی شود.
-                    </p>
-
-                    <a asp-controller="Support"
-                       asp-action="Create"
-                       class="primary-button">
-
-                        ارسال تیکت پشتیبانی
-
-                    </a>
-
-                </div>
-                <img src="~/images/codino-intro.jpg" />
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- قرارداد آنلاین -->
-    <section class="online-contract section" id="contracts">
-
-        <div class="section-container">
-
-            <div class="contract-box">
-
-                <div class="contract-content">
-
-                    <h2>قرارداد آنلاین</h2>
-
-                    <p>
-                        جزئیات همکاری، شرایط انجام پروژه و
-                        توافقات کاری را از طریق بخش قراردادها
-                        دنبال کنید.
-                    </p>
-
-                    <a asp-controller="Contracts"
-                       asp-action="Index"
-                       class="primary-button">
-
-                        مشاهده قراردادها
-
-                    </a>
-
-                </div>
-                <img src="~/images/codinogharad.jpg" />
-
-            </div>
-
-        </div>
-
-    </section>
- *@
-
     <!-- نظرات کاربران -->
     <section class="comments section" id="comments">
 
@@ -683,64 +497,90 @@
 
 
 <!-- تابلو اعلانات -->
+
+
 <section class="codino-announcements">
 
+    <!-- ANNOUNCEMENTS HEADER -->
     <div class="announcements-header">
 
         <div>
-
             <h2>تابلو اعلانات</h2>
 
             <p>
                 آخرین اطلاعیه‌ها و اخبار رسمی Codino
             </p>
-
         </div>
 
     </div>
 
+    <!-- ANNOUNCEMENTS LIST -->
     <div class="announcement-list">
 
-        <div class="announcement-item">
+        @if (Model?.Announcements != null &&
+             Model.Announcements.Any(a => a != null))
+        {
+            @foreach (var announcement in Model.Announcements
+                .Where(a => a != null)
+                .OrderByDescending(a => a.CreatedAtUtc))
+            {
+                <div class="announcement-item">
 
-            <div class="announcement-content">
+                    <div class="announcement-content">
 
-                <div class="announcement-title-row">
+                        <!-- TITLE -->
+                        <div class="announcement-title-row">
 
-                    <h3>
-                        اطلاعیه رسمی گزارش مشکلات سایت
-                    </h3>
+                            <h3>
+                                @announcement.Title
+                            </h3>
+
+                        </div>
+
+                        <!-- CONTENT -->
+                        <p>
+                            @announcement.Content
+                        </p>
+
+                        <!-- AUTHOR AND DATE -->
+                        <span class="announcement-date">
+
+                            @announcement.AuthorLabel
+
+                            <span>|</span>
+
+                            @announcement.CreatedAtUtc
+                            .ToLocalTime()
+                            .ToString("yyyy/MM/dd")
+
+                        </span>
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <!-- EMPTY STATE -->
+            <div class="announcement-item">
+
+                <div class="announcement-content">
+
+                    <p>
+                        در حال حاضر اطلاعیه‌ای برای نمایش وجود ندارد.
+                    </p>
 
                 </div>
 
-                <p>
-                    کاربران گرامی، در صورت مواجهه با هرگونه اختلال،
-                    خطای فنی یا مشکل در استفاده از امکانات وب‌سایت Codino،
-                    خواهشمند است موضوع را به همراه شرح دقیق مشکل و
-                    تصویر مربوطه از طریق تلگرام به واحد پشتیبانی اطلاع دهید.
-
-                    <br /><br />
-
-                    درخواست‌های ارسالی در اسرع وقت بررسی خواهند شد
-                    و اقدامات لازم برای رفع مشکلات احتمالی انجام می‌گیرد.
-
-                    <br /><br />
-
-                    از همکاری شما در بهبود کیفیت خدمات و افزایش
-                    پایداری وب‌سایت سپاسگزاریم.
-                </p>
-
-                <span class="announcement-date">
-                    واحد پشتیبانی فنی | Codino
-                </span>
-
             </div>
-
-        </div>
+        }
 
     </div>
 
 </section>
+
+
 
 
 <!-- فوتر -->

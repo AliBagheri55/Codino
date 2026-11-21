@@ -1,0 +1,270 @@
+﻿@using System.Text.Json
+@model List<JsonElement>
+
+@{
+    ViewData["Title"] = "مدیریت تیکت‌ها";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    string GetValue(JsonElement item, string property)
+    {
+        return item.TryGetProperty(property, out var value)
+            ? value.ToString()
+            : "-";
+    }
+
+    string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Open" => "ticket-status-open",
+            "WaitingForAdmin" => "ticket-status-waiting",
+            "WaitingForUser" => "ticket-status-user",
+            "Closed" => "ticket-status-closed",
+            _ => "ticket-status-default"
+        };
+    }
+
+    string GetStatusText(string status)
+    {
+        return status switch
+        {
+            "Open" => "باز",
+            "WaitingForAdmin" => "در انتظار مدیر",
+            "WaitingForUser" => "در انتظار کاربر",
+            "Closed" => "بسته شده",
+            _ => status
+        };
+    }
+
+    string GetPriorityClass(string priority)
+    {
+        return priority switch
+        {
+            "High" => "priority-high",
+            "Normal" => "priority-normal",
+            "Low" => "priority-low",
+            _ => "priority-default"
+        };
+    }
+
+    string GetPriorityText(string priority)
+    {
+        return priority switch
+        {
+            "High" => "زیاد",
+            "Normal" => "معمولی",
+            "Low" => "کم",
+            _ => priority
+        };
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-tickets.css" asp-append-version="true" />
+}
+
+<div class="admin-tickets-page">
+
+    <div class="tickets-header">
+        <div>
+            <span class="tickets-eyebrow">SUPPORT CENTER</span>
+            <h1>مدیریت تیکت‌ها</h1>
+            <p>مدیریت درخواست‌های پشتیبانی و ارتباط با کاربران</p>
+        </div>
+
+        <div class="tickets-header-icon">
+            <i class="fas fa-headset"></i>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="tickets-alert success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="tickets-alert error">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="tickets-summary">
+        <div class="tickets-summary-card">
+            <span>کل تیکت‌های نمایش‌داده‌شده</span>
+            <strong>@Model.Count</strong>
+            <i class="fas fa-ticket-alt"></i>
+        </div>
+
+        <div class="tickets-summary-card">
+            <span>تیکت‌های باز</span>
+            <strong>@Model.Count(x => GetValue(x, "status") == "Open")</strong>
+            <i class="fas fa-folder-open"></i>
+        </div>
+
+        <div class="tickets-summary-card">
+            <span>در انتظار پاسخ مدیر</span>
+            <strong>@Model.Count(x => GetValue(x, "status") == "WaitingForAdmin")</strong>
+            <i class="fas fa-clock"></i>
+        </div>
+
+        <div class="tickets-summary-card">
+            <span>بسته شده</span>
+            <strong>@Model.Count(x => GetValue(x, "status") == "Closed")</strong>
+            <i class="fas fa-check-circle"></i>
+        </div>
+    </div>
+
+    <div class="tickets-panel">
+
+        <div class="tickets-panel-heading">
+            <div>
+                <h2>فهرست درخواست‌ها</h2>
+                <p>تیکت‌های ثبت‌شده توسط کاربران</p>
+            </div>
+
+            <span class="tickets-count">
+                @Model.Count تیکت
+            </span>
+        </div>
+
+        <form method="get" asp-controller="AdminTickets" asp-action="Index" class="tickets-filter-form">
+
+            <div class="tickets-search">
+                <i class="fas fa-search"></i>
+                <input type="text"
+                       name="search"
+                       value="@ViewBag.Search"
+                       placeholder="جست‌وجو در تیکت‌ها..." />
+            </div>
+
+            <select name="status">
+                <option value="">تمام وضعیت‌ها</option>
+                <option value="Open" selected="@(ViewBag.Status as string == "Open")">باز</option>
+                <option value="WaitingForAdmin" selected="@(ViewBag.Status as string == "WaitingForAdmin")">در انتظار مدیر</option>
+                <option value="WaitingForUser" selected="@(ViewBag.Status as string == "WaitingForUser")">در انتظار کاربر</option>
+                <option value="Closed" selected="@(ViewBag.Status as string == "Closed")">بسته شده</option>
+            </select>
+
+            <select name="priority">
+                <option value="">تمام اولویت‌ها</option>
+                <option value="High" selected="@(ViewBag.Priority as string == "High")">زیاد</option>
+                <option value="Normal" selected="@(ViewBag.Priority as string == "Normal")">معمولی</option>
+                <option value="Low" selected="@(ViewBag.Priority as string == "Low")">کم</option>
+            </select>
+
+            <select name="category">
+                <option value="">تمام دسته‌بندی‌ها</option>
+                <option value="General" selected="@(ViewBag.Category as string == "General")">عمومی</option>
+                <option value="Technical" selected="@(ViewBag.Category as string == "Technical")">فنی</option>
+                <option value="Billing" selected="@(ViewBag.Category as string == "Billing")">مالی</option>
+                <option value="Account" selected="@(ViewBag.Category as string == "Account")">حساب کاربری</option>
+                <option value="Other" selected="@(ViewBag.Category as string == "Other")">سایر</option>
+            </select>
+
+            <button type="submit" class="tickets-filter-button">
+                <i class="fas fa-filter"></i>
+                اعمال فیلتر
+            </button>
+
+            <a asp-controller="AdminTickets"
+               asp-action="Index"
+               class="tickets-reset-button">
+                پاک کردن
+            </a>
+
+        </form>
+
+        @if (Model.Any())
+        {
+            <div class="tickets-table-wrapper">
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>شماره تیکت</th>
+                            <th>موضوع</th>
+                            <th>کاربر</th>
+                            <th>دسته‌بندی</th>
+                            <th>اولویت</th>
+                            <th>وضعیت</th>
+                            <th>تاریخ ثبت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var ticket in Model)
+                        {
+                            var id = GetValue(ticket, "id");
+                            var number = GetValue(ticket, "ticketNumber");
+                            var subject = GetValue(ticket, "subject");
+                            var customerName = GetValue(ticket, "customerName");
+                            var category = GetValue(ticket, "category");
+                            var priority = GetValue(ticket, "priority");
+                            var status = GetValue(ticket, "status");
+                            var createdAt = GetValue(ticket, "createdAtUtc");
+
+                            <tr>
+                                <td>
+                                    <span class="ticket-number">@number</span>
+                                </td>
+
+                                <td>
+                                    <span class="ticket-subject">@subject</span>
+                                </td>
+
+                                <td>
+                                    <span class="ticket-customer">
+                                        <i class="fas fa-user-circle"></i>
+                                        @customerName
+                                    </span>
+                                </td>
+
+                                <td>@category</td>
+
+                                <td>
+                                    <span class="ticket-priority @GetPriorityClass(priority)">
+                                        @GetPriorityText(priority)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="ticket-status @GetStatusClass(status)">
+                                        @GetStatusText(status)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="ticket-date">
+                                        @createdAt
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <a asp-controller="AdminTickets"
+                                       asp-action="Details"
+                                       asp-route-id="@id"
+                                       class="ticket-view-button">
+                                        مشاهده
+                                        <i class="fas fa-arrow-left"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="tickets-empty">
+                <i class="fas fa-inbox"></i>
+                <h3>تیکتی پیدا نشد</h3>
+                <p>در حال حاضر تیکتی برای نمایش وجود ندارد یا نتیجه‌ای با فیلترهای انتخاب‌شده پیدا نشد.</p>
+            </div>
+        }
+
+    </div>
+</div>

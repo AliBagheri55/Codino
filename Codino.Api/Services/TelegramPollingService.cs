@@ -277,8 +277,8 @@ namespace Codino.Api.Services
                     if (affectedRows == 1)
                     {
                         resultMessage = newStatus == "Approved"
-                            ? "درخواست پروژه با موفقیت تأیید شد. ✅"
-                            : "درخواست پروژه رد شد. ❌";
+                            ? "درخواست پروژه با موفقیت تأیید شد. "
+                            : "درخواست پروژه رد شد. ";
 
                         _logger.LogInformation(
                             "Project request {RequestId} changed to {Status}.",

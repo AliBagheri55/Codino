@@ -25,13 +25,18 @@ namespace Codino.Api.Controllers
             _logger = logger;
         }
 
+        // =========================================================
+        // SUBMIT COLLABORATION REQUEST
+        // ثبت درخواست همکاری
+        // =========================================================
+
         [HttpPost("submit")]
         public async Task<IActionResult> Submit(
             [FromBody] CreateCollaborationRequest request)
         {
             try
             {
-                // دریافت شناسه کاربر از اطلاعات احراز هویت
+                // دریافت شناسه کاربر از توکن احراز هویت
                 var userIdValue = User.FindFirstValue(
                     ClaimTypes.NameIdentifier);
 
@@ -44,7 +49,7 @@ namespace Codino.Api.Controllers
                     });
                 }
 
-                // بررسی وجود کاربر
+                // بررسی وجود کاربر و تأیید شماره موبایل
                 var user = await _context.Users
                     .FirstOrDefaultAsync(x => x.Id == userId);
 
@@ -113,7 +118,84 @@ namespace Codino.Api.Controllers
                 });
             }
         }
+
+        // =========================================================
+        // GET MY COLLABORATION REQUEST
+        // دریافت درخواست همکاری کاربر واردشده
+        // =========================================================
+
+        [HttpGet("my-request")]
+        public async Task<IActionResult> GetMyRequest(
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                // شناسه کاربر فقط از توکن معتبر دریافت می‌شود.
+                var userIdValue = User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+                if (!int.TryParse(userIdValue, out var userId))
+                {
+                    return Unauthorized(new
+                    {
+                        success = false,
+                        message = "اطلاعات کاربری معتبر نیست."
+                    });
+                }
+
+                // فقط درخواست متعلق به همین کاربر دریافت می‌شود.
+                var request = await _context.CollaborationRequests
+                    .AsNoTracking()
+                    .Where(x => x.UserId == userId)
+                    .OrderByDescending(x => x.CreatedAt)
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.Specialty,
+                        x.Experience,
+                        x.Skills,
+                        x.PortfolioUrl,
+                        x.Description,
+                        x.Status,
+                        x.CreatedAt
+                    })
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (request == null)
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = "هنوز درخواست همکاری ثبت نکرده‌اید.",
+                        data = (object?)null
+                    });
+                }
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "درخواست همکاری با موفقیت دریافت شد.",
+                    data = request
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Error retrieving collaboration request");
+
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "دریافت درخواست همکاری با مشکل مواجه شد."
+                });
+            }
+        }
     }
+
+    // =========================================================
+    // CREATE COLLABORATION REQUEST DTO
+    // =========================================================
 
     public class CreateCollaborationRequest
     {

@@ -1,0 +1,149 @@
+﻿@model Codino.Controllers.AdminUserViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "جزئیات کاربر";
+    ViewData["PageTitle"] = "جزئیات کاربر";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-users.css" asp-append-version="true" />
+}
+
+<div class="admin-user-details">
+
+    <div class="details-header">
+        <div>
+            <h2>اطلاعات کاربر</h2>
+            <p>مشاهده اطلاعات حساب کاربری و وضعیت آن</p>
+        </div>
+
+        <a asp-controller="AdminUsers"
+           asp-action="Index"
+           class="details-back-button">
+            بازگشت به کاربران
+        </a>
+    </div>
+
+    <div class="details-profile-card">
+
+        <div class="details-avatar">
+            @(string.IsNullOrWhiteSpace(Model.FullName)
+                ? "؟"
+                : Model.FullName.Substring(0, 1))
+        </div>
+
+        <div class="details-profile-info">
+            <h3>
+                @(string.IsNullOrWhiteSpace(Model.FullName)
+                    ? "بدون نام"
+                    : Model.FullName)
+            </h3>
+
+            <span>شناسه کاربری: #@Model.Id</span>
+        </div>
+
+        @if (Model.Role == "Admin")
+        {
+            <span class="role-badge admin-role">مدیر</span>
+        }
+        else
+        {
+            <span class="role-badge user-role">کاربر</span>
+        }
+
+    </div>
+
+    <div class="details-information-card">
+
+        <div class="details-section-title">
+            <span></span>
+            اطلاعات حساب
+        </div>
+
+        <div class="details-information-grid">
+
+            <div class="details-information-item">
+                <span>شناسه کاربری</span>
+                <strong>#@Model.Id</strong>
+            </div>
+
+            <div class="details-information-item">
+                <span>نام و نام خانوادگی</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(Model.FullName)
+                        ? "ثبت نشده"
+                        : Model.FullName)
+                </strong>
+            </div>
+
+            <div class="details-information-item">
+                <span>شماره موبایل</span>
+                <strong class="details-phone">
+                    @(string.IsNullOrWhiteSpace(Model.PhoneNumber)
+                        ? "ثبت نشده"
+                        : Model.PhoneNumber)
+                </strong>
+            </div>
+
+            <div class="details-information-item">
+                <span>نقش حساب</span>
+                <strong>
+                    @(Model.Role == "Admin" ? "مدیر" : "کاربر")
+                </strong>
+            </div>
+
+            <div class="details-information-item">
+                <span>تاریخ عضویت</span>
+                <strong>
+                    @Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                </strong>
+            </div>
+
+            <div class="details-information-item">
+                <span>وضعیت تأیید موبایل</span>
+
+                @if (Model.IsPhoneVerified)
+                {
+                    <strong class="details-status verified">
+                        تأیید شده
+                    </strong>
+                }
+                else
+                {
+                    <strong class="details-status unverified">
+                        تأیید نشده
+                    </strong>
+                }
+            </div>
+
+        </div>
+    </div>
+
+    <div class="details-footer">
+
+        <a asp-controller="AdminUsers"
+           asp-action="Index"
+           class="details-back-button">
+            بازگشت
+        </a>
+
+        @if (Model.Role != "Admin")
+        {
+            <form asp-controller="AdminUsers"
+                  asp-action="Delete"
+                  asp-route-id="@Model.Id"
+                  method="post"
+                  onsubmit="return confirm('آیا از حذف این حساب کاربری اطمینان دارید؟ این عملیات قابل بازگشت نیست.');">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit" class="details-delete-button">
+                    حذف این کاربر
+                </button>
+            </form>
+        }
+
+    </div>
+
+</div>

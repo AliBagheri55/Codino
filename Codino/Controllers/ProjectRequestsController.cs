@@ -2,7 +2,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Codino.Controllers
@@ -23,11 +25,19 @@ namespace Codino.Controllers
             _logger = logger;
         }
 
+        // =========================================================
+        // نمایش فرم ثبت پروژه
+        // =========================================================
+
         [HttpGet]
         public IActionResult Create()
         {
             return View(new CreateProjectRequestViewModel());
         }
+
+        // =========================================================
+        // ثبت درخواست پروژه
+        // =========================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -65,6 +75,7 @@ namespace Codino.Controllers
                 return View(model);
             }
 
+            // بررسی آدرس API
             var apiBaseUrl = _configuration["ApiSettings:BaseUrl"];
 
             if (string.IsNullOrWhiteSpace(apiBaseUrl) ||
@@ -90,9 +101,24 @@ namespace Codino.Controllers
                 var client = _httpClientFactory.CreateClient();
                 client.Timeout = TimeSpan.FromSeconds(15);
 
+                // دریافت توکن کاربر واردشده از Session
+                var accessToken = HttpContext.Session.GetString("AccessToken");
+
+                // اگر کاربر وارد حساب شده باشد، توکن برای API ارسال می‌شود.
+                // کاربران مهمان بدون توکن می‌توانند درخواست ثبت کنند.
+                if (!string.IsNullOrWhiteSpace(accessToken))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue(
+                            "Bearer",
+                            accessToken);
+                }
+
+                // آدرس ثبت درخواست در API
                 var apiUrl =
                     $"{baseUri.ToString().TrimEnd('/')}/api/project-requests";
 
+                // آماده‌سازی اطلاعات درخواست
                 var requestData = new
                 {
                     customerName = model.CustomerName,
@@ -105,6 +131,7 @@ namespace Codino.Controllers
                     desiredDeadline = model.DesiredDeadline
                 };
 
+                // ارسال درخواست به API
                 using var response = await client.PostAsJsonAsync(
                     apiUrl,
                     requestData,
@@ -120,9 +147,15 @@ namespace Codino.Controllers
                     return RedirectToAction(nameof(Create));
                 }
 
+                // ثبت جزئیات خطای API در گزارش سرور
+                var errorContent =
+                    await response.Content.ReadAsStringAsync(
+                        cancellationToken);
+
                 _logger.LogWarning(
-                    "Project request API returned status code {StatusCode}.",
-                    (int)response.StatusCode);
+                    "Project request API returned status code {StatusCode}. Response: {Response}",
+                    (int)response.StatusCode,
+                    errorContent);
 
                 ModelState.AddModelError(
                     string.Empty,
@@ -152,6 +185,10 @@ namespace Codino.Controllers
             return View(model);
         }
     }
+
+    // =========================================================
+    // مدل فرم ثبت درخواست پروژه
+    // =========================================================
 
     public class CreateProjectRequestViewModel
     {
